@@ -37,10 +37,13 @@ public class SequenceEncoder {
     private FramesMP4MuxerTrack outTrack;
     private ByteBuffer _out;
     private int frameNo;
+    private int presentationTimestamp = 0;
     private MP4Muxer muxer;
+	private int targetFramerate;
 
-    public SequenceEncoder(File out) throws IOException {
+    public SequenceEncoder(File out, int targetFramerate) throws IOException {
         this.ch = NIOUtils.writableFileChannel(out);
+        this.targetFramerate = targetFramerate;
 
         // Transform to convert between RGB and YUV
         transform = new RgbToYuv420(0, 0);
@@ -49,7 +52,7 @@ public class SequenceEncoder {
         muxer = new MP4Muxer(ch, Brand.MP4);
 
         // Add video track to muxer
-        outTrack = muxer.addTrackForCompressed(TrackType.VIDEO, 25);
+        outTrack = muxer.addTrackForCompressed(TrackType.VIDEO, targetFramerate);
 
         // Allocate a buffer big enough to hold output frames
         _out = ByteBuffer.allocate(1920 * 1080 * 6);
@@ -63,8 +66,24 @@ public class SequenceEncoder {
         ppsList = new ArrayList<ByteBuffer>();
 
     }
-
+    
+    /**
+     * Add another frame of animation, assuming we're still hitting our target rate
+     * @param bi
+     * @throws IOException
+     */
     public void encodeImage(BufferedImage bi) throws IOException {
+    	encodeImage(bi, 1);
+    }
+
+    /**
+     * Encode another frame of animation.
+     * @param bi
+     * @param frameDuration - how many animation frames this image should be used for (1 if we're hitting 
+     * 	our target framerate rate, more if not)
+     * @throws IOException
+     */
+    public void encodeImage(BufferedImage bi, int frameDuration) throws IOException {
         if (toEncode == null) {
             toEncode = Picture.create(bi.getWidth(), bi.getHeight(), ColorSpace.YUV420);
         }
@@ -84,9 +103,10 @@ public class SequenceEncoder {
         H264Utils.encodeMOVPacket(result, spsList, ppsList);
 
         // Add packet to video track
-        outTrack.addFrame(new MP4Packet(result, frameNo, 25, 1, frameNo, true, null, frameNo, 0));
+        outTrack.addFrame(new MP4Packet(result, presentationTimestamp, targetFramerate, frameDuration, frameNo, true, null, frameNo, 0));
 
         frameNo++;
+        presentationTimestamp += frameDuration;
     }
 
     public void finish() throws IOException {
@@ -96,14 +116,5 @@ public class SequenceEncoder {
         // Write MP4 header and finalize recording
         muxer.writeHeader();
         NIOUtils.closeQuietly(ch);
-    }
-
-    public static void main(String[] args) throws IOException {
-        SequenceEncoder encoder = new SequenceEncoder(new File("video.mp4"));
-        for (int i = 1; i < 100; i++) {
-            BufferedImage bi = ImageIO.read(new File(String.format("folder/img%08d.png", i)));
-            encoder.encodeImage(bi);
-        }
-        encoder.finish();
     }
 }
