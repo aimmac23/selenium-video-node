@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.servlet;
+package com.mooo.aimmac23.node;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;

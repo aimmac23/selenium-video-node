@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.servlet;
+package com.mooo.aimmac23.node.servlet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +19,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.mooo.aimmac23.node.VideoRecordController;
 
 public class VideoRecordingControlServlet extends HttpServlet {
 	
