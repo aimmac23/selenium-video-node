@@ -21,7 +21,8 @@ import org.jcodec.containers.mp4.TrackType;
 import org.jcodec.containers.mp4.muxer.FramesMP4MuxerTrack;
 import org.jcodec.containers.mp4.muxer.MP4Muxer;
 import org.jcodec.scale.AWTUtil;
-import org.jcodec.scale.RgbToYuv420;
+import org.jcodec.scale.ColorUtil;
+import org.jcodec.scale.Transform;
 
 /**
  * From http://stackoverflow.com/questions/10969423/jcodec-has-anyone-seen-documentation-on-this-library
@@ -30,7 +31,7 @@ import org.jcodec.scale.RgbToYuv420;
 public class SequenceEncoder {
     private SeekableByteChannel ch;
     private Picture toEncode;
-    private RgbToYuv420 transform;
+    private Transform transform;
     private H264Encoder encoder;
     private ArrayList<ByteBuffer> spsList;
     private ArrayList<ByteBuffer> ppsList;
@@ -45,20 +46,20 @@ public class SequenceEncoder {
         this.ch = NIOUtils.writableFileChannel(out);
         this.targetFramerate = targetFramerate;
 
+        // Create an instance of encoder
+        encoder = new H264Encoder();
+
         // Transform to convert between RGB and YUV
-        transform = new RgbToYuv420(0, 0);
+        transform = ColorUtil.getTransform(ColorSpace.RGB, encoder.getSupportedColorSpaces()[0]);
 
         // Muxer that will store the encoded frames
         muxer = new MP4Muxer(ch, Brand.MP4);
 
         // Add video track to muxer
-        outTrack = muxer.addTrackForCompressed(TrackType.VIDEO, targetFramerate);
+        outTrack = muxer.addTrack(TrackType.VIDEO, targetFramerate);
 
         // Allocate a buffer big enough to hold output frames
         _out = ByteBuffer.allocate(1920 * 1080 * 6);
-
-        // Create an instance of encoder
-        encoder = new H264Encoder();
 
         // Encoder extra data ( SPS, PPS ) to be stored in a special place of
         // MP4
@@ -85,22 +86,21 @@ public class SequenceEncoder {
      */
     public void encodeImage(BufferedImage bi, int frameDuration) throws IOException {
         if (toEncode == null) {
-            toEncode = Picture.create(bi.getWidth(), bi.getHeight(), ColorSpace.YUV420);
+            toEncode = Picture.create(bi.getWidth(), bi.getHeight(), encoder.getSupportedColorSpaces()[0]);
         }
 
-        // Perform conversion
-        for (int i = 0; i < 3; i++)
-            Arrays.fill(toEncode.getData()[i], 0);
+        
         transform.transform(AWTUtil.fromBufferedImage(bi), toEncode);
 
         // Encode image into H.264 frame, the result is stored in '_out' buffer
         _out.clear();
-        ByteBuffer result = encoder.encodeFrame(_out, toEncode);
+        ByteBuffer result = encoder.encodeFrame(toEncode, _out);
 
         // Based on the frame above form correct MP4 packet
         spsList.clear();
         ppsList.clear();
-        H264Utils.encodeMOVPacket(result, spsList, ppsList);
+        H264Utils.wipePS(result, spsList, ppsList);
+        H264Utils.encodeMOVPacket(result);
 
         // Add packet to video track
         outTrack.addFrame(new MP4Packet(result, presentationTimestamp, targetFramerate, frameDuration, frameNo, true, null, frameNo, 0));
