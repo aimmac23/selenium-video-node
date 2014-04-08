@@ -41,11 +41,35 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		FileInputStream fileStream = new FileInputStream(video);
 		try {
 			resp.setContentType("video/mp4");
+			resp.setContentLength((int)video.length());
 			new StreamPumper(fileStream, resp.getOutputStream()).run();
 			return;
 		}
 		finally {
 			fileStream.close();
 		}
+	}
+	
+	@Override
+	protected void doHead(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		String sessionId = req.getParameter("sessionId");
+		
+		if(sessionId == null) {
+			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
+			return;
+		}
+		
+		File video = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
+		
+		if(video == null || !video.exists()) {
+			resp.setStatus(HttpStatus.SC_NO_CONTENT);
+			return;
+		}
+		
+		resp.setStatus(HttpStatus.SC_OK);
+		resp.setContentType("video/mp4");
+		resp.setContentLength((int)video.length());
+		return;
 	}
 }
