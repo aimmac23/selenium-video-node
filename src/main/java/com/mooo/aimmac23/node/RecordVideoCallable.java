@@ -6,10 +6,13 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
 import com.mooo.aimmac23.jcodec.SequenceEncoder;
 
 public class RecordVideoCallable implements Callable<File> {
+	
+	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 	
 	public static final int TARGET_FRAMERATE = 25;
 	public static final int TARGET_FRAMERATE_TIME = (int)((1.0 / TARGET_FRAMERATE) * 1000.0);
@@ -23,17 +26,18 @@ public class RecordVideoCallable implements Callable<File> {
 		File outputFile = File.createTempFile("screencast", ".mp4");
 		SequenceEncoder encoder = new SequenceEncoder(outputFile, TARGET_FRAMERATE);
 		
+		log.info("Started recording to file: " + outputFile.getCanonicalPath());
 		Robot robot = new Robot();
 		
 		long excessTime = 0;
 
+		long videoStartTime = System.currentTimeMillis();
 		Rectangle screenSize = getScreenSize();
 		while(!shouldStop) {
 			// how long to use the next frame for - should be 1 if we're not falling behind
 			int frameDuration = 1 + (int)(excessTime / TARGET_FRAMERATE_TIME);
 			// if excessTime > TARGET_FRAMERATE_TIME. then we've just taken that into account
 			excessTime = excessTime % TARGET_FRAMERATE_TIME;
-			System.out.println("Frame duration: " + frameDuration);
 			long start = System.currentTimeMillis();
 			BufferedImage image = robot.createScreenCapture(screenSize);
 			encoder.encodeImage(image, frameDuration);
@@ -42,7 +46,6 @@ public class RecordVideoCallable implements Callable<File> {
 			long timeTaken = finish - start;
 			// we're keeping up
 			if(timeTaken < TARGET_FRAMERATE_TIME) {
-				System.out.println("We needed to sleep for " + (finish - start));
 				Thread.sleep(TARGET_FRAMERATE_TIME - timeTaken);
 			}
 			else {
@@ -52,7 +55,11 @@ public class RecordVideoCallable implements Callable<File> {
 		}
 		
 		encoder.finish();
-		System.out.println("Frames: " + frames);
+		
+		long videoEndTime = System.currentTimeMillis();
+		
+		long duration = ((videoEndTime - videoStartTime) / 1000);
+		log.info("Finished recording - frames: " + frames + " duration: " +  duration + " seconds  fps: " + frames / duration);
 		return outputFile;
 	}
 	
