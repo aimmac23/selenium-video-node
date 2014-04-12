@@ -2,10 +2,12 @@
 #include "vpx/vpx_encoder.h"
 #include "vpx/vp8cx.h"
 #define interface (vpx_codec_vp8_cx())
-#define fourcc    0x30385056
+//#define fourcc    0x30385056
 
 #include <stdlib.h>
 #include <string.h>
+
+#include "libyuv.h"
 
 typedef struct _encoder_context
 {
@@ -55,17 +57,29 @@ int init_codec(encoder_context* context)
 int init_image(encoder_context* context)
 {
   // WAS: VPX_IMG_FMT_I420, but that's not what Java is using (on Linux)
-  return vpx_img_alloc(&context->raw, VPX_IMG_FMT_RGB32_LE, context->width, context->height, 1) == 0;
+  return vpx_img_alloc(&context->raw, VPX_IMG_FMT_I420, context->width, context->height, 1) == 0;
 }
 
-int encode_frame(encoder_context* context, long* data)
+int convert_frame(encoder_context* context, long* data) 
 {
-  int targetSize = context->width * context->height * 4; // 4 bytes in an int
-  memcpy(context->raw.planes[0], data, targetSize);
-  int result = vpx_codec_encode(&context->codec, &context->raw, context->frame_count,
+  int inputSize = context->width * context->height * 4; // 4 bytes in an int
+  
+  vpx_image_t image = context->raw;
+  
+  return RAWToI420((const uint8*)data, 12, // stride = 12 bytes
+                  image.planes[0], image.stride[0], // Y Plane
+                  image.planes[1], image.stride[1], // U plane
+                  image.planes[2], image.stride[2], // V plane
+                  context->width, context->height);
+                  
+}
+
+int encode_last_frame(encoder_context* context)
+{
+  
+  return vpx_codec_encode(&context->codec, &context->raw, context->frame_count,
                                 1, 0, VPX_DL_REALTIME);
   
-  return result;
   
 }
 
