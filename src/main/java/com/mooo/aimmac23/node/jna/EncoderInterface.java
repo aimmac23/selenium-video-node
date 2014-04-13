@@ -18,7 +18,7 @@ public interface EncoderInterface extends Library {
 	
 	int convert_frame(Pointer context, int[] data);
 	
-	int encode_next_frame(Pointer context);
+	int encode_next_frame(Pointer context, long duration);
 	
 	int encode_finish(Pointer context);
 	

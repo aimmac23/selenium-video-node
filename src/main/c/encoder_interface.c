@@ -106,10 +106,10 @@ int convert_frame(encoder_context* context, const uint8* data)
   return result;
 }
 
-int do_encode(encoder_context* context, vpx_image_t* image)
+int do_encode(encoder_context* context, vpx_image_t* image, unsigned long duration)
 {
   int result = vpx_codec_encode(&context->codec, image, context->frame_count,
-                                1, 0, VPX_DL_REALTIME);
+                                duration, 0, VPX_DL_REALTIME);
   if(result) 
   {
     return result;
@@ -134,16 +134,16 @@ int do_encode(encoder_context* context, vpx_image_t* image)
   return 0;
 }
 
-int encode_next_frame(encoder_context* context)
+int encode_next_frame(encoder_context* context, unsigned long duration)
 {
-  return do_encode(context, context->raw);
+  return do_encode(context, context->raw, duration);
 }
 
 int encode_finish(encoder_context* context)
 {
   int result = 0;
   // pass NULL, to signal that we're done
-  result = do_encode(context, NULL);
+  result = do_encode(context, NULL, 1);
   
   // XXX: 0 is an incorrect hash
   write_webm_file_footer(&context->encoder_output, 1);
