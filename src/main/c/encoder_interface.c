@@ -17,12 +17,26 @@ typedef struct _encoder_context
       int width;
       int height;
       vpx_codec_pts_t frame_count;
+      File* output;
+      EbmlGlobal encoder_output;
   
 } encoder_context;
 
 encoder_context* create_context()
 {
   encoder_context* context = malloc(sizeof(encoder_context));
+  context->output = fopen("output.mkv", "wb");
+  
+  if(!context->output)
+  {
+    printf("Couldn't open output file, but continuing anyway :/");
+  }
+  
+  // XXX: Hopefully this should be large enough...
+  context->encoder_output.length = 100000;
+  context->encoder_output.buf = malloc(context->encoder_output.length);
+  context->encoder_output.offset = 0;
+  
   return context;
   
 }
@@ -79,8 +93,6 @@ int encode_last_frame(encoder_context* context)
   
   return vpx_codec_encode(&context->codec, &context->raw, context->frame_count,
                                 1, 0, VPX_DL_REALTIME);
-  
-  
 }
 
 const char* codec_error_detail(encoder_context* context)
