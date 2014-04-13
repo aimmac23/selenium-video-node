@@ -87,7 +87,7 @@ int convert_frame(encoder_context* context, const uint8* data)
   
   vpx_image_t* image = context->raw;
   
-  int result = ARGBToI420(data, context->width * 4, // appears to be a 4 byte format?
+  int result = BGRAToI420(data, context->width * 4, // appears to be a 4 byte format?
                   image->planes[0], image->stride[0], // Y Plane
                   image->planes[1], image->stride[1], // U plane
                   image->planes[2], image->stride[2], // V plane
