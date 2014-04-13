@@ -4,17 +4,20 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import com.mooo.aimmac23.jcodec.SequenceEncoder;
+import com.mooo.aimmac23.node.jna.EncoderInterface;
+import com.sun.jna.Pointer;
 
 public class RecordVideoCallable implements Callable<File> {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 	
-	public static final int TARGET_FRAMERATE = 4;
+	public static final int TARGET_FRAMERATE = 8;
 	public static final int TARGET_FRAMERATE_TIME = (int)((1.0 / TARGET_FRAMERATE) * 1000.0);
 	
 	
@@ -23,16 +26,24 @@ public class RecordVideoCallable implements Callable<File> {
 	@Override
 	public File call() throws Exception {
 		int frames = 0;
-		File outputFile = File.createTempFile("screencast", ".mp4");
-		SequenceEncoder encoder = null; // = new SequenceEncoder(outputFile, TARGET_FRAMERATE);
 		
+		Rectangle screenSize = getScreenSize();
+
+		File outputFile = File.createTempFile("screencast", ".mkv");
+		
+		Pointer context = EncoderInterface.INSTANCE.create_context(outputFile.getCanonicalPath());
+		int result = EncoderInterface.INSTANCE.init_encoder(context, (int)screenSize.getWidth(),(int)screenSize.getHeight());
+		
+		EncoderInterface.INSTANCE.init_codec(context);
+		
+		EncoderInterface.INSTANCE.init_image(context);
+				
 		log.info("Started recording to file: " + outputFile.getCanonicalPath());
 		Robot robot = new Robot();
 		
 		long excessTime = 0;
 
 		long videoStartTime = System.currentTimeMillis();
-		Rectangle screenSize = getScreenSize();
 		while(!shouldStop) {
 			// how long to use the next frame for - should be 1 if we're not falling behind
 			int frameDuration = 1 + (int)(excessTime / TARGET_FRAMERATE_TIME);
@@ -41,7 +52,11 @@ public class RecordVideoCallable implements Callable<File> {
 			long start = System.currentTimeMillis();
 			BufferedImage image = robot.createScreenCapture(screenSize);
 			
-			encoder.encodeImage(image, frameDuration);
+			int[] data = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+
+			EncoderInterface.INSTANCE.convert_frame(context, data);
+			
+			EncoderInterface.INSTANCE.encode_next_frame(context, frameDuration);
 			long finish = System.currentTimeMillis();
 			frames++;
 			long timeTaken = finish - start;
@@ -54,8 +69,7 @@ public class RecordVideoCallable implements Callable<File> {
 				excessTime += timeTaken;
 			}
 		}
-		
-		encoder.finish();
+		EncoderInterface.INSTANCE.encode_finish(context);
 		
 		long videoEndTime = System.currentTimeMillis();
 		
