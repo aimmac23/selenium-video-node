@@ -37,14 +37,28 @@ int main()
   char* buffer = malloc(stat_info.st_size);
   fread(buffer, stat_info.st_size, 1, input);
   
-  convert_frame(context, (long*)buffer);
+  /*
+  memset(buffer, 0xF, stat_info.st_size);
+  
+  int a;
+  for(a = 0; a < stat_info.st_size; a++)
+  {
+    if(a % 4 == 0)
+    {
+      buffer[a] = 0x0;
+    }
+  }*/
+  
+  convert_frame(context, buffer);
   FILE* output = fopen("mem.bin", "wb");
+  fwrite(context->raw->planes[2], 100000, 1, output);
+  fflush(output);
   printf("Size is %d\n", context->raw->stride[3]);
 
   int i;
   for(i = 0; i < 100; i++)
   {
-  convert_frame(context, (long*)buffer);
+  convert_frame(context, buffer);
   
   encode_next_frame(context);
   }

@@ -81,18 +81,20 @@ int init_image(encoder_context* context)
   return context->raw == NULL;
 }
 
-int convert_frame(encoder_context* context, long* data) 
+int convert_frame(encoder_context* context, const uint8* data) 
 {
   int inputSize = context->width * context->height * 4; // 4 bytes in an int
   
   vpx_image_t* image = context->raw;
   
-  return BGRAToI420((const uint8*)data, 4, // appears to be a 4 byte format?
+  int result = ARGBToI420(data, context->width * 4, // appears to be a 4 byte format?
                   image->planes[0], image->stride[0], // Y Plane
                   image->planes[1], image->stride[1], // U plane
                   image->planes[2], image->stride[2], // V plane
                   context->width, context->height);
-                  
+  
+  printf("First is %d %d %d\n", image->planes[0][0], image->planes[1][0], image->planes[2][0]);
+  return result;
 }
 
 int do_encode(encoder_context* context, vpx_image_t* image)
