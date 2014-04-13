@@ -49,10 +49,6 @@ encoder_context* create_context()
   context->encoder_output.stream = context->output;
   context->encoder_output.debug = 1;
   context->encoder_output.cue_list = NULL;
-    context->encoder_output.cues = 0;
-
-  
-  fprintf(stderr, "Context location: %p\n", context);
 
   return context;
   
@@ -97,24 +93,21 @@ int init_image(encoder_context* context)
 
 int convert_frame(encoder_context* context, const uint8* data) 
 {
-  fprintf(stderr, "Context location: %p\n", context);
   int inputSize = context->width * context->height * 4; // 4 bytes in an int
   
   vpx_image_t* image = context->raw;
   
-  int result = BGRAToI420(data, context->width * 4, // appears to be a 4 byte format?
+  int result = ARGBToI420(data, context->width * 4, // appears to be a 4 byte format?
                   image->planes[0], image->stride[0], // Y Plane
                   image->planes[1], image->stride[1], // U plane
                   image->planes[2], image->stride[2], // V plane
                   context->width, context->height);
   
-  printf("First is %d %d %d\n", image->planes[0][0], image->planes[1][0], image->planes[2][0]);
   return result;
 }
 
 int do_encode(encoder_context* context, vpx_image_t* image)
 {
-  fprintf(stderr, "Before encode\n");
   int result = vpx_codec_encode(&context->codec, image, context->frame_count,
                                 1, 0, VPX_DL_REALTIME);
   if(result) 
@@ -128,9 +121,9 @@ int do_encode(encoder_context* context, vpx_image_t* image)
     switch(packet->kind) 
     {
       case VPX_CODEC_CX_FRAME_PKT:
-	fprintf(stderr, "Got frame packet\n");
+//	fprintf(stderr, "Got frame packet\n");
 	write_webm_block(&context->encoder_output, &context->cfg, packet);
-	fprintf(stderr, "After frame packet\n");
+	//fprintf(stderr, "After frame packet\n");
         break;
       default:
 	// we can also receive statistics packets
