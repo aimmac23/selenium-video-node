@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import com.mooo.aimmac23.jcodec.SequenceEncoder;
 import com.mooo.aimmac23.node.jna.EncoderInterface;
 import com.sun.jna.Pointer;
 
