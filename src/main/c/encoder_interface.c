@@ -26,10 +26,18 @@ typedef struct _encoder_context
   
 } encoder_context;
 
+       
+void fatal(const char* error, ...)
+{
+  printf("FATAL: %s\n", error);
+  exit(1);
+}
+
+
 encoder_context* create_context()
 {
   encoder_context* context = malloc(sizeof(encoder_context));
-  memset(context, 0, sizeof(context));
+  memset(context, 0, sizeof(encoder_context));
   
   context->output = fopen("output.mkv", "wb");
   
@@ -41,6 +49,10 @@ encoder_context* create_context()
   context->encoder_output.stream = context->output;
   context->encoder_output.debug = 1;
   context->encoder_output.cue_list = NULL;
+    context->encoder_output.cues = 0;
+
+  
+  fprintf(stderr, "Context location: %p\n", context);
 
   return context;
   
@@ -85,6 +97,7 @@ int init_image(encoder_context* context)
 
 int convert_frame(encoder_context* context, const uint8* data) 
 {
+  fprintf(stderr, "Context location: %p\n", context);
   int inputSize = context->width * context->height * 4; // 4 bytes in an int
   
   vpx_image_t* image = context->raw;
