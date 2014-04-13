@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 public interface EncoderInterface extends Library {
 	EncoderInterface INSTANCE = (EncoderInterface)Native.loadLibrary("interface.so", EncoderInterface.class);
 	
-	Pointer create_context();
+	Pointer create_context(String outputFile);
 	
 	int init_encoder(Pointer context, int width, int height);
 	
