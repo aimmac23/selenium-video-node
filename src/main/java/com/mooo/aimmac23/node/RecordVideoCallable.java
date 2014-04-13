@@ -14,7 +14,7 @@ public class RecordVideoCallable implements Callable<File> {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 	
-	public static final int TARGET_FRAMERATE = 25;
+	public static final int TARGET_FRAMERATE = 4;
 	public static final int TARGET_FRAMERATE_TIME = (int)((1.0 / TARGET_FRAMERATE) * 1000.0);
 	
 	
@@ -24,7 +24,7 @@ public class RecordVideoCallable implements Callable<File> {
 	public File call() throws Exception {
 		int frames = 0;
 		File outputFile = File.createTempFile("screencast", ".mp4");
-		SequenceEncoder encoder = new SequenceEncoder(outputFile, TARGET_FRAMERATE);
+		SequenceEncoder encoder = null; // = new SequenceEncoder(outputFile, TARGET_FRAMERATE);
 		
 		log.info("Started recording to file: " + outputFile.getCanonicalPath());
 		Robot robot = new Robot();
@@ -40,6 +40,7 @@ public class RecordVideoCallable implements Callable<File> {
 			excessTime = excessTime % TARGET_FRAMERATE_TIME;
 			long start = System.currentTimeMillis();
 			BufferedImage image = robot.createScreenCapture(screenSize);
+			
 			encoder.encodeImage(image, frameDuration);
 			long finish = System.currentTimeMillis();
 			frames++;

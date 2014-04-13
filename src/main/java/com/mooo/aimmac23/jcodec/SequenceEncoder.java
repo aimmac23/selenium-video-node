@@ -11,10 +11,15 @@ import javax.imageio.ImageIO;
 
 import org.jcodec.codecs.h264.H264Encoder;
 import org.jcodec.codecs.h264.H264Utils;
+import org.jcodec.codecs.vpx.VP8Encoder;
 import org.jcodec.common.NIOUtils;
 import org.jcodec.common.SeekableByteChannel;
+import org.jcodec.common.VideoEncoder;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
+import org.jcodec.common.model.Size;
+import org.jcodec.containers.mkv.MKVMuxer;
+import org.jcodec.containers.mkv.MKVMuxer.MKVMuxerTrack;
 import org.jcodec.containers.mp4.Brand;
 import org.jcodec.containers.mp4.MP4Packet;
 import org.jcodec.containers.mp4.TrackType;
@@ -24,39 +29,44 @@ import org.jcodec.scale.AWTUtil;
 import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.Transform;
 
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+
 /**
  * From http://stackoverflow.com/questions/10969423/jcodec-has-anyone-seen-documentation-on-this-library
  *
  */
 public class SequenceEncoder {
+ 
+	
     private SeekableByteChannel ch;
     private Picture toEncode;
     private Transform transform;
-    private H264Encoder encoder;
+    private VideoEncoder encoder;
     private ArrayList<ByteBuffer> spsList;
     private ArrayList<ByteBuffer> ppsList;
-    private FramesMP4MuxerTrack outTrack;
+    private MKVMuxerTrack outTrack;
     private ByteBuffer _out;
     private int frameNo;
     private int presentationTimestamp = 0;
-    private MP4Muxer muxer;
+    private MKVMuxer muxer;
 	private int targetFramerate;
 
-    public SequenceEncoder(File out, int targetFramerate) throws IOException {
+    public SequenceEncoder(File out, Size dimensions, int targetFramerate) throws IOException {
         this.ch = NIOUtils.writableFileChannel(out);
         this.targetFramerate = targetFramerate;
 
         // Create an instance of encoder
-        encoder = new H264Encoder();
+        encoder = new VP8Encoder();
 
         // Transform to convert between RGB and YUV
         transform = ColorUtil.getTransform(ColorSpace.RGB, encoder.getSupportedColorSpaces()[0]);
 
         // Muxer that will store the encoded frames
-        muxer = new MP4Muxer(ch, Brand.MP4);
+        muxer = new MKVMuxer(ch);
 
         // Add video track to muxer
-        outTrack = muxer.addTrack(TrackType.VIDEO, targetFramerate);
+        outTrack = muxer.addVideoTrack(dimensions, "VP8");
 
         // Allocate a buffer big enough to hold output frames
         _out = ByteBuffer.allocate(1920 * 1080 * 6);
@@ -102,8 +112,9 @@ public class SequenceEncoder {
         H264Utils.wipePS(result, spsList, ppsList);
         H264Utils.encodeMOVPacket(result);
 
+
         // Add packet to video track
-        outTrack.addFrame(new MP4Packet(result, presentationTimestamp, targetFramerate, frameDuration, frameNo, true, null, frameNo, 0));
+        //outTrack.addFrame(new MP4Packet(result, presentationTimestamp, targetFramerate, frameDuration, frameNo, true, null, frameNo, 0));
 
         frameNo++;
         presentationTimestamp += frameDuration;
@@ -111,10 +122,10 @@ public class SequenceEncoder {
 
     public void finish() throws IOException {
         // Push saved SPS/PPS to a special storage in MP4
-        outTrack.addSampleEntry(H264Utils.createMOVSampleEntry(spsList, ppsList));
+        //outTrack.addSampleEntry(H264Utils.createMOVSampleEntry(spsList, ppsList));
 
         // Write MP4 header and finalize recording
-        muxer.writeHeader();
+        //muxer.writeHeader();
         NIOUtils.closeQuietly(ch);
     }
 }
