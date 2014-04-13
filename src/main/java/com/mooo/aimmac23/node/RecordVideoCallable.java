@@ -29,7 +29,7 @@ public class RecordVideoCallable implements Callable<File> {
 		
 		Rectangle screenSize = getScreenSize();
 
-		File outputFile = File.createTempFile("screencast", ".mkv");
+		File outputFile = File.createTempFile("screencast", ".webm");
 		
 		Pointer context = EncoderInterface.INSTANCE.create_context(outputFile.getCanonicalPath());
 		int result = EncoderInterface.INSTANCE.init_encoder(context, (int)screenSize.getWidth(),

@@ -40,7 +40,7 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		
 		FileInputStream fileStream = new FileInputStream(video);
 		try {
-			resp.setContentType("video/mp4");
+			resp.setContentType("video/webm");
 			resp.setContentLength((int)video.length());
 			new StreamPumper(fileStream, resp.getOutputStream()).run();
 			return;

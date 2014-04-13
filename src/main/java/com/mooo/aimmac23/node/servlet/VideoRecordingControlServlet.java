@@ -141,7 +141,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		}
 		
 		resp.setStatus(HttpStatus.SC_OK);
-		resp.setContentType("video/mp4");
+		resp.setContentType("video/webm");
 		resp.setContentLength((int)video.length());
 		FileInputStream videoStream = new FileInputStream(video);
 		new StreamPumper(videoStream, resp.getOutputStream()).run();

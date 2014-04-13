@@ -57,7 +57,7 @@ public class HubVideoRegistry {
 			}
 			// XXX: Should check mime-type, just in case
 			
-			File outputFile = File.createTempFile("screencast", ".mp4");
+			File outputFile = File.createTempFile("screencast", ".webm");
 			FileOutputStream outputStream = new FileOutputStream(outputFile);
 			try {
 				new StreamPumper(response.getEntity().getContent(), outputStream).run();

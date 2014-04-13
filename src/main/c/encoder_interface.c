@@ -112,7 +112,7 @@ int convert_frame(encoder_context* context, const uint8* data)
 
 int do_encode(encoder_context* context, vpx_image_t* image, unsigned long duration)
 {
-  fprintf(stderr, "Duration is: %d\n", duration);
+  //fprintf(stderr, "Duration is: %d\n", duration);
   int result = vpx_codec_encode(&context->codec, image, context->frame_count,
                                 duration, 0, VPX_DL_REALTIME);
   if(result) 
