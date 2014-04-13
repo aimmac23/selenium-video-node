@@ -54,7 +54,7 @@ encoder_context* create_context(char* output_file)
   
 }
 
-int init_encoder(encoder_context* context, int width, int height)
+int init_encoder(encoder_context* context, int width, int height, int fps)
 {
   
   int result = vpx_codec_enc_config_default(interface, &context->cfg, 0);
@@ -68,9 +68,8 @@ int init_encoder(encoder_context* context, int width, int height)
   context->cfg.g_w = width;
   context->cfg.g_h = height;
   
-  //XXX: Proceed with 8 FPS for now
   context->cfg.g_timebase.num=1;
-  context->cfg.g_timebase.den=5;
+  context->cfg.g_timebase.den=fps;
   
   
   context->width = width;

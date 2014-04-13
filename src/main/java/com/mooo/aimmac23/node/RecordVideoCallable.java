@@ -32,7 +32,8 @@ public class RecordVideoCallable implements Callable<File> {
 		File outputFile = File.createTempFile("screencast", ".mkv");
 		
 		Pointer context = EncoderInterface.INSTANCE.create_context(outputFile.getCanonicalPath());
-		int result = EncoderInterface.INSTANCE.init_encoder(context, (int)screenSize.getWidth(),(int)screenSize.getHeight());
+		int result = EncoderInterface.INSTANCE.init_encoder(context, (int)screenSize.getWidth(),
+						(int) screenSize.getHeight(), TARGET_FRAMERATE);
 		
 		EncoderInterface.INSTANCE.init_codec(context);
 		

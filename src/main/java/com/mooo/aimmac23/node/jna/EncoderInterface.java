@@ -10,7 +10,7 @@ public interface EncoderInterface extends Library {
 	
 	Pointer create_context(String outputFile);
 	
-	int init_encoder(Pointer context, int width, int height);
+	int init_encoder(Pointer context, int width, int height, int fps);
 	
 	int init_codec(Pointer context);
 	
