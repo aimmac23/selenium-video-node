@@ -30,6 +30,7 @@ encoder_context* create_context()
 {
   encoder_context* context = malloc(sizeof(encoder_context));
   memset(context, 0, sizeof(context));
+  
   context->output = fopen("output.mkv", "wb");
   
   if(!context->output)
@@ -39,7 +40,8 @@ encoder_context* create_context()
   
   context->encoder_output.stream = context->output;
   context->encoder_output.debug = 1;
-  
+  context->encoder_output.cue_list = NULL;
+
   return context;
   
 }
@@ -99,6 +101,7 @@ int convert_frame(encoder_context* context, const uint8* data)
 
 int do_encode(encoder_context* context, vpx_image_t* image)
 {
+  fprintf(stderr, "Before encode\n");
   int result = vpx_codec_encode(&context->codec, image, context->frame_count,
                                 1, 0, VPX_DL_REALTIME);
   if(result) 
@@ -112,8 +115,9 @@ int do_encode(encoder_context* context, vpx_image_t* image)
     switch(packet->kind) 
     {
       case VPX_CODEC_CX_FRAME_PKT:
+	fprintf(stderr, "Got frame packet\n");
 	write_webm_block(&context->encoder_output, &context->cfg, packet);
-	printf("Got frame packet\n");
+	fprintf(stderr, "After frame packet\n");
         break;
       default:
 	// we can also receive statistics packets
@@ -138,6 +142,7 @@ int encode_finish(encoder_context* context)
   // XXX: 0 is an incorrect hash
   write_webm_file_footer(&context->encoder_output, 1);
   fflush(context->output);
+  fclose(context->output);
   
   return result;
 }
