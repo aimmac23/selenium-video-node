@@ -20,9 +20,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.mooo.aimmac23.node.VideoRecordController;
-import com.mooo.aimmac23.node.jna.EncoderInterface;
-import com.mooo.aimmac23.node.jna.LibVPX;
-import com.mooo.aimmac23.node.jna.YUVLib;
+import com.mooo.aimmac23.node.jna.JnaLibraryLoader;
 
 public class VideoRecordingControlServlet extends HttpServlet {
 	
@@ -32,8 +30,14 @@ public class VideoRecordingControlServlet extends HttpServlet {
 	private VideoRecordController controller;
 	Cache<String, File> availableVideos;
 
+	static {
+		log.info("Static initializer called");
+		JnaLibraryLoader.init();
+	}
 	public VideoRecordingControlServlet() {
 		super();
+		log.info("Constructor called");
+		
 		controller = new VideoRecordController();
 		
 		availableVideos = CacheBuilder.newBuilder().maximumSize(10).removalListener(new RemovalListener<String, File>() {
@@ -47,18 +51,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		
 		// I suspect that simply mentioning these variables will throw a rather rude
 		// throwable if the dependencies cannot be found - still, best check
-		if(LibVPX.INSTANCE == null) {
-			throw new IllegalStateException("Could not load libvpx - cannot encode videos");
-		}
-		
-		if(YUVLib.INSTANCE == null) {
-			throw new IllegalStateException("Could not load libyuv - cannot encode videos");
-		}
-		
-		if(EncoderInterface.INSTANCE == null) {
-			throw new IllegalStateException("Could not load C libraray interface - cannot encode videos");
-		}
-		
+			
 	}
 	
 	@Override

@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import com.mooo.aimmac23.node.jna.EncoderInterface;
+import com.mooo.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
 
 public class RecordVideoCallable implements Callable<File> {
@@ -30,13 +31,17 @@ public class RecordVideoCallable implements Callable<File> {
 
 		File outputFile = File.createTempFile("screencast", ".webm");
 		
-		Pointer context = EncoderInterface.INSTANCE.create_context(outputFile.getCanonicalPath());
-		int result = EncoderInterface.INSTANCE.init_encoder(context, (int)screenSize.getWidth(),
+		JnaLibraryLoader.init();
+		
+		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
+		
+		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
+		int result = encoder.init_encoder(context, (int)screenSize.getWidth(),
 						(int) screenSize.getHeight(), TARGET_FRAMERATE);
 		
-		EncoderInterface.INSTANCE.init_codec(context);
+		encoder.init_codec(context);
 		
-		EncoderInterface.INSTANCE.init_image(context);
+		encoder.init_image(context);
 				
 		log.info("Started recording to file: " + outputFile.getCanonicalPath());
 		Robot robot = new Robot();
@@ -54,9 +59,9 @@ public class RecordVideoCallable implements Callable<File> {
 			
 			int[] data = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 
-			EncoderInterface.INSTANCE.convert_frame(context, data);
+			encoder.convert_frame(context, data);
 			
-			EncoderInterface.INSTANCE.encode_next_frame(context, frameDuration);
+			encoder.encode_next_frame(context, frameDuration);
 			long finish = System.currentTimeMillis();
 			frames++;
 			long timeTaken = finish - start;
@@ -69,7 +74,7 @@ public class RecordVideoCallable implements Callable<File> {
 				excessTime += timeTaken;
 			}
 		}
-		EncoderInterface.INSTANCE.encode_finish(context);
+		encoder.encode_finish(context);
 		
 		long videoEndTime = System.currentTimeMillis();
 		
