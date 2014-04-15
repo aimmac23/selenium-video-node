@@ -8,9 +8,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.seleniumhq.jetty7.util.log.Log;
-
-import com.mooo.aimmac23.node.servlet.VideoRecordingControlServlet;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
@@ -35,7 +32,7 @@ public class JnaLibraryLoader {
 			return;
 		}
 		
-		String targetDirectory = System.getProperty("java.io.tmpdir") + File.separator + "nativeCode" + File.separator;
+		String targetDirectory = System.getProperty("java.io.tmpdir") + File.separator + "nativeCode-" + System.currentTimeMillis() + File.separator;
 		
 		File target = new File(targetDirectory);
 		if(target.exists()) {
@@ -58,6 +55,7 @@ public class JnaLibraryLoader {
                 outputStream.close();
 			}
 			zipInputStream.close();
+			zipStream.close();
 			
 			addNativePath(targetDirectory);
 				
@@ -65,9 +63,6 @@ public class JnaLibraryLoader {
 			log.info("Caught IOException");
 			e.printStackTrace();
 		}
-		
-		
-		
 	}
 	
 	public static void init() {
