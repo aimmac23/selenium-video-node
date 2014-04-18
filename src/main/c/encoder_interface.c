@@ -155,6 +155,14 @@ int encode_finish(encoder_context* context)
   fflush(context->output);
   fclose(context->output);
   
+  // we also need to free some memory
+  vpx_img_free(context->raw);
+  
+  //XXX: We should check the return result
+  vpx_codec_destroy(&context->codec);
+  
+  free(context);
+  
   return result;
 }
 
