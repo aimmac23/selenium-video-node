@@ -19,11 +19,13 @@ public class JnaLibraryLoader {
 	static private LibVPX libVPX;
 	static private EncoderInterface encoder;
 	static private YUVLib yuvLib;
+	static private LibMKV libMKV;
 	
 	private static void addNativePath(String path) {
 		NativeLibrary.addSearchPath("vpx", path);
 		NativeLibrary.addSearchPath("yuv", path);
 		NativeLibrary.addSearchPath("interface", path);
+		NativeLibrary.addSearchPath("mkv", path);
 	}
 	
 	private static void extractJNABinariesIfAvailable() {
@@ -78,6 +80,7 @@ public class JnaLibraryLoader {
 		
 		libVPX = (LibVPX) Native.loadLibrary("vpx", LibVPX.class);
 		yuvLib = (YUVLib) Native.loadLibrary("yuv", YUVLib.class);
+		libMKV = (LibMKV) Native.loadLibrary("mkv", LibMKV.class);
 		encoder = (EncoderInterface) Native.loadLibrary("interface", EncoderInterface.class);
 	}
 	
