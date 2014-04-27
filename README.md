@@ -7,18 +7,19 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 
 * A dual core processor (one core for video encoding, another for everything else).
 * 64-bit Linux on x86_64 (see "Mis-Features" below)
+* 64-bit Windows on x86_64 (after version 0.4)
 
 The above does not apply to the Selenium Hub, which does not perform any video processing.
 
 ## Features
 
 * (Reasonably) easy setup - just need to add another JAR file to the Selenium Node classpath
-* Good video quality (about 8 frames/sec)
+* Excellent video quality (about 8 frames/sec)
 * Simple API to retrieve videos
 
 ## Mis-Features
 
-* Video encoding is done using native code (using JNA) - this project still needs binaries compiled for other platforms
+* Video encoding is done using native code (using JNA) - unfortunately this means that additional effort is required to support more plaforms.
 
 ## Installation
 
@@ -32,7 +33,7 @@ Download:
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-0.2.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.mooo.aimmac23.hub.proxy.VideoProxy -role node
+    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.mooo.aimmac23.hub.proxy.VideoProxy -role node
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 
@@ -51,7 +52,7 @@ It is also recommended to specify only the browers that your platform supports a
 
 We also need to add some extra functionality to the Selenium Hub to make this work:
 
-    java -cp selenium-video-node-0.2.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
+    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
 
 When starting up, you should see a line saying something like:
 
