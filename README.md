@@ -37,7 +37,7 @@ A Selenium node can be launched by running:
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 
-    xvfb-run -a -s "-screen 0 1280x1024x32 -wr" <video node start command>
+    xvfb-run -a -s "-screen 0 1280x1024x24 -wr" <video node start command>
     
 When starting up you should see a line saying something like:
 
