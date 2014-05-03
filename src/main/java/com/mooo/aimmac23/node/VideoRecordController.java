@@ -6,24 +6,34 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class VideoRecordController {
 	
+	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
+
 	private ThreadPoolExecutor executor;
 	RecordVideoCallable currentCallable;
 	private Future<File> currentFuture;
+	private final int targetFramerate;
 	
 	public VideoRecordController() {
 		executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
 		executor.setThreadFactory(new RecorderThreadFactory());
 		executor.prestartAllCoreThreads();
+		
+		String framerateString = System.getProperty("video.framerate", "8");
+		targetFramerate = Integer.parseInt(framerateString);
+		
+		log.info("Will attempt to record at  " + targetFramerate + " frames per second - adjust this value " +
+		" by setting -Dvideo.framerate=<value>");
 	}
 	
 	public void startRecording() {
 		if(currentCallable != null) {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
-		currentCallable = new RecordVideoCallable();
+		currentCallable = new RecordVideoCallable(targetFramerate);
 		currentFuture = executor.submit(currentCallable);
 	}
 	

@@ -17,11 +17,17 @@ public class RecordVideoCallable implements Callable<File> {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 	
-	public static final int TARGET_FRAMERATE = 8;
-	public static final int TARGET_FRAMERATE_TIME = (int)((1.0 / TARGET_FRAMERATE) * 1000.0);
+	public final int targetFramerate;
+	// how long we should sleep before recording another frame, if everything else took zero time
+	public final int targetFramerateSleepTime;
 	
 	
 	private volatile boolean shouldStop = false;
+	
+	public RecordVideoCallable(int targetFramerate) {
+		this.targetFramerate = targetFramerate;
+		this.targetFramerateSleepTime = (int)((1.0 / targetFramerate) * 1000.0);
+	}
 
 	@Override
 	public File call() throws Exception {
@@ -37,7 +43,7 @@ public class RecordVideoCallable implements Callable<File> {
 		
 		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
 		int result = encoder.init_encoder(context, (int)screenSize.getWidth(),
-						(int) screenSize.getHeight(), TARGET_FRAMERATE);
+						(int) screenSize.getHeight(), targetFramerate);
 		
 		encoder.init_codec(context);
 		
@@ -51,9 +57,9 @@ public class RecordVideoCallable implements Callable<File> {
 		long videoStartTime = System.currentTimeMillis();
 		while(!shouldStop) {
 			// how long to use the next frame for - should be 1 if we're not falling behind
-			int frameDuration = 1 + (int)(excessTime / TARGET_FRAMERATE_TIME);
+			int frameDuration = 1 + (int)(excessTime / targetFramerateSleepTime);
 			// if excessTime > TARGET_FRAMERATE_TIME. then we've just taken that into account
-			excessTime = excessTime % TARGET_FRAMERATE_TIME;
+			excessTime = excessTime % targetFramerateSleepTime;
 			long start = System.currentTimeMillis();
 			BufferedImage image = robot.createScreenCapture(screenSize);
 			
@@ -66,8 +72,8 @@ public class RecordVideoCallable implements Callable<File> {
 			frames++;
 			long timeTaken = finish - start;
 			// we're keeping up
-			if(timeTaken < TARGET_FRAMERATE_TIME) {
-				Thread.sleep(TARGET_FRAMERATE_TIME - timeTaken);
+			if(timeTaken < targetFramerateSleepTime) {
+				Thread.sleep(targetFramerateSleepTime - timeTaken);
 			}
 			else {
 				// we're falling behind, take that into account for the next frame
@@ -79,7 +85,8 @@ public class RecordVideoCallable implements Callable<File> {
 		long videoEndTime = System.currentTimeMillis();
 		
 		long duration = ((videoEndTime - videoStartTime) / 1000);
-		log.info("Finished recording - frames: " + frames + " duration: " +  duration + " seconds  fps: " + frames / duration);
+		log.info("Finished recording - frames: " + frames + " duration: " +  duration +
+				" seconds targetFps: " + targetFramerate + " actualFps: " + frames / duration);
 		return outputFile;
 	}
 	
