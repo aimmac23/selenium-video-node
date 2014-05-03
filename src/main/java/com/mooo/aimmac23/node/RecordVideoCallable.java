@@ -17,9 +17,9 @@ public class RecordVideoCallable implements Callable<File> {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 	
-	public final int targetFramerate;
+	private final int targetFramerate;
 	// how long we should sleep before recording another frame, if everything else took zero time
-	public final int targetFramerateSleepTime;
+	private final int targetFramerateSleepTime;
 	
 	
 	private volatile boolean shouldStop = false;

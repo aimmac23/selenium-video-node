@@ -20,7 +20,7 @@ typedef struct _encoder_context
       vpx_image_t*          raw;
       int width;
       int height;
-      vpx_codec_pts_t frame_count;
+      vpx_codec_pts_t pts_timestamp;
       FILE* output;
       struct EbmlGlobal encoder_output;
   
@@ -75,7 +75,7 @@ int init_encoder(encoder_context* context, int width, int height, int fps)
   context->width = width;
   context->height = height;
   
-  context->frame_count = 0;
+  context->pts_timestamp = 0;
   
   printf("Video stats: width: %d height: %d bitrate: %d\n", context->cfg.g_w, context->cfg.g_h, context->cfg.rc_target_bitrate);
   
@@ -113,7 +113,7 @@ int convert_frame(encoder_context* context, const uint8* data)
 int do_encode(encoder_context* context, vpx_image_t* image, unsigned long duration)
 {
   //fprintf(stderr, "Duration is: %d\n", duration);
-  int result = vpx_codec_encode(&context->codec, image, context->frame_count,
+  int result = vpx_codec_encode(&context->codec, image, context->pts_timestamp,
                                 duration, 0, VPX_DL_REALTIME);
   if(result) 
   {
@@ -135,7 +135,8 @@ int do_encode(encoder_context* context, vpx_image_t* image, unsigned long durati
         break;
     }
   }
-  context->frame_count++;
+  // if we're hitting our target framerate, should be 1 - if not, take into account how long we displayed this frame for
+  context->pts_timestamp += duration;
   return 0;
 }
 

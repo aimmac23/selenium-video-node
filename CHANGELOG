@@ -1,3 +1,9 @@
+Version 0.5 (unreleased)
+======================
+
+* Make the target framerate be configurable
+* Fix a playback framerate issue when the video wasn't recorded fast enough (was playing too fast)
+
 Version 0.4 21/04/2014
 ======================
 
