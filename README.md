@@ -82,7 +82,7 @@ Note that videos are only available after the Session has been closed - for exam
 
 ## Extra JVM Arguments:
 
-   -Dvideo.framerate=<value>
+    -Dvideo.framerate=<value>
 
 Sets the framerate that we try to record video at - default value is "8" frames a second. At the moment we can only support up to about 10 frames a second (we spend a lot of time taking screenshots on the Java end). 
 
