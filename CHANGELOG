@@ -1,8 +1,9 @@
-Version 0.5 (unreleased)
+Version 0.5 03/05/2014
 ======================
 
 * Make the target framerate be configurable
 * Fix a playback framerate issue when the video wasn't recorded fast enough (was playing too fast)
+* Recompile binaries on glibc 2.13, because not all Linux installations have 2.17
 
 Version 0.4 21/04/2014
 ======================
