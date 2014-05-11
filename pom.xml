@@ -15,8 +15,8 @@
         <repository>
             <!-- Login should be required for upload - if more than one person 
                 wants to do it, perhaps time to find a proper repository -->
-            <id>aimmac23.mooo.com-public-repository</id>
-            <url>dav:https://aimmac23.mooo.com/public/maven-repository</url>
+            <id>aimmac23.com-public-repository</id>
+            <url>dav:https://aimmac23.com/public/maven-repository</url>
         </repository>
     </distributionManagement>
     <dependencies>

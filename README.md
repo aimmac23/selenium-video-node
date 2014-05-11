@@ -27,7 +27,7 @@ This guide assumes some familiarity with the Selenium Grid setup guide: https://
 
 Download:
 * The latest "selenium-server-standalone" JAR from http://selenium-release.storage.googleapis.com/index.html
-* The latest "selenium-video-node" JAR from https://aimmac23.mooo.com/public/maven-repository/com/mooo/aimmac23/selenium-video-node/
+* The latest "selenium-video-node" JAR from https://aimmac23.com/public/maven-repository/com/mooo/aimmac23/selenium-video-node/
 
 ### Node setup
 
