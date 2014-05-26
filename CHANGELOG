@@ -1,3 +1,8 @@
+Version 0.6 26/05/2014
+======================
+
+* Fixed an issue where videos were not immediately available after the session was closed - only after the Hub had finished tidying up the node. We now immediately transfer the video to the Hub.
+
 Version 0.5 03/05/2014
 ======================
 
