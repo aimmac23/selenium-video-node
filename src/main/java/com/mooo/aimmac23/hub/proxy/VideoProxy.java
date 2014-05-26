@@ -2,6 +2,9 @@ package com.mooo.aimmac23.hub.proxy;
 
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,6 +16,8 @@ import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.TestSession;
 import org.openqa.grid.selenium.proxy.DefaultRemoteProxy;
+import org.openqa.grid.web.servlet.handler.RequestType;
+import org.openqa.grid.web.servlet.handler.SeleniumBasedRequest;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
@@ -61,7 +66,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	@Override
 	public void beforeSession(TestSession arg0) {
 		super.beforeSession(arg0);
-		
+				
 		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
                 "POST", serviceUrl + "?command=start");
 		
@@ -73,6 +78,9 @@ public class VideoProxy extends DefaultRemoteProxy {
 			}
 			
 			isCurrentlyRecording = true;
+			
+			log.info("Started recording for new session on node: " + getId());
+
 		} catch (Exception e) {
 			log.warning("Could not start video reporting due to exception: " + e.getMessage());
 			e.printStackTrace();
@@ -81,9 +89,39 @@ public class VideoProxy extends DefaultRemoteProxy {
 	}
 	
 	@Override
+	public void afterCommand(TestSession session, HttpServletRequest request,
+			HttpServletResponse response) {
+		super.afterCommand(session, request, response);
+		
+		// its a shame we have to extract this again
+		SeleniumBasedRequest seleniumRequest = SeleniumBasedRequest.createFromRequest(request, getRegistry());
+		
+		if(RequestType.STOP_SESSION.equals(seleniumRequest.getRequestType())) {
+			
+			if(isCurrentlyRecording) {
+				log.info("Selenium session closed for " + session.getExternalKey() + " on node " + getId() + " - stopping recording.");
+				stopRecording(session);
+			}
+			else {
+				log.severe("Recording not started for " + session.getExternalKey() + " on node " + getId() + 
+						" and session being deleted - this could be a bug in the code.");
+			}
+			
+		}
+		
+	}
+	
+	@Override
 	public void afterSession(TestSession session) {
 		super.afterSession(session);
 		
+		if(isCurrentlyRecording) {
+			log.warning("Session session terminated ungracefully for " + session.getExternalKey() + " on node " + getId() + " - stopping recording");
+			stopRecording(session);
+		}
+	}
+	
+	void stopRecording(TestSession session) {
 		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
                 "POST", serviceUrl + "?command=stop");
 		
