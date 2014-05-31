@@ -36,7 +36,7 @@ void fatal(const char* error, ...)
 
 encoder_context* create_context(char* output_file)
 {
-  encoder_context* context = malloc(sizeof(encoder_context));
+  encoder_context* context = (encoder_context*) malloc(sizeof(encoder_context));
   memset(context, 0, sizeof(encoder_context));
   
   context->output = fopen(output_file, "wb");
