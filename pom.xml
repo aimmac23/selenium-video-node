@@ -71,7 +71,7 @@
             </goals>
             <configuration>
               <tasks>
-                <zip includes="*" basedir="binaries/" destfile="src/main/resources/native.zip">
+                <zip includes="**" basedir="binaries/" destfile="src/main/resources/native.zip">
                 </zip>
               </tasks>
             </configuration>
