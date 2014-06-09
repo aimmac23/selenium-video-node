@@ -1,11 +1,9 @@
 package com.mooo.aimmac23.hub;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.StreamPumper;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,29 +13,24 @@ import org.apache.http.util.EntityUtils;
 import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import com.mooo.aimmac23.hub.videostorage.BasicWebDAVStore;
+import com.mooo.aimmac23.hub.videostorage.IVideoStore;
 
 public class HubVideoRegistry {
 	
 	private static final Logger log = Logger.getLogger(HubVideoRegistry.class.getName());
 
-	
-	private static Cache<ExternalSessionKey, File> availableVideos;
+	private static IVideoStore videoStore;
 	
 	static {
-		availableVideos = CacheBuilder.newBuilder().maximumSize(200).removalListener(new RemovalListener<ExternalSessionKey, File>() {
-			@Override
-			public void onRemoval(RemovalNotification<ExternalSessionKey, File> arg0) {
-				if(arg0.getValue().delete()) {
-					log.info("Deleted recording due to excess videos: " + arg0.getKey());
-				}
-			}
-		}).build();
+		try {
+			videoStore = new BasicWebDAVStore();
+		} catch (Exception e) {
+			// throw a nasty error to hopefully prevent the Hub from trying to continue without this 
+			throw new Error("Could not initialize video store due to exception", e);
+		}
 	}
-	
+
 	public static void copyVideoToHub(ExternalSessionKey key, String pathKey, URL remoteHost) {
 		String serviceUrl = remoteHost + "/extra/VideoRecordingControlServlet";
 		
@@ -57,18 +50,7 @@ public class HubVideoRegistry {
 			}
 			// XXX: Should check mime-type, just in case
 			
-			File outputFile = File.createTempFile("screencast", ".webm");
-			FileOutputStream outputStream = new FileOutputStream(outputFile);
-			try {
-				new StreamPumper(response.getEntity().getContent(), outputStream).run();
-			}
-			finally {
-				outputStream.close();
-			}
-			
-			availableVideos.put(key, outputFile);
-			log.info("Successfully retrieved video for session: " + key + " and temporarily stashed it at: " + outputFile);
-			
+			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString());
         }
 		catch(Exception e) {
 			log.warning("Could not download video, exception caught: " + e.getMessage());
@@ -76,8 +58,9 @@ public class HubVideoRegistry {
 		}
 	}
 	
-	public static File getVideoForSession(ExternalSessionKey key) {
-		return availableVideos.getIfPresent(key);
+	public static InputStream getVideoForSession(ExternalSessionKey key) throws Exception {
+		
+		return videoStore.retrieveVideo(key.toString());
 	}
 	
 

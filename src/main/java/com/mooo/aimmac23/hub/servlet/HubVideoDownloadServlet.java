@@ -1,8 +1,10 @@
 package com.mooo.aimmac23.hub.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +19,18 @@ import com.mooo.aimmac23.hub.HubVideoRegistry;
 
 public class HubVideoDownloadServlet extends HttpServlet {
 	
+	private static final Logger log = Logger.getLogger(HubVideoDownloadServlet.class.getName());
+
 	private static final long serialVersionUID = 1L;
+	
+	static {
+		try {
+			// force this class to be initialized, so any errors are thrown at startup instead of first use
+			Class.forName(HubVideoRegistry.class.getCanonicalName());
+		} catch (ClassNotFoundException e) {
+			// Can't happen
+		}
+		}
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -30,23 +43,30 @@ public class HubVideoDownloadServlet extends HttpServlet {
 			return;
 		}
 		
-		File video = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
+		InputStream stream;
+		try {
+			stream = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Caught exception when fetching video for " + sessionId, e);
+			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			resp.getWriter().write("Internal error when fetching video");
+			return;
+		}
 		
-		if(video == null || !video.exists()) {
+		if(stream == null) {
 			resp.setStatus(HttpStatus.SC_NO_CONTENT);
 			resp.getWriter().write("Video content not found for sessionId: " + sessionId);
 			return;
 		}
 		
-		FileInputStream fileStream = new FileInputStream(video);
 		try {
 			resp.setContentType("video/webm");
-			resp.setContentLength((int)video.length());
-			new StreamPumper(fileStream, resp.getOutputStream()).run();
+			// resp.setContentLength((int)video.length());
+			new StreamPumper(stream, resp.getOutputStream()).run();
 			return;
 		}
 		finally {
-			fileStream.close();
+			stream.close();
 		}
 	}
 	
@@ -60,7 +80,7 @@ public class HubVideoDownloadServlet extends HttpServlet {
 			return;
 		}
 		
-		File video = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
+		File video = null; //HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
 		
 		if(video == null || !video.exists()) {
 			resp.setStatus(HttpStatus.SC_NO_CONTENT);
