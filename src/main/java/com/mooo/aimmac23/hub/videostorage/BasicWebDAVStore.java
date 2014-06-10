@@ -83,26 +83,38 @@ public class BasicWebDAVStore implements IVideoStore {
         	builder.setSslcontext(new SSLContextBuilder().useSSL().build());	
         }
         
-        
         client = builder.setDefaultCredentialsProvider(credentials).build();
         
-        clientContext = HttpClientContext.create();
+        clientContext = createClientContext(remoteHost, credentials);
+
+	}
+	
+	/**
+	 * The Apache HTTP client makes it as hard as possible to eagerly send auth credentials to remote hosts for
+	 * security reasons. We have to do this because we are streaming the video file to upload, so we cannot
+	 * send a second HTTP PUT with credentials.
+	 * 
+	 * @param host - the remote host we are connecting to
+	 * @param credentials - an object possibly holding HTTP credentials
+	 * @return A Context object that the HTTP client should use for connection-specific properties (clone before use)
+	 */
+	private HttpClientContext createClientContext(HttpHost host, BasicCredentialsProvider credentials) {
+		HttpClientContext context = HttpClientContext.create();
         
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
-        clientContext.setAuthCache(authCache);
-        authCache.put(remoteHost, basicAuth);
+        context.setAuthCache(authCache);
+        authCache.put(host, basicAuth);
         
-        clientContext.setCredentialsProvider(credentials);
-        clientContext.setAuthCache(authCache);
+        context.setCredentialsProvider(credentials);
+        context.setAuthCache(authCache);
+        
+        return context;
 	}
 
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
 			String sessionId) throws Exception {
-		
-		
-		
 		
 		HttpPut request = new HttpPut(url.toExternalForm() + "/" + sessionId + ".webm");
 		request.setEntity(new InputStreamEntity(videoStream, ContentType.create(mimeType)));

@@ -8,7 +8,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
@@ -39,8 +39,7 @@ public class HubVideoRegistry {
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         HttpClient client = httpClientFactory.getHttpClient();
         
-		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
-                "POST", serviceUrl + "?command=download&filekey=" + pathKey);
+        HttpGet r = new HttpGet(serviceUrl + "?command=download&filekey=" + pathKey);
 		
         try {
 			HttpResponse response = client.execute(remote, r);
@@ -49,13 +48,15 @@ public class HubVideoRegistry {
 				return;
 			}
 			// XXX: Should check mime-type, just in case
-			
 			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString());
         }
 		catch(Exception e) {
 			log.warning("Could not download video, exception caught: " + e.getMessage());
 			e.printStackTrace();
 		}
+        finally {
+        	r.releaseConnection();
+        }
 	}
 	
 	public static InputStream getVideoForSession(ExternalSessionKey key) throws Exception {
