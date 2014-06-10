@@ -25,7 +25,6 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 
 public class BasicWebDAVStore implements IVideoStore {
 	
@@ -128,7 +127,7 @@ public class BasicWebDAVStore implements IVideoStore {
 			
 			int statusCode = response.getStatusLine().getStatusCode();
 			
-			if(statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_NO_CONTENT) {
+			if(statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_CREATED) {
 				throw new HttpException("Could not upload video - response code: " + statusCode + 
 						" reason: " + response.getStatusLine().getReasonPhrase());
 			}
