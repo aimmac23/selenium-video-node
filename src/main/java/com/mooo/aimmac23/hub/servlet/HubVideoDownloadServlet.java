@@ -16,6 +16,7 @@ import org.apache.http.HttpStatus;
 import org.openqa.grid.internal.ExternalSessionKey;
 
 import com.mooo.aimmac23.hub.HubVideoRegistry;
+import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 
 public class HubVideoDownloadServlet extends HttpServlet {
 	
@@ -43,9 +44,9 @@ public class HubVideoDownloadServlet extends HttpServlet {
 			return;
 		}
 		
-		InputStream stream;
+		StoredVideoDownloadContext videoContext;
 		try {
-			stream = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
+			videoContext = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
 		} catch (Exception e) {
 			log.log(Level.WARNING, "Caught exception when fetching video for " + sessionId, e);
 			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -53,7 +54,7 @@ public class HubVideoDownloadServlet extends HttpServlet {
 			return;
 		}
 		
-		if(stream == null) {
+		if(!videoContext.isVideoFound()) {
 			resp.setStatus(HttpStatus.SC_NO_CONTENT);
 			resp.getWriter().write("Video content not found for sessionId: " + sessionId);
 			return;
@@ -61,12 +62,17 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		
 		try {
 			resp.setContentType("video/webm");
-			// resp.setContentLength((int)video.length());
-			new StreamPumper(stream, resp.getOutputStream()).run();
+			
+			Long contentLength = videoContext.getContentLengthIfKnown();
+			if(contentLength != null) {
+				resp.setContentLength(contentLength.intValue());
+
+			}
+			new StreamPumper(videoContext.getStream(), resp.getOutputStream()).run();
 			return;
 		}
 		finally {
-			stream.close();
+			videoContext.close();
 		}
 	}
 	

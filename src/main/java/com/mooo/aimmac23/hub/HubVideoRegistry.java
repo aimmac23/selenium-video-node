@@ -1,6 +1,5 @@
 package com.mooo.aimmac23.hub;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -15,6 +14,7 @@ import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 import com.mooo.aimmac23.hub.videostorage.BasicWebDAVStore;
 import com.mooo.aimmac23.hub.videostorage.IVideoStore;
+import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 
 public class HubVideoRegistry {
 	
@@ -59,7 +59,7 @@ public class HubVideoRegistry {
         }
 	}
 	
-	public static InputStream getVideoForSession(ExternalSessionKey key) throws Exception {
+	public static StoredVideoDownloadContext getVideoForSession(ExternalSessionKey key) throws Exception {
 		
 		return videoStore.retrieveVideo(key.toString());
 	}

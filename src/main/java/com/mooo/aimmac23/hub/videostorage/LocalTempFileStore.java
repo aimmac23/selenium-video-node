@@ -1,8 +1,12 @@
 package com.mooo.aimmac23.hub.videostorage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.StreamPumper;
@@ -31,7 +35,6 @@ public class LocalTempFileStore implements IVideoStore {
 		}).build();
 	}
 	
-
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
 			String sessionId) throws Exception {
@@ -50,9 +53,56 @@ public class LocalTempFileStore implements IVideoStore {
 	}
 
 	@Override
-	public InputStream retrieveVideo(String sessionId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception {
+		File file = availableVideos.getIfPresent(new ExternalSessionKey(sessionId));
+		if(file != null && file.exists() && file.isFile()) {
+			return new LocalTempFileDownloadContext(file);
+		}
+		
+		return new LocalTempFileDownloadContext(null);
+	}
+	
+	private static class LocalTempFileDownloadContext implements StoredVideoDownloadContext {
+		
+		private File file;
+		private FileInputStream stream;
+
+		public LocalTempFileDownloadContext(File file) throws FileNotFoundException {
+			this.file = file;
+			if(file != null) {
+				stream = new FileInputStream(file);	
+			}
+			else {
+				stream = null;
+			}
+			
+		}
+
+		@Override
+		public boolean isVideoFound() {
+			return file != null;
+		}
+
+		@Override
+		public InputStream getStream() throws IOException {
+			return stream;
+		}
+
+		@Override
+		public Long getContentLengthIfKnown() {
+			return new Long(file.length());
+		}
+
+		@Override
+		public void close() {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				log.log(Level.WARNING, "Could not close file: " + file, e);
+			}
+			
+		}
+		
 	}
 
 }

@@ -6,5 +6,5 @@ public interface IVideoStore {
 	
 	public void storeVideo(InputStream videoStream, String mimeType, String sessionId) throws Exception;
 	
-	public InputStream retrieveVideo(String sessionId) throws Exception;
+	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception;
 }

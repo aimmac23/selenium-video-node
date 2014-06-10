@@ -1,9 +1,11 @@
 package com.mooo.aimmac23.hub.videostorage;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -12,7 +14,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.entity.ContentType;
@@ -138,14 +142,14 @@ public class BasicWebDAVStore implements IVideoStore {
 	}
 
 	@Override
-	public InputStream retrieveVideo(String sessionId) throws Exception {
-		BasicHttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("GET", url.toExternalForm() + "/" + sessionId + ".webm");
+	public WebDAVDownloadContext retrieveVideo(String sessionId) throws Exception {
+		HttpGet request = new HttpGet(url.toExternalForm() + "/" + sessionId + ".webm");
 		HttpResponse response = client.execute(remoteHost, request);
 		
 		int statusCode = response.getStatusLine().getStatusCode();
 		
 		if(statusCode == HttpStatus.SC_NOT_FOUND) {
-			return null;
+			return new WebDAVDownloadContext(request, response, false);
 		}
 		
 		if(statusCode != HttpStatus.SC_OK) {
@@ -156,7 +160,48 @@ public class BasicWebDAVStore implements IVideoStore {
 		
 		log.info("Got video for session: " + sessionId);
 		
-		return response.getEntity().getContent();
+		return new WebDAVDownloadContext(request, response, true);
+	}
+	
+	private static class WebDAVDownloadContext implements StoredVideoDownloadContext {
+		
+		private HttpRequestBase request;
+		private HttpResponse response;
+		private boolean videoFound;
+
+		public WebDAVDownloadContext(HttpRequestBase request, HttpResponse response, boolean videoFound) {
+			this.request = request;
+			this.response = response;
+			this.videoFound = videoFound;
+		}
+
+		@Override
+		public boolean isVideoFound() {
+			return videoFound;
+		}
+
+		@Override
+		public InputStream getStream() throws IOException {
+			if(videoFound) {
+				return response.getEntity().getContent();
+			}
+			return null;
+		}
+
+		@Override
+		public Long getContentLengthIfKnown() {
+			Header contentLength = response.getFirstHeader("Content-Length");
+			if(contentLength != null) {
+				return new Long(contentLength.getValue());
+			}
+			return null;
+		}
+
+		@Override
+		public void close() {
+			request.releaseConnection();
+		}
+		
 	}
 
 }
