@@ -12,10 +12,11 @@ import org.apache.http.util.EntityUtils;
 import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
-import com.mooo.aimmac23.hub.videostorage.BasicWebDAVStore;
 import com.mooo.aimmac23.hub.videostorage.IVideoStore;
+import com.mooo.aimmac23.hub.videostorage.LocalTempFileStore;
 import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 
+@SuppressWarnings("unchecked")
 public class HubVideoRegistry {
 	
 	private static final Logger log = Logger.getLogger(HubVideoRegistry.class.getName());
@@ -24,7 +25,15 @@ public class HubVideoRegistry {
 	
 	static {
 		try {
-			videoStore = new BasicWebDAVStore();
+			Class<? extends IVideoStore> storageClass = LocalTempFileStore.class;
+			String classname = System.getProperty("video.storage");
+			if(classname != null) {
+				storageClass = (Class<? extends IVideoStore>) Class.forName(classname);
+			}
+			
+			videoStore = storageClass.newInstance();
+			log.info("Using " + storageClass + " to store videos");
+			
 		} catch (Exception e) {
 			// throw a nasty error to hopefully prevent the Hub from trying to continue without this 
 			throw new Error("Could not initialize video store due to exception", e);
