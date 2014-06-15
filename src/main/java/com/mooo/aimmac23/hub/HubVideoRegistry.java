@@ -15,6 +15,7 @@ import org.openqa.selenium.remote.internal.HttpClientFactory;
 import com.mooo.aimmac23.hub.videostorage.IVideoStore;
 import com.mooo.aimmac23.hub.videostorage.LocalTempFileStore;
 import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
+import com.mooo.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
 @SuppressWarnings("unchecked")
 public class HubVideoRegistry {
@@ -71,6 +72,10 @@ public class HubVideoRegistry {
 	public static StoredVideoDownloadContext getVideoForSession(ExternalSessionKey key) throws Exception {
 		
 		return videoStore.retrieveVideo(key.toString());
+	}
+	
+	public static StoredVideoInfoContext getVideoInfoForSession(ExternalSessionKey key) throws Exception {
+		return videoStore.getVideoInformation(key.toString());
 	}
 	
 

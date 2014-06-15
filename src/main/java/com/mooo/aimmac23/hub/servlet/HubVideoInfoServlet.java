@@ -1,6 +1,7 @@
 package com.mooo.aimmac23.hub.servlet;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,17 +10,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.exec.StreamPumper;
 import org.apache.http.HttpStatus;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.grid.internal.ExternalSessionKey;
 
 import com.mooo.aimmac23.hub.HubVideoRegistry;
-import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 import com.mooo.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
-public class HubVideoDownloadServlet extends HttpServlet {
+public class HubVideoInfoServlet extends HttpServlet {
 	
-	private static final Logger log = Logger.getLogger(HubVideoDownloadServlet.class.getName());
+	private static final Logger log = Logger.getLogger(HubVideoInfoServlet.class.getName());
 
 	private static final long serialVersionUID = 1L;
 	
@@ -32,7 +33,7 @@ public class HubVideoDownloadServlet extends HttpServlet {
 			// Can't happen
 		}
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -41,48 +42,6 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		if(sessionId == null) {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
 			resp.getWriter().write("Missing parameter: 'sessionId'");
-			return;
-		}
-		
-		StoredVideoDownloadContext videoContext;
-		try {
-			videoContext = HubVideoRegistry.getVideoForSession(new ExternalSessionKey(sessionId));
-		} catch (Exception e) {
-			log.log(Level.WARNING, "Caught exception when fetching video for " + sessionId, e);
-			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			resp.getWriter().write("Internal error when fetching video");
-			return;
-		}
-		
-		if(!videoContext.isVideoFound()) {
-			resp.setStatus(HttpStatus.SC_NO_CONTENT);
-			resp.getWriter().write("Video content not found for sessionId: " + sessionId);
-			return;
-		}
-		
-		try {
-			resp.setContentType("video/webm");
-			
-			Long contentLength = videoContext.getContentLengthIfKnown();
-			if(contentLength != null) {
-				resp.setContentLength(contentLength.intValue());
-
-			}
-			new StreamPumper(videoContext.getStream(), resp.getOutputStream()).run();
-			return;
-		}
-		finally {
-			videoContext.close();
-		}
-	}
-	
-	@Override
-	protected void doHead(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		String sessionId = req.getParameter("sessionId");
-		
-		if(sessionId == null) {
-			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
 			return;
 		}
 		
@@ -98,14 +57,27 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		
 		if(!videoInfoForSession.isVideoFound()) {
 			resp.setStatus(HttpStatus.SC_NOT_FOUND);
+			resp.getWriter().write("Video not found for session: " + sessionId);
 			return;
 		}
 		
-		resp.setStatus(HttpStatus.SC_OK);
-		resp.setContentType("video/mp4");
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
 		if(videoInfoForSession.getContentLengthIfKnown() != null) {
-			resp.setContentLength(videoInfoForSession.getContentLengthIfKnown().intValue());
+			responseMap.put("fileSize", videoInfoForSession.getContentLengthIfKnown());	
 		}
-		return;
+		
+		responseMap.put("additional", videoInfoForSession.additionalInformation());
+		
+		
+		String json;
+		try {
+			json = new JSONObject(responseMap).toString(4);
+		} catch (JSONException e) {
+			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			log.log(Level.WARNING, "Threw exception when writing JSON", e);
+			return;
+		}
+		resp.setStatus(HttpStatus.SC_OK);
+		resp.getWriter().write(json);
 	}
 }

@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +55,7 @@ public class LocalTempFileStore implements IVideoStore {
 	}
 
 	@Override
-	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception {
+	public LocalTempFileDownloadContext retrieveVideo(String sessionId) throws Exception {
 		File file = availableVideos.getIfPresent(new ExternalSessionKey(sessionId));
 		if(file != null && file.exists() && file.isFile()) {
 			return new LocalTempFileDownloadContext(file);
@@ -62,7 +64,14 @@ public class LocalTempFileStore implements IVideoStore {
 		return new LocalTempFileDownloadContext(null);
 	}
 	
-	private static class LocalTempFileDownloadContext implements StoredVideoDownloadContext {
+	@Override
+	public StoredVideoInfoContext getVideoInformation(String sessionId)
+			throws Exception {
+		// XXX: Abuse the class heirarchy for this one
+		return retrieveVideo(sessionId);
+	}
+	
+	private static class LocalTempFileDownloadContext implements StoredVideoDownloadContext, StoredVideoInfoContext {
 		
 		private File file;
 		private FileInputStream stream;
@@ -75,7 +84,6 @@ public class LocalTempFileStore implements IVideoStore {
 			else {
 				stream = null;
 			}
-			
 		}
 
 		@Override
@@ -100,9 +108,12 @@ public class LocalTempFileStore implements IVideoStore {
 			} catch (IOException e) {
 				log.log(Level.WARNING, "Could not close file: " + file, e);
 			}
-			
 		}
-		
+
+		@Override
+		public Map<String, Object> additionalInformation() {
+			return Collections.emptyMap();
+		}
 	}
 
 }

@@ -2,7 +2,10 @@ package com.mooo.aimmac23.hub.videostorage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.http.Header;
@@ -15,6 +18,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -148,7 +152,7 @@ public class BasicWebDAVStore implements IVideoStore {
 		int statusCode = response.getStatusLine().getStatusCode();
 		
 		if(statusCode == HttpStatus.SC_NOT_FOUND) {
-			return new WebDAVDownloadContext(request, response, false);
+			return new WebDAVDownloadContext(request, response, false, false);
 		}
 		
 		if(statusCode != HttpStatus.SC_OK) {
@@ -159,19 +163,40 @@ public class BasicWebDAVStore implements IVideoStore {
 		
 		log.info("Got video for session: " + sessionId);
 		
-		return new WebDAVDownloadContext(request, response, true);
+		return new WebDAVDownloadContext(request, response, true, false);
 	}
 	
-	private static class WebDAVDownloadContext implements StoredVideoDownloadContext {
+	@Override
+	public StoredVideoInfoContext getVideoInformation(String sessionId)
+			throws Exception {
+		HttpHead request = new HttpHead(url.toExternalForm() + "/" + sessionId + ".webm");
+		HttpResponse response = client.execute(remoteHost, request);
+		
+		int statusCode = response.getStatusLine().getStatusCode();
+		
+		if(statusCode == HttpStatus.SC_NOT_FOUND) {
+			return new WebDAVDownloadContext(request, response, false, true);
+		}
+		
+		if(statusCode == HttpStatus.SC_OK) {
+			return new WebDAVDownloadContext(request, response, true, true);
+		}
+		
+		throw new IllegalStateException("Unknown status when fetching video information for session: " + sessionId);
+	}
+	
+	private static class WebDAVDownloadContext implements StoredVideoDownloadContext, StoredVideoInfoContext {
 		
 		private HttpRequestBase request;
 		private HttpResponse response;
 		private boolean videoFound;
+		private boolean isHeadRequest;
 
-		public WebDAVDownloadContext(HttpRequestBase request, HttpResponse response, boolean videoFound) {
+		public WebDAVDownloadContext(HttpRequestBase request, HttpResponse response, boolean videoFound, boolean isHeadRequest) {
 			this.request = request;
 			this.response = response;
 			this.videoFound = videoFound;
+			this.isHeadRequest = isHeadRequest;
 		}
 
 		@Override
@@ -181,6 +206,10 @@ public class BasicWebDAVStore implements IVideoStore {
 
 		@Override
 		public InputStream getStream() throws IOException {
+			if(isHeadRequest) {
+				throw new IllegalStateException("Cannot retrieve video with an HTTP HEAD request");
+			}
+			
 			if(videoFound) {
 				return response.getEntity().getContent();
 			}
@@ -200,7 +229,16 @@ public class BasicWebDAVStore implements IVideoStore {
 		public void close() {
 			request.releaseConnection();
 		}
-		
-	}
 
+		@Override
+		public Map<String, Object> additionalInformation() {
+			Map<String, Object> info = new HashMap<String, Object>();
+			try {
+				info.put("url", request.getURI().toURL().toExternalForm());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			return info;
+		}	
+	}
 }

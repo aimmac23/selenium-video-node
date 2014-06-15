@@ -122,13 +122,13 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		
 		File video = availableVideos.getIfPresent(filekey);
 		if(video == null) {
-			resp.setStatus(HttpStatus.SC_NO_CONTENT);
+			resp.setStatus(HttpStatus.SC_NOT_FOUND);
 			resp.getWriter().write("No video found for key: " + filekey);
 			return;
 		}
 		
 		if(!video.exists()) {
-			resp.setStatus(HttpStatus.SC_NO_CONTENT);
+			resp.setStatus(HttpStatus.SC_NOT_FOUND);
 			resp.getWriter().write("Video file deleted for key: " + filekey);
 			return;
 		}
