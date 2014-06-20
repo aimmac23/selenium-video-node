@@ -92,12 +92,12 @@ public class JnaLibraryLoader {
 		}
 		
 		try {
-			tryBitDepth(BitDepth.BIT_32, targetDirectory);	
+			tryBitDepth(BitDepth.BIT_64, targetDirectory);	
 		}
 		catch(Error e) {
-			log.info("Could not load 32 bit native libraries - attempting 64 bit instead");
+			log.info("Could not load 64 bit native libraries - attempting 32 bit instead");
 			deleteAllFilesInDirectory(targetDirectory);
-			tryBitDepth(BitDepth.BIT_64, targetDirectory);
+			tryBitDepth(BitDepth.BIT_32, targetDirectory);
 		}
 	}
 	
