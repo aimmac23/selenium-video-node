@@ -1,3 +1,13 @@
+Version 0.7 20/06/2014
+======================
+
+* Added experimental support for Windows x86 (32-bit). I don't have a 32-bit JVM on-hand to test that the native code works.
+* Wrote a plugin to make how we store videos be extensible
+  * LocalTempFileStore - the pre-existing storage mechanism
+  * LocalFileVideoStore - permanent storage in a directory
+  * BasicWebDAVStore - permanent storage in a WebDAV directory on a webserver
+* Added HubVideoInfoServlet to provide storage-plugin specific information about where a video is kept
+
 Version 0.6 26/05/2014
 ======================
 
@@ -44,3 +54,4 @@ Initial implementation. Used a Java implementation of an h264 encoder. It centra
  * Some time-base issues
  * Some browsers/players refused to play back the video
  * Patent issues for encoding h264
+
