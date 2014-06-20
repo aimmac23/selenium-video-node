@@ -1,10 +1,16 @@
 package com.mooo.aimmac23.node.jna;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
-
+/**
+ * The native C interface we use for video encoding. All the 
+ * state is kept in C-land - this interface represents the points
+ * where we have to cross between Java-land and C-land.
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public interface EncoderInterface extends Library {
 	
 	Pointer create_context(String outputFile);

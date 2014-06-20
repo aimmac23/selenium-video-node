@@ -2,7 +2,12 @@ package com.mooo.aimmac23.node.jna;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
-
+/**
+ * The libvpx encoder library - does the VP8 video encoding.
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public interface LibVPX extends Library {
 	
 	String vpx_codec_err_to_string(int result);
