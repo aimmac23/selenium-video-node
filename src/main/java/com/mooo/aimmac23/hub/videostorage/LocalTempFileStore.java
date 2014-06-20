@@ -19,6 +19,18 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
+/**
+ * A plugin to temporarily store videos in temporary local files. Videos are deleted when
+ * we store over a certain number of them (currently 200) to save on disk space. Use this plugin if:
+ * 
+ * <ul>
+ * <li>You are just getting your grid setup, and you don't want the added complexity</li>
+ * <li>You don't mind the grid forgetting about videos over restarts</li>
+ * <li>You don't need the grid to store videos to be stored for very long</li>
+ * </ul>
+ * @author Alasdair Macmillan
+ *
+ */
 public class LocalTempFileStore implements IVideoStore {
 	
 	private static final Logger log = Logger.getLogger(LocalTempFileStore.class.getName());

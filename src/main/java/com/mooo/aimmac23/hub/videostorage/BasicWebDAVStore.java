@@ -30,6 +30,20 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+/**
+ * A plugin to store videos on a WebDAV server. It only uses HTTP GET, PUT and HEAD - not any 
+ * WebDAV-specific extensions. Supports SSL, and optionally username/password authentication.
+ * 
+ * Use this plugin when:
+ * <ul>
+ * <li>You don't want your Selenium Hub server to be in charge of storage</li>
+ * <li>You may want to make the videos integrate with another system</li>
+ * <li>You don't want the Hub to forget about videos over restarts</li>
+ * </ul>
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public class BasicWebDAVStore implements IVideoStore {
 	
 	private static final Logger log = Logger.getLogger(BasicWebDAVStore.class.getName());

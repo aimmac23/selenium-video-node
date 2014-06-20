@@ -3,6 +3,13 @@ package com.mooo.aimmac23.hub.videostorage;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * An object providing a means by which we can download a video from a plugin
+ * in an implementation-independent way.
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public interface StoredVideoDownloadContext {
 	
 	/**

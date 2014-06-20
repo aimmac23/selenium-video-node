@@ -14,6 +14,20 @@ import java.util.logging.Logger;
 
 import org.apache.commons.exec.StreamPumper;
 
+/**
+ * A plugin to store permamently videos in a local filesystem directory.
+ * 
+ * This should be used when:
+ * <ul>
+ *   <li>You don't want your Selenium Grid to delete videos</li>
+ *   <li>You don't want your Selenium Grid to forget about videos over restarts</li>
+ *   <li>You are trying to integrate with something that needs to access videos directly 
+ *   (NOT through the Hub), and you so happen to share a filesystem with that thing. </li>
+ *   </ul>
+ *   
+ * @author Alasdair Macmillan
+ *
+ */
 public class LocalFileVideoStore implements IVideoStore {
 	
 	private static final Logger log = Logger.getLogger(LocalFileVideoStore.class.getName());
