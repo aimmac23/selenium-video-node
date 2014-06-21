@@ -5,9 +5,10 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 
 ## Features
 
-* (Reasonably) easy setup - just need to add another JAR file to the Selenium Node classpath
+* Easy setup - just need to add another JAR file to the Selenium Node classpath
 * Excellent video quality (about 8 frames/sec)
 * Simple API to retrieve videos
+* Extensible storage mechanism for video storage
 
 ## Mis-Features
 
@@ -41,9 +42,9 @@ The latest version can be downloaded here: https://aimmac23.com/public/maven-rep
 
 ## Basic Installation
 
-See [Installation](INSTALLATION.md)
+To get the plugin working on your Selenium grid, see [Installation](INSTALLATION.md)
 
 ## Additional Features
 
-See [Additional Features](ADDITIONAL_FEATURES.md)
+The Video Nodes can change some of their behaviour, based on certain command-line parameters. See [Additional Features](ADDITIONAL_FEATURES.md) on how to make that happen.
 

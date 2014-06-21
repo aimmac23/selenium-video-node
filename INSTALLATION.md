@@ -1,5 +1,6 @@
  
-## Installation
+Installation
+============
 
 This guide assumes some familiarity with the Selenium Grid setup guide: https://code.google.com/p/selenium/wiki/Grid2
 
