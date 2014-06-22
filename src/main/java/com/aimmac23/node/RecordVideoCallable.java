@@ -85,8 +85,13 @@ public class RecordVideoCallable implements Callable<File> {
 		long videoEndTime = System.currentTimeMillis();
 		
 		long duration = ((videoEndTime - videoStartTime) / 1000);
-		log.info("Finished recording - frames: " + frames + " duration: " +  duration +
-				" seconds targetFps: " + targetFramerate + " actualFps: " + frames / duration);
+		if(duration != 0) {
+			log.info("Finished recording - frames: " + frames + " duration: " +  duration +
+					" seconds targetFps: " + targetFramerate + " actualFps: " + frames / duration);	
+		}
+		else {
+			log.warning("Finished recording - video was zero length!");
+		}
 		return outputFile;
 	}
 	
