@@ -17,7 +17,7 @@ The Hub supports an extensible plugin system to decide how to store the recorded
 
     -Dvideo.storage=<classname>
 
-Changes the backend implementation for how we store videos. This can be either a plugin provided by this project, or a user-supplied plugin on the classpath.
+Changes the backend implementation for how we store videos. This can be either a plugin provided by this project, or a user-defined plugin on the classpath.
 
 ### com.mooo.aimmac23.hub.videostorage.LocalTempFileStore (default)
 
@@ -48,3 +48,9 @@ Optionally provide a username to use when uploading the video.
     -Dwebdav.password=<password>
     
 Optionally provide a password to use when uploading the video.
+
+### User-Defined plugin
+
+You can also create your own plugin to handle storage, but it has to implement com.mooo.aimmac23.hub.videostorage.IVideoStore.
+
+
