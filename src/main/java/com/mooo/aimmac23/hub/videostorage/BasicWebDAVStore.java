@@ -135,7 +135,8 @@ public class BasicWebDAVStore implements IVideoStore {
 
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
-			String sessionId) throws Exception {
+			String sessionId, Map<String, Object> requestedCapabilities, 
+			Map<String, Object> nodeCapabilities) throws Exception {
 		
 		HttpPut request = new HttpPut(url.toExternalForm() + "/" + sessionId + ".webm");
 		request.setEntity(new InputStreamEntity(videoStream, ContentType.create(mimeType)));

@@ -1,6 +1,7 @@
 package com.mooo.aimmac23.hub;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpHost;
@@ -8,8 +9,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.util.EntityUtils;
 import org.openqa.grid.internal.ExternalSessionKey;
+import org.openqa.grid.internal.TestSession;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 import com.mooo.aimmac23.hub.videostorage.IVideoStore;
@@ -41,8 +44,13 @@ public class HubVideoRegistry {
 		}
 	}
 
-	public static void copyVideoToHub(ExternalSessionKey key, String pathKey, URL remoteHost) {
+	public static void copyVideoToHub(TestSession session, String pathKey, URL remoteHost) {
 		String serviceUrl = remoteHost + "/extra/VideoRecordingControlServlet";
+
+		Map<String, Object> requestedCapabilities = session.getRequestedCapabilities();
+		Map<String, Object> nodeCapabilities = session.getSlot().getCapabilities();
+		
+		ExternalSessionKey key = session.getExternalKey();
 		
 		HttpHost remote = new HttpHost(remoteHost.getHost(),
 				remoteHost.getPort());
@@ -58,7 +66,7 @@ public class HubVideoRegistry {
 				return;
 			}
 			// XXX: Should check mime-type, just in case
-			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString());
+			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), requestedCapabilities, nodeCapabilities);
         }
 		catch(Exception e) {
 			log.warning("Could not download video, exception caught: " + e.getMessage());

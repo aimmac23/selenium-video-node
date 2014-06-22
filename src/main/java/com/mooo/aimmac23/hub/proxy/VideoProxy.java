@@ -1,5 +1,6 @@
 package com.mooo.aimmac23.hub.proxy;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +123,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	}
 	
 	void stopRecording(TestSession session) {
+		
 		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
                 "POST", serviceUrl + "?command=stop");
 		
@@ -137,7 +139,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 			if(session.getExternalKey() != null) {
 				JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 				String fileKey = json.getString("filekey");
-				HubVideoRegistry.copyVideoToHub(session.getExternalKey(), fileKey, getRemoteHost());
+				HubVideoRegistry.copyVideoToHub(session, fileKey, getRemoteHost());
 				
 
 			}

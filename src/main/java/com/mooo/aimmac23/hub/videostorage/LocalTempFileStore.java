@@ -51,7 +51,8 @@ public class LocalTempFileStore implements IVideoStore {
 	
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
-			String sessionId) throws Exception {
+			String sessionId, Map<String, Object> requestedCapabilities, 
+			Map<String, Object> nodeCapabilities) throws Exception {
 		File outputFile = File.createTempFile("screencast", ".webm");
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
 		try {
