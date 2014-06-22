@@ -4,6 +4,7 @@ Version 0.8 (unreleased)
 * Added pre-compiled binaries for OS X
 * Change the API for IVideoStore to also include requested capabilities + node capabilities when storing the job. This is intended
 for use when integrating with custom job reporting code.
+* Renames packages/POM from 'com.mooo.aimmac23' -> 'com.aimmac23'
 
 Version 0.7 20/06/2014
 ======================

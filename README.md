@@ -38,7 +38,7 @@ The above does not apply to the Selenium Hub, which does not perform any video p
 
 ## Downloads
 
-The latest version can be downloaded here: https://aimmac23.com/public/maven-repository/com/mooo/aimmac23/selenium-video-node/
+The latest version can be downloaded here: https://aimmac23.com/public/maven-repository/com/aimmac23/selenium-video-node/
 
 ## Basic Installation
 

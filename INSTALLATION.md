@@ -6,13 +6,13 @@ This guide assumes some familiarity with the Selenium Grid setup guide: https://
 
 Download:
 * The latest "selenium-server-standalone" JAR from http://selenium-release.storage.googleapis.com/index.html
-* The latest "selenium-video-node" JAR from https://aimmac23.com/public/maven-repository/com/mooo/aimmac23/selenium-video-node/
+* The latest "selenium-video-node" JAR from https://aimmac23.com/public/maven-repository/com/aimmac23/selenium-video-node/
 
 ### Node setup
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.mooo.aimmac23.hub.proxy.VideoProxy -role node
+    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role node
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 
@@ -31,11 +31,11 @@ It is also recommended to specify only the browers that your platform supports a
 
 We also need to add some extra functionality to the Selenium Hub to make this work:
 
-    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.mooo.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
+    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
 
 When starting up, you should see a line saying something like:
 
-    INFO: binding com.mooo.aimmac23.hub.servlet.HubVideoDownloadServlet to /grid/admin/HubVideoDownloadServlet/*
+    INFO: binding com.aimmac23.hub.servlet.HubVideoDownloadServlet to /grid/admin/HubVideoDownloadServlet/*
 
 Which means that the extra servlet in the Hub has been installed successfully.
 

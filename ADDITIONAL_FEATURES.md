@@ -19,13 +19,13 @@ The Hub supports an extensible plugin system to decide how to store the recorded
 
 Changes the backend implementation for how we store videos. This can be either a plugin provided by this project, or a user-defined plugin on the classpath.
 
-### com.mooo.aimmac23.hub.videostorage.LocalTempFileStore (default)
+### com.aimmac23.hub.videostorage.LocalTempFileStore (default)
 
 This implementation stores the videos as temporary files, and deletes them if too many accumulate. It also tends to forget about currently stored videos if the hub gets restarted.
 
 There are currently no configurable options for this plugin.
 
-### com.mooo.aimmac23.hub.videostorage.LocalFileVideoStore
+### com.aimmac23.hub.videostorage.LocalFileVideoStore
 
 Stores videos in a directory on disk. Videos persist over Hub restarts, and are never deleted. Note that clients can request any file in the configured directory, so be aware of where they are stored.
 
@@ -33,7 +33,7 @@ Stores videos in a directory on disk. Videos persist over Hub restarts, and are 
     
 Uses the given directory to store the videos.
 
-### com.mooo.aimmac23.hub.videostorage.BasicWebDAVStore
+### com.aimmac23.hub.videostorage.BasicWebDAVStore
 
 Uploads videos to a server which supports WebDAV. Following HTTP redirects when uploading is not supported.
 
@@ -51,6 +51,6 @@ Optionally provide a password to use when uploading the video.
 
 ### User-Defined plugin
 
-You can also create your own plugin to handle storage, but it has to implement com.mooo.aimmac23.hub.videostorage.IVideoStore.
+You can also create your own plugin to handle storage, but it has to implement com.aimmac23.hub.videostorage.IVideoStore.
 
 
