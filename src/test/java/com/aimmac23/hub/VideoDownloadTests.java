@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.hub;
+package com.aimmac23.hub;
 
 import junit.framework.Assert;
 

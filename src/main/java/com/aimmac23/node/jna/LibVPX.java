@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.node.jna;
+package com.aimmac23.node.jna;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 

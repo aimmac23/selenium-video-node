@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.hub;
+package com.aimmac23.hub;
 
 import java.net.URL;
 import java.util.Map;
@@ -15,10 +15,10 @@ import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.grid.internal.TestSession;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
-import com.mooo.aimmac23.hub.videostorage.IVideoStore;
-import com.mooo.aimmac23.hub.videostorage.LocalTempFileStore;
-import com.mooo.aimmac23.hub.videostorage.StoredVideoDownloadContext;
-import com.mooo.aimmac23.hub.videostorage.StoredVideoInfoContext;
+import com.aimmac23.hub.videostorage.IVideoStore;
+import com.aimmac23.hub.videostorage.LocalTempFileStore;
+import com.aimmac23.hub.videostorage.StoredVideoDownloadContext;
+import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
 @SuppressWarnings("unchecked")
 public class HubVideoRegistry {

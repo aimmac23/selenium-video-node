@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.hub.proxy;
+package com.aimmac23.hub.proxy;
 
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,7 +22,7 @@ import org.openqa.grid.web.servlet.handler.SeleniumBasedRequest;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
-import com.mooo.aimmac23.hub.HubVideoRegistry;
+import com.aimmac23.hub.HubVideoRegistry;
 
 public class VideoProxy extends DefaultRemoteProxy {
 

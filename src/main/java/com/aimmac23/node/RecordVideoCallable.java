@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.node;
+package com.aimmac23.node;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import com.mooo.aimmac23.node.jna.EncoderInterface;
-import com.mooo.aimmac23.node.jna.JnaLibraryLoader;
+import com.aimmac23.node.jna.EncoderInterface;
+import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
 
 public class RecordVideoCallable implements Callable<File> {

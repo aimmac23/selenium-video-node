@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.node.jna;
+package com.aimmac23.node.jna;
 
 import java.io.File;
 import java.io.FileOutputStream;

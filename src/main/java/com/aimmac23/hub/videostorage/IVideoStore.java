@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.hub.videostorage;
+package com.aimmac23.hub.videostorage;
 
 import java.io.InputStream;
 import java.util.Map;

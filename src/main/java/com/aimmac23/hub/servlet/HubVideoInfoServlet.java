@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.hub.servlet;
+package com.aimmac23.hub.servlet;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,8 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.grid.internal.ExternalSessionKey;
 
-import com.mooo.aimmac23.hub.HubVideoRegistry;
-import com.mooo.aimmac23.hub.videostorage.StoredVideoInfoContext;
+import com.aimmac23.hub.HubVideoRegistry;
+import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
 public class HubVideoInfoServlet extends HttpServlet {
 	

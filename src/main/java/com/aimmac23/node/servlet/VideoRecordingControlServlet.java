@@ -1,4 +1,4 @@
-package com.mooo.aimmac23.node.servlet;
+package com.aimmac23.node.servlet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,12 +15,12 @@ import org.apache.commons.exec.StreamPumper;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
+import com.aimmac23.node.VideoRecordController;
+import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
-import com.mooo.aimmac23.node.VideoRecordController;
-import com.mooo.aimmac23.node.jna.JnaLibraryLoader;
 
 public class VideoRecordingControlServlet extends HttpServlet {
 	
