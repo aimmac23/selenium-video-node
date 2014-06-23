@@ -12,7 +12,7 @@ Download:
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role node
+    java -cp selenium-video-node-0.8.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role node
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 

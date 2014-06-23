@@ -2,9 +2,12 @@ Version 0.8 (unreleased)
 ======================
 
 * Added pre-compiled binaries for OS X
+* Added pre-compiled binaries for Linux x86 (32-bit)
+* Recompiled all binaries (except Windows x86_64) to fix video length bug (Issue #3)
 * Change the API for IVideoStore to also include requested capabilities + node capabilities when storing the job. This is intended
 for use when integrating with custom job reporting code.
 * Renames packages/POM from 'com.mooo.aimmac23' -> 'com.aimmac23'
+* Removed experimental support for Windows x86 (32-bit). 64-bit binaries compiled by the same process crashed, so these probably won't work either.
 
 Version 0.7 20/06/2014
 ======================
