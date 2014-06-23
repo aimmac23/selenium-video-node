@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aimmac23</groupId>
     <artifactId>selenium-video-node</artifactId>
-    <version>0.8</version>
+    <version>0.9-SNAPSHOT</version>
     <name>selenium-video-node</name>
     <description>Selenium Grid plugin that records videos of running tests</description>
     <scm>
