@@ -135,8 +135,7 @@ public class BasicWebDAVStore implements IVideoStore {
 
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
-			String sessionId, Map<String, Object> requestedCapabilities, 
-			Map<String, Object> nodeCapabilities) throws Exception {
+			String sessionId, SessionInfoBean infoBean) throws Exception {
 		
 		HttpPut request = new HttpPut(url.toExternalForm() + "/" + sessionId + ".webm");
 		request.setEntity(new InputStreamEntity(videoStream, ContentType.create(mimeType)));
@@ -198,6 +197,12 @@ public class BasicWebDAVStore implements IVideoStore {
 		}
 		
 		throw new IllegalStateException("Unknown status when fetching video information for session: " + sessionId);
+	}
+	
+
+	@Override
+	public String getVideoStoreTypeIdentifier() {
+		return "WEBDAV";
 	}
 	
 	private static class WebDAVDownloadContext implements StoredVideoDownloadContext, StoredVideoInfoContext {

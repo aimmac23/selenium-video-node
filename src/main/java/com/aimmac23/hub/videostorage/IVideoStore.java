@@ -3,6 +3,10 @@ package com.aimmac23.hub.videostorage;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.openqa.grid.internal.TestSession;
+
+import com.aimmac23.hub.servlet.HubVideoInfoServlet;
+
 /**
  * An interface to describe a plugin which handles how we store videos.
  * 
@@ -17,13 +21,11 @@ public interface IVideoStore {
 	 * @param videoStream - an input stream for the video being streamed from the node.
 	 * @param mimeType - a mimetype for the video stream.
 	 * @param sessionId - the Selenium session ID which this video recorded.
-	 * @param requestedCapabilities - The capabilities map that the client requested. This could potentially
-	 * contain useful information to help identify the job (like a name)
-	 * @param nodeCapabilities - The capabilities of the node that the video was recorded on.
+	 * @param sessionInfo - A bean representing information about the session that just ran.
 	 * @throws Exception if anything went wrong when trying to store the video.
 	 */
 	public void storeVideo(InputStream videoStream, String mimeType, String sessionId, 
-			Map<String, Object> requestedCapabilities, Map<String, Object> nodeCapabilities) throws Exception;
+			SessionInfoBean sessionInfo) throws Exception;
 	
 	/**
 	 * Attempts to retrieve the video using this plugin. 
@@ -42,4 +44,11 @@ public interface IVideoStore {
 	 * @throws Exception if anything went wrong when trying to get information about the video.
 	 */
 	public StoredVideoInfoContext getVideoInformation(String sessionId) throws Exception;
+	
+	/**
+	 * Returns some sort of machine-readable string to help identify the storage mechanism
+	 * being used. This is used in the {@link HubVideoInfoServlet}
+	 * @return
+	 */
+	public String getVideoStoreTypeIdentifier();
 }

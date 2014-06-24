@@ -66,6 +66,8 @@ public class HubVideoInfoServlet extends HttpServlet {
 			responseMap.put("fileSize", videoInfoForSession.getContentLengthIfKnown());	
 		}
 		
+		
+		responseMap.put("storageType", HubVideoRegistry.getVideoStoreType());
 		responseMap.put("additional", videoInfoForSession.additionalInformation());
 		
 		

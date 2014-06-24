@@ -17,6 +17,7 @@ import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 import com.aimmac23.hub.videostorage.IVideoStore;
 import com.aimmac23.hub.videostorage.LocalTempFileStore;
+import com.aimmac23.hub.videostorage.SessionInfoBean;
 import com.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
@@ -47,8 +48,7 @@ public class HubVideoRegistry {
 	public static void copyVideoToHub(TestSession session, String pathKey, URL remoteHost) {
 		String serviceUrl = remoteHost + "/extra/VideoRecordingControlServlet";
 
-		Map<String, Object> requestedCapabilities = session.getRequestedCapabilities();
-		Map<String, Object> nodeCapabilities = session.getSlot().getCapabilities();
+		SessionInfoBean infoBean = new SessionInfoBean(session);
 		
 		ExternalSessionKey key = session.getExternalKey();
 		
@@ -66,7 +66,7 @@ public class HubVideoRegistry {
 				return;
 			}
 			// XXX: Should check mime-type, just in case
-			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), requestedCapabilities, nodeCapabilities);
+			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), infoBean);
         }
 		catch(Exception e) {
 			log.warning("Could not download video, exception caught: " + e.getMessage());
@@ -86,5 +86,8 @@ public class HubVideoRegistry {
 		return videoStore.getVideoInformation(key.toString());
 	}
 	
+	public static String getVideoStoreType() {
+		return videoStore.getVideoStoreTypeIdentifier();
+	}
 
 }

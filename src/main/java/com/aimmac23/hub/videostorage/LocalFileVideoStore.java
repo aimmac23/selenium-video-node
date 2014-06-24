@@ -63,8 +63,7 @@ public class LocalFileVideoStore implements IVideoStore {
 
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
-			String sessionId, Map<String, Object> requestedCapabilities, 
-			Map<String, Object> nodeCapabilities) throws Exception {
+			String sessionId,  SessionInfoBean infoBean) throws Exception {
 		
 		File target = new File(directory, sessionId + ".webm");
 		
@@ -98,6 +97,12 @@ public class LocalFileVideoStore implements IVideoStore {
 	public StoredVideoInfoContext getVideoInformation(String sessionId)
 			throws Exception {
 		return retrieveVideo(sessionId);
+	}
+	
+
+	@Override
+	public String getVideoStoreTypeIdentifier() {
+		return "LOCAL_FILE";
 	}
 	
 	private static class LocalFileVideoStoreDownloadContext implements StoredVideoDownloadContext, StoredVideoInfoContext {

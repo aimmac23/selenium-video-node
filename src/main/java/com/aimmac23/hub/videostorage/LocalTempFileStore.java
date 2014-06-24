@@ -51,8 +51,7 @@ public class LocalTempFileStore implements IVideoStore {
 	
 	@Override
 	public void storeVideo(InputStream videoStream, String mimeType,
-			String sessionId, Map<String, Object> requestedCapabilities, 
-			Map<String, Object> nodeCapabilities) throws Exception {
+			String sessionId,  SessionInfoBean infoBean) throws Exception {
 		File outputFile = File.createTempFile("screencast", ".webm");
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
 		try {
@@ -82,6 +81,11 @@ public class LocalTempFileStore implements IVideoStore {
 			throws Exception {
 		// XXX: Abuse the class heirarchy for this one
 		return retrieveVideo(sessionId);
+	}
+	
+	@Override
+	public String getVideoStoreTypeIdentifier() {
+		return "TEMP_FILE";
 	}
 	
 	private static class LocalTempFileDownloadContext implements StoredVideoDownloadContext, StoredVideoInfoContext {
