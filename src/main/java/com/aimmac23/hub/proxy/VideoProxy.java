@@ -10,6 +10,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -68,8 +69,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	public void beforeSession(TestSession arg0) {
 		super.beforeSession(arg0);
 				
-		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
-                "POST", serviceUrl + "?command=start");
+		HttpPost r = new HttpPost(serviceUrl + "?command=start");
 		
         try {
 			HttpResponse response = client.execute(remoteHost, r);
@@ -87,6 +87,9 @@ public class VideoProxy extends DefaultRemoteProxy {
 			e.printStackTrace();
 			return;
 		}
+        finally {
+        	r.releaseConnection();
+        }
 	}
 	
 	@Override
@@ -124,8 +127,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	
 	void stopRecording(TestSession session) {
 		
-		BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest(
-                "POST", serviceUrl + "?command=stop");
+		HttpPost r = new HttpPost(serviceUrl + "?command=stop");
 		
         try {
 			HttpResponse response = client.execute(remoteHost, r);
@@ -147,5 +149,8 @@ public class VideoProxy extends DefaultRemoteProxy {
 			log.warning("Could not stop video reporting due to exception: " + e.getMessage());
 			e.printStackTrace();
 		}
+        finally {
+        	r.releaseConnection();
+        }
 	}
 }
