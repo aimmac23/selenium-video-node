@@ -1,4 +1,10 @@
-Version 0.8 (unreleased)
+Version 0.9 24/06/2014
+======================
+
+* Recompiled Windows x86_64 binaries to fix video length bug (Issue #3)
+* Changed the interface for IVideoStore to be a bit cleaner
+
+Version 0.8 23/06/2014
 ======================
 
 * Added pre-compiled binaries for OS X
