@@ -2,8 +2,10 @@ package com.aimmac23.hub;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -65,8 +67,16 @@ public class HubVideoRegistry {
 				log.warning("Could not download video: " + EntityUtils.toString(response.getEntity()));
 				return;
 			}
-			// XXX: Should check mime-type, just in case
-			videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), infoBean);
+			
+			Header contentType = response.getFirstHeader("Content-Type");
+			if(contentType != null && !"video/webm".equals(contentType.getValue())) {
+				log.log(Level.SEVERE, "Incorrect 'Content-Type' header when downloading video - "
+						+ "check that the control servlet is correctly setup for node: " + remoteHost);
+			}
+			else {
+				videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), infoBean);	
+			}
+			
         }
 		catch(Exception e) {
 			log.warning("Could not download video, exception caught: " + e.getMessage());
