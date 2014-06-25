@@ -6,7 +6,7 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 ## Features
 
 * Easy setup - just need to add another JAR file to the Selenium Node classpath
-* Excellent video quality (about 8 frames/sec)
+* Excellent video quality (at about 8-15 frames/sec)
 * Simple API to retrieve videos
 * Extensible storage mechanism for video storage
 

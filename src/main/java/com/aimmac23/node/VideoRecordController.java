@@ -22,7 +22,7 @@ public class VideoRecordController {
 		executor.setThreadFactory(new RecorderThreadFactory());
 		executor.prestartAllCoreThreads();
 		
-		String framerateString = System.getProperty("video.framerate", "8");
+		String framerateString = System.getProperty("video.framerate", "15");
 		targetFramerate = Integer.parseInt(framerateString);
 		
 		log.info("Will attempt to record at  " + targetFramerate + " frames per second - adjust this value " +
