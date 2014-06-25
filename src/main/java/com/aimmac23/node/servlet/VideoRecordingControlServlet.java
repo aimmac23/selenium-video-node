@@ -15,6 +15,7 @@ import org.apache.commons.exec.StreamPumper;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
+import com.aimmac23.node.RecordVideoCallable;
 import com.aimmac23.node.VideoRecordController;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.google.common.cache.Cache;
@@ -30,9 +31,15 @@ public class VideoRecordingControlServlet extends HttpServlet {
 	private VideoRecordController controller;
 	Cache<String, File> availableVideos;
 
+	// make sure we initialise the RecordVideoCallable class, because that initialises
+	// the native code dependencies. If we can't load the native code, we should blow
+	// up now
 	static {
-		log.info("Static initializer called");
-		JnaLibraryLoader.init();
+		try {
+			Class.forName(RecordVideoCallable.class.getName());
+		} catch (ClassNotFoundException e) {
+			// not possible
+		}
 	}
 	public VideoRecordingControlServlet() {
 		super();

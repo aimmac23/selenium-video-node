@@ -24,6 +24,10 @@ public class RecordVideoCallable implements Callable<File> {
 	
 	private volatile boolean shouldStop = false;
 	
+	static {
+		JnaLibraryLoader.init();
+	}
+	
 	public RecordVideoCallable(int targetFramerate) {
 		this.targetFramerate = targetFramerate;
 		this.targetFramerateSleepTime = (int)((1.0 / targetFramerate) * 1000.0);
@@ -36,9 +40,7 @@ public class RecordVideoCallable implements Callable<File> {
 		Rectangle screenSize = getScreenSize();
 
 		File outputFile = File.createTempFile("screencast", ".webm");
-		
-		JnaLibraryLoader.init();
-		
+				
 		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		
 		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
