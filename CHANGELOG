@@ -1,3 +1,10 @@
+Version 0.10 25/06/2014
+=======================
+
+* Fix an issue where HTTP connections leaked, and we couldn't acquire any more
+* Change the native code extraction logic to only happen once at startup (previously we also did it when recording a video too)
+* Bump the default framerate to 15 - some platforms can record faster than others.
+
 Version 0.9 24/06/2014
 ======================
 
