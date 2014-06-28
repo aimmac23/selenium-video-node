@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
+import junit.framework.Assert;
+
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
@@ -47,9 +49,15 @@ public class RecordVideoCallable implements Callable<File> {
 		int result = encoder.init_encoder(context, (int)screenSize.getWidth(),
 						(int) screenSize.getHeight(), targetFramerate);
 		
-		encoder.init_codec(context);
+		handleVPXError(result, "Failed to create VPX Context", context);
+		result = encoder.init_codec(context);
 		
-		encoder.init_image(context);
+		handleVPXError(result, "Failed to create init VPX codec", context);
+
+		result = encoder.init_image(context);
+		if(result != 0) {
+			throw new IllegalStateException("Failed to allocate memory for image buffer.");
+		}
 				
 		log.info("Started recording to file: " + outputFile.getCanonicalPath());
 		Robot robot = new Robot();
@@ -67,9 +75,15 @@ public class RecordVideoCallable implements Callable<File> {
 			
 			int[] data = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 
-			encoder.convert_frame(context, data);
+			result = encoder.convert_frame(context, data);
 			
-			encoder.encode_next_frame(context, frameDuration);
+			if(result != 0) {
+				throw new IllegalStateException("Failed to convert frame to YUV format");
+			}
+			result = encoder.encode_next_frame(context, frameDuration);
+			
+			handleVPXError(result, "Failed to encode next VPX frame", context);
+			
 			long finish = System.currentTimeMillis();
 			frames++;
 			long timeTaken = finish - start;
@@ -82,7 +96,9 @@ public class RecordVideoCallable implements Callable<File> {
 				excessTime += timeTaken;
 			}
 		}
-		encoder.encode_finish(context);
+		result = encoder.encode_finish(context);
+		
+		handleVPXError(result, "Failed to finalize video", context);
 		
 		long videoEndTime = System.currentTimeMillis();
 		
@@ -106,6 +122,14 @@ public class RecordVideoCallable implements Callable<File> {
 		return GraphicsEnvironment.getLocalGraphicsEnvironment().
 				getDefaultScreenDevice().getDefaultConfiguration().getBounds();
 		
+	}
+	
+	private void handleVPXError(int errorCode, String message, Pointer context) {
+		if(errorCode != 0) {
+			throw new IllegalStateException(message + ": " 
+					+ JnaLibraryLoader.getLibVPX().vpx_codec_err_to_string(errorCode)
+					+ " due to: " + JnaLibraryLoader.getEncoder().codec_error_detail(context));
+		}
 	}
 
 }

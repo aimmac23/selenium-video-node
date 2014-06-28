@@ -112,7 +112,6 @@ int convert_frame(encoder_context* context, const uint8* data)
 
 int do_encode(encoder_context* context, vpx_image_t* image, unsigned long duration)
 {
-  //fprintf(stderr, "Duration is: %d\n", duration);
   int result = vpx_codec_encode(&context->codec, image, context->pts_timestamp,
                                 duration, 0, VPX_DL_REALTIME);
   if(result) 
@@ -126,9 +125,7 @@ int do_encode(encoder_context* context, vpx_image_t* image, unsigned long durati
     switch(packet->kind) 
     {
       case VPX_CODEC_CX_FRAME_PKT:
-//	fprintf(stderr, "Got frame packet\n");
 	write_webm_block(&context->encoder_output, &context->cfg, packet);
-	//fprintf(stderr, "After frame packet\n");
         break;
       default:
 	// we can also receive statistics packets
