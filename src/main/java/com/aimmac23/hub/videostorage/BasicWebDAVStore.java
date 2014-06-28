@@ -134,11 +134,11 @@ public class BasicWebDAVStore implements IVideoStore {
 	}
 
 	@Override
-	public void storeVideo(InputStream videoStream, String mimeType,
+	public void storeVideo(InputStream videoStream, long contentLength, String mimeType,
 			String sessionId, SessionInfoBean infoBean) throws Exception {
 		
 		HttpPut request = new HttpPut(url.toExternalForm() + "/" + sessionId + ".webm");
-		request.setEntity(new InputStreamEntity(videoStream, ContentType.create(mimeType)));
+		request.setEntity(new InputStreamEntity(videoStream, contentLength, ContentType.create(mimeType)));
 		
 		try {
 			HttpResponse response = client.execute(remoteHost, request, new HttpClientContext(clientContext));

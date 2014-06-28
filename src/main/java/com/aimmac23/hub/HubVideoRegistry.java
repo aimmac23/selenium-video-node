@@ -74,7 +74,7 @@ public class HubVideoRegistry {
 						+ "check that the control servlet is correctly setup for node: " + remoteHost);
 			}
 			else {
-				videoStore.storeVideo(response.getEntity().getContent(), "video/webm", key.toString(), infoBean);	
+				videoStore.storeVideo(response.getEntity().getContent(), response.getEntity().getContentLength(), "video/webm", key.toString(), infoBean);	
 			}
 			
         }

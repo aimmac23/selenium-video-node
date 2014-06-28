@@ -19,12 +19,13 @@ public interface IVideoStore {
 	 * Store a video using this plugin.
 	 * 
 	 * @param videoStream - an input stream for the video being streamed from the node.
+	 * @param contentLength - the length of the video stream, in bytes
 	 * @param mimeType - a mimetype for the video stream.
 	 * @param sessionId - the Selenium session ID which this video recorded.
 	 * @param sessionInfo - A bean representing information about the session that just ran.
 	 * @throws Exception if anything went wrong when trying to store the video.
 	 */
-	public void storeVideo(InputStream videoStream, String mimeType, String sessionId, 
+	public void storeVideo(InputStream videoStream, long contentLength, String mimeType, String sessionId, 
 			SessionInfoBean sessionInfo) throws Exception;
 	
 	/**

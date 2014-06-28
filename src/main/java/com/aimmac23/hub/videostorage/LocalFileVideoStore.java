@@ -62,7 +62,7 @@ public class LocalFileVideoStore implements IVideoStore {
 	}
 
 	@Override
-	public void storeVideo(InputStream videoStream, String mimeType,
+	public void storeVideo(InputStream videoStream, long contentLength, String mimeType,
 			String sessionId,  SessionInfoBean infoBean) throws Exception {
 		
 		File target = new File(directory, sessionId + ".webm");
