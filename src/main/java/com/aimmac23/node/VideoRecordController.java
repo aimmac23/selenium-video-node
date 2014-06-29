@@ -42,8 +42,9 @@ public class VideoRecordController {
 			throw new IllegalStateException("Video recording not currently in progress, cannot stop!");
 		}
 		
-		// sleep for one second, to make sure we catch the end of the test
-		Thread.sleep(1000);
+		// sleep for half a second, to make sure we catch the end of the test
+		// XXX: Do we really need this?
+		Thread.sleep(500);
 		
 		currentCallable.stopRecording();
 		currentCallable = null;

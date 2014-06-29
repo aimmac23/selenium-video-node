@@ -9,8 +9,6 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import junit.framework.Assert;
-
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
