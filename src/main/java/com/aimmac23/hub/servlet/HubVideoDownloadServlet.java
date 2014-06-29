@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +16,7 @@ import com.aimmac23.hub.HubVideoRegistry;
 import com.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
-public class HubVideoDownloadServlet extends HttpServlet {
+public class HubVideoDownloadServlet extends AbstractHubVideoServlet {
 	
 	private static final Logger log = Logger.getLogger(HubVideoDownloadServlet.class.getName());
 
@@ -41,6 +40,11 @@ public class HubVideoDownloadServlet extends HttpServlet {
 		if(sessionId == null) {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
 			resp.getWriter().write("Missing parameter: 'sessionId'");
+			return;
+		}
+		
+		if(!checkValidSessionId(sessionId, resp)) {
+			// response writing already handled
 			return;
 		}
 		

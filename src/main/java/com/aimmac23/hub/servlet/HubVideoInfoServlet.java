@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +17,7 @@ import org.openqa.grid.internal.ExternalSessionKey;
 import com.aimmac23.hub.HubVideoRegistry;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
-public class HubVideoInfoServlet extends HttpServlet {
+public class HubVideoInfoServlet extends AbstractHubVideoServlet {
 	
 	private static final Logger log = Logger.getLogger(HubVideoInfoServlet.class.getName());
 
@@ -33,6 +32,8 @@ public class HubVideoInfoServlet extends HttpServlet {
 			// Can't happen
 		}
 	}
+	
+	
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -42,6 +43,11 @@ public class HubVideoInfoServlet extends HttpServlet {
 		if(sessionId == null) {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
 			resp.getWriter().write("Missing parameter: 'sessionId'");
+			return;
+		}
+		
+		if(!checkValidSessionId(sessionId, resp)) {
+			// response writing already handled
 			return;
 		}
 		
