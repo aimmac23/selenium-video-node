@@ -14,6 +14,10 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 
 * Video encoding is done using native code (using JNA) - unfortunately this means that additional effort is required to support more plaforms.
 
+## Example videos
+
+For example videos recorded using this plugin, [see the examples page](http://selenium-videos.s3-website-eu-west-1.amazonaws.com/).
+
 ## Video Node System Requirements
 
 * A dual core processor (one core for video encoding, another for everything else). It is possible to lower this requirement by reducing the framerate.
