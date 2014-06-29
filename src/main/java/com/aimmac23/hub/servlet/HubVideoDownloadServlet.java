@@ -16,6 +16,15 @@ import com.aimmac23.hub.HubVideoRegistry;
 import com.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
+/**
+ * A servlet to download videos for a given sessionId.
+ * 
+ * Note that videos are not available until you have closed the Selenium Session
+ * (calling driver.quit(), for example).
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public class HubVideoDownloadServlet extends AbstractHubVideoServlet {
 	
 	private static final Logger log = Logger.getLogger(HubVideoDownloadServlet.class.getName());

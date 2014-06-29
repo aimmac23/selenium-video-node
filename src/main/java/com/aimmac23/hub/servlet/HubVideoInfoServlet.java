@@ -17,6 +17,18 @@ import org.openqa.grid.internal.ExternalSessionKey;
 import com.aimmac23.hub.HubVideoRegistry;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
 
+/**
+ * A servlet to fetch information about videos for a given sessionId.
+ * 
+ * This servlet exists because some storage schemes can provide a location for a video
+ * without the Hub being involved in the download/presentation.
+ * 
+ * Note that videos are not available until you have closed the Selenium Session
+ * (calling driver.quit(), for example).
+ * 
+ * @author Alasdair Macmillan
+ *
+ */
 public class HubVideoInfoServlet extends AbstractHubVideoServlet {
 	
 	private static final Logger log = Logger.getLogger(HubVideoInfoServlet.class.getName());
@@ -33,8 +45,6 @@ public class HubVideoInfoServlet extends AbstractHubVideoServlet {
 		}
 	}
 	
-	
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {

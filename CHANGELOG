@@ -1,3 +1,11 @@
+Version 0.11 29/06/2014
+=======================
+
+* Handle native code error conditions better (but haven't managed to test it because it works perfectly :/)
+* Tweak the IVideoStore interface again to also pass in the video content length (in bytes)
+* Reduce the excess video recording time when closing the session to be 1/2 a second (was 1 second)
+* Plug a security hole which existed in most of the video storage mechanisms by which a request could access any file ending in .webm off the filesystem.
+
 Version 0.10 25/06/2014
 =======================
 
