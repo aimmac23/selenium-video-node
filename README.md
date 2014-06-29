@@ -16,7 +16,7 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 
 ## Video Node System Requirements
 
-* A dual core processor (one core for video encoding, another for everything else).
+* A dual core processor (one core for video encoding, another for everything else). It is possible to lower this requirement by reducing the framerate.
 
 * A Java 6 JVM (or higher) running on one of the following platforms:
 
@@ -24,13 +24,14 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 |:---------------:|:---------:|:---------:|
 | Linux x86_64 (64-bit) |  Yes        | Yes |
 | Linux x86 (32-bit)   | Yes      | Yes |
-| Windows x86_64 (64-bit) | Yes | Yes |
+| Windows x86_64 (64-bit) | Yes¹ | Yes¹ |
 | Windows x86 (32-bit) | No | No |
 | Mac OS X 10.9 x86_64 (64 bit)² | Yes | Yes |
 | Mac OS X 10.5-10.8 x86_64 (64-bit)² | Yes | No |
-
+```
+¹ - Compiled and tested on Windows 7
 ² - Compiled with flag -mmacosx-version-min=10.5
-
+```
 The above does not apply to the Selenium Hub, which does not perform any video processing.
 
 ## Downloads
