@@ -58,3 +58,7 @@ For example:
     http://127.0.0.1:4444/grid/admin/HubVideoDownloadServlet/?sessionId=38d9cb20-f3d7-40d5-8e08-6f31b2ed1506
     
 Note that videos are only available after the Session has been closed - for example, by calling RemoteWebDriver.quit() (as a Java example).
+
+## Code Examples
+
+See [ExampleSeleniumTests.java](src/test/java/com/aimmac23/hub/examples/ExampleSeleniumTests.java) and [AbstractVideoSeleniumTest.java](src/test/java/com/aimmac23/hub/examples/AbstractVideoSeleniumTest.java) for a Java example how how you can integrate videos into your Selenium tests.
