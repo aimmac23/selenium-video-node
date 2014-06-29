@@ -28,10 +28,10 @@ This project adds video recording capability to a Selenium Grid. Videos are enco
 | Windows x86 (32-bit) | No | No |
 | Mac OS X 10.9 x86_64 (64 bit)² | Yes | Yes |
 | Mac OS X 10.5-10.8 x86_64 (64-bit)² | Yes | No |
-```
-¹ - Compiled and tested on Windows 7
-² - Compiled with flag -mmacosx-version-min=10.5
-```
+
+¹ - Compiled and tested on Windows 7.
+² - Compiled with flag -mmacosx-version-min=10.5 - it should work with older OS X versions.
+
 The above does not apply to the Selenium Hub, which does not perform any video processing.
 
 ## Downloads
