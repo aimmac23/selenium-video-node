@@ -59,6 +59,8 @@ For example:
     
 Note that videos are only available after the Session has been closed - for example, by calling RemoteWebDriver.quit() (as a Java example).
 
+WARNING: By default the Hub will only store 200 recently recorded videos to avoid diskfilling the machine. See [Additional Features](ADDITIONAL_FEATURES.md) on how to change this behaviour.
+
 ## Code Examples
 
 See [ExampleSeleniumTests.java](src/test/java/com/aimmac23/hub/examples/ExampleSeleniumTests.java) and [AbstractVideoSeleniumTest.java](src/test/java/com/aimmac23/hub/examples/AbstractVideoSeleniumTest.java) for a Java example how how you can integrate videos into your Selenium tests.
