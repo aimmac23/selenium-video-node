@@ -1,3 +1,9 @@
+Version 1.1 8/07/2014
+=====================
+
+* Add an API call to the Node to reset the video recording to a known state (will be used in future releases)
+* Fix some resource leaks in Video Download/Info servlets (issue #4)
+
 Version 1.0 1/07/2014
 =====================
 
