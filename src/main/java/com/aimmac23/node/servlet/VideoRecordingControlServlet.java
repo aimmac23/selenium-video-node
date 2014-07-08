@@ -88,6 +88,9 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		else if(command.equalsIgnoreCase("stop")) {
 			handleDoStopRecording(resp);			
 		}
+		else if(command.equalsIgnoreCase("reset")) {
+			handleReset(resp);
+		}
 		else if(command.equalsIgnoreCase("download")) {
 			handleDownload(req, resp);
 		}
@@ -98,6 +101,14 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		}
 	}
 	
+	private void handleReset(HttpServletResponse resp) throws IOException {
+		controller.resetRecording();
+		
+		resp.setStatus(HttpStatus.SC_OK);
+		resp.getWriter().write("OK");
+		
+	}
+
 	private void handleDoStopRecording(HttpServletResponse resp) throws IOException {
 		try {
 			File videoFile = controller.stopRecording();

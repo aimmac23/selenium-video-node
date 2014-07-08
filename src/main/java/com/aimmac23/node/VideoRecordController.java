@@ -50,6 +50,20 @@ public class VideoRecordController {
 		currentCallable = null;
 		return currentFuture.get();
 	}
+	
+	public void resetRecording() {
+		// if we are currently recording, stop
+		if(currentCallable != null) {
+			currentCallable.stopRecording();
+			currentCallable = null;
+			
+			log.info("Stopped recording due to resetRecording being called");
+		}
+		else {
+			log.info("resetRecording called but not recording - nothing to do");	
+		}
+		
+	}
 	class RecorderThreadFactory implements ThreadFactory {
 		
 		@Override
