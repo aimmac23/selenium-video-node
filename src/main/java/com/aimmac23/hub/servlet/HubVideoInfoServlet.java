@@ -74,6 +74,7 @@ public class HubVideoInfoServlet extends AbstractHubVideoServlet {
 		if(!videoInfoForSession.isVideoFound()) {
 			resp.setStatus(HttpStatus.SC_NOT_FOUND);
 			resp.getWriter().write("Video not found for session: " + sessionId);
+			videoInfoForSession.close();
 			return;
 		}
 		
@@ -86,6 +87,8 @@ public class HubVideoInfoServlet extends AbstractHubVideoServlet {
 		responseMap.put("storageType", HubVideoRegistry.getVideoStoreType());
 		responseMap.put("additional", videoInfoForSession.additionalInformation());
 		
+		// we don't need this anymore
+		videoInfoForSession.close();
 		
 		String json;
 		try {

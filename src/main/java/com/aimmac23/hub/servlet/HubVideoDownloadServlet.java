@@ -70,6 +70,7 @@ public class HubVideoDownloadServlet extends AbstractHubVideoServlet {
 		if(!videoContext.isVideoFound()) {
 			resp.setStatus(HttpStatus.SC_NOT_FOUND);
 			resp.getWriter().write("Video content not found for sessionId: " + sessionId);
+			videoContext.close();
 			return;
 		}
 		
