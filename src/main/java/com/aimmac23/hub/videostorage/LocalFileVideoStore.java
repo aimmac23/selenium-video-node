@@ -140,6 +140,10 @@ public class LocalFileVideoStore implements IVideoStore {
 
 		@Override
 		public void close() {
+			if(stream == null) {
+				// nothing to do
+				return;
+			}
 			try {
 				stream.close();
 			} catch (IOException e) {
