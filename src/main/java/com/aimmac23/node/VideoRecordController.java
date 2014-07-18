@@ -29,11 +29,11 @@ public class VideoRecordController {
 		" by setting -Dvideo.framerate=<value>");
 	}
 	
-	public void startRecording() {
+	public void startRecording() throws Exception {
 		if(currentCallable != null) {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
-		currentCallable = new RecordVideoCallable(targetFramerate);
+		currentCallable = new RecordVideoCallable(targetFramerate, new RobotScreenshotSource());
 		currentFuture = executor.submit(currentCallable);
 	}
 	

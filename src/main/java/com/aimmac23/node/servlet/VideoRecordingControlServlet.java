@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -81,8 +82,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		}
 		
 		if(command.equalsIgnoreCase("start")) {
-			controller.startRecording();
-			resp.getWriter().write("Started Recording");
+			handleStartRecording(resp);
 			return;
 		}
 		else if(command.equalsIgnoreCase("stop")) {
@@ -101,6 +101,20 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		}
 	}
 	
+	
+	private void handleStartRecording(HttpServletResponse resp) throws IOException {
+		try {
+			controller.startRecording();
+		} catch (Exception e) {
+			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			resp.getWriter().write("Internal server error while trying to start recording: " + e.getMessage());
+			log.log(Level.SEVERE, "Caught exception while trying to start recording", e);
+			return;
+		}
+		resp.setStatus(HttpStatus.SC_OK);
+		resp.getWriter().write("Started Recording");
+		
+	}
 	private void handleReset(HttpServletResponse resp) throws IOException {
 		controller.resetRecording();
 		
@@ -123,7 +137,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		} catch (Exception e) {
 			resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.getWriter().write("Internal Server Error: Caught Exception: " + e.getMessage());
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Caught exception while trying to stop recording", e);
 			return;
 		}
 	}

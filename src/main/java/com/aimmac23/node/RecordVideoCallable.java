@@ -1,10 +1,5 @@
 package com.aimmac23.node;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
@@ -23,29 +18,30 @@ public class RecordVideoCallable implements Callable<File> {
 	
 	
 	private volatile boolean shouldStop = false;
+
+	private ScreenshotSource screenshotSource;
 	
 	static {
 		JnaLibraryLoader.init();
 	}
 	
-	public RecordVideoCallable(int targetFramerate) {
+	public RecordVideoCallable(int targetFramerate, ScreenshotSource screenshotSource) {
 		this.targetFramerate = targetFramerate;
+		this.screenshotSource = screenshotSource;
 		this.targetFramerateSleepTime = (int)((1.0 / targetFramerate) * 1000.0);
 	}
 
 	@Override
 	public File call() throws Exception {
 		int frames = 0;
-		
-		Rectangle screenSize = getScreenSize();
 
 		File outputFile = File.createTempFile("screencast", ".webm");
 				
 		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		
 		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
-		int result = encoder.init_encoder(context, (int)screenSize.getWidth(),
-						(int) screenSize.getHeight(), targetFramerate);
+		int result = encoder.init_encoder(context, screenshotSource.getWidth(),
+						screenshotSource.getHeight(), targetFramerate);
 		
 		handleVPXError(result, "Failed to create VPX Context", context);
 		result = encoder.init_codec(context);
@@ -58,7 +54,6 @@ public class RecordVideoCallable implements Callable<File> {
 		}
 				
 		log.info("Started recording to file: " + outputFile.getCanonicalPath());
-		Robot robot = new Robot();
 		
 		long excessTime = 0;
 
@@ -69,9 +64,8 @@ public class RecordVideoCallable implements Callable<File> {
 			// if excessTime > TARGET_FRAMERATE_TIME. then we've just taken that into account
 			excessTime = excessTime % targetFramerateSleepTime;
 			long start = System.currentTimeMillis();
-			BufferedImage image = robot.createScreenCapture(screenSize);
 			
-			int[] data = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+			int[] data = screenshotSource.getScreenshot();
 
 			result = encoder.convert_frame(context, data);
 			
@@ -115,11 +109,8 @@ public class RecordVideoCallable implements Callable<File> {
 		shouldStop = true;
 	}
 	
-	private Rectangle getScreenSize() {
-		//XXX: This probably won't work with multiple monitors
-		return GraphicsEnvironment.getLocalGraphicsEnvironment().
-				getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-		
+	protected int[] getScreenshotData() {
+		return null;
 	}
 	
 	private void handleVPXError(int errorCode, String message, Pointer context) {
