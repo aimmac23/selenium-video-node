@@ -79,8 +79,8 @@ void* xvfb_interface_getScreenshot(xvfb_interface* interface)
     XWDFileHeader* header = (XWDFileHeader*) interface->memory;
     // the graphics data should lie past this...
     int header_size = readValue(&header->header_size);
-    
-    return interface->memory + header_size;
+    int colourmap_size = readValue(&header->ncolors) * sizeof(XWDColor);
+    return interface->memory + header_size + colourmap_size;
 
 }
 
