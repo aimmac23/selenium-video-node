@@ -33,7 +33,7 @@ public class VideoRecordController {
 		if(currentCallable != null) {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
-		currentCallable = new RecordVideoCallable(targetFramerate, new RobotScreenshotSource());
+		currentCallable = new RecordVideoCallable(targetFramerate, new XvfbFileScreenshotSource());
 		currentFuture = executor.submit(currentCallable);
 	}
 	

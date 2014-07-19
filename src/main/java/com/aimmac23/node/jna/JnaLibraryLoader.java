@@ -22,12 +22,16 @@ public class JnaLibraryLoader {
 	static private YUVLib yuvLib;
 	static private LibMKV libMKV;
 	static private EncoderInterface encoder;
+	// optional dependency
+	static private XvfbScreenshotInterface xvfbInterface;
 
 	private static void addNativePath(String path) {
 		NativeLibrary.addSearchPath("vpx", path);
 		NativeLibrary.addSearchPath("yuv", path);
 		NativeLibrary.addSearchPath("mkv", path);
 		NativeLibrary.addSearchPath("interface", path);
+		
+		NativeLibrary.addSearchPath("xvfb_interface", path);
 	}
 	
 	private static File extractJNABinariesIfAvailable() {
@@ -150,6 +154,13 @@ public class JnaLibraryLoader {
 	
 	public static LibVPX getLibVPX() {
 		return libVPX;
+	}
+	
+	public static XvfbScreenshotInterface getXvfbInterface() {
+		if(xvfbInterface == null) {
+			xvfbInterface = (XvfbScreenshotInterface) Native.loadLibrary("xvfb_interface", XvfbScreenshotInterface.class);
+		}
+		return xvfbInterface;
 	}
 	
 	private static enum BitDepth {

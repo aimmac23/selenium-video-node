@@ -1,8 +1,10 @@
 package com.aimmac23.node;
 
+import com.sun.jna.Pointer;
+
 public interface ScreenshotSource {
 	
-	int[] getScreenshot();
+	int applyScreenshot(Pointer encoderContext);
 	
 	int getWidth();
 	

@@ -39,6 +39,8 @@ public class RecordVideoCallable implements Callable<File> {
 				
 		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		
+		log.info("Starting new recording at " + targetFramerate + " with resolution " 
+		+ screenshotSource.getWidth() + "x" + screenshotSource.getHeight());
 		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
 		int result = encoder.init_encoder(context, screenshotSource.getWidth(),
 						screenshotSource.getHeight(), targetFramerate);
@@ -65,10 +67,8 @@ public class RecordVideoCallable implements Callable<File> {
 			excessTime = excessTime % targetFramerateSleepTime;
 			long start = System.currentTimeMillis();
 			
-			int[] data = screenshotSource.getScreenshot();
+			result = screenshotSource.applyScreenshot(context);
 
-			result = encoder.convert_frame(context, data);
-			
 			if(result != 0) {
 				throw new IllegalStateException("Failed to convert frame to YUV format");
 			}

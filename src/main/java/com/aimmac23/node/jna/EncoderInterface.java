@@ -23,6 +23,9 @@ public interface EncoderInterface extends Library {
 	
 	int convert_frame(Pointer context, int[] data);
 	
+	// same function, different way of expressing the argument
+	int convert_frame(Pointer context, Pointer data);
+	
 	int encode_next_frame(Pointer context, long duration);
 	
 	int encode_finish(Pointer context);

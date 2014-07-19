@@ -6,6 +6,10 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import com.aimmac23.node.jna.EncoderInterface;
+import com.aimmac23.node.jna.JnaLibraryLoader;
+import com.sun.jna.Pointer;
+
 public class RobotScreenshotSource implements ScreenshotSource {
 
 	private Robot robot;
@@ -15,11 +19,14 @@ public class RobotScreenshotSource implements ScreenshotSource {
 	}
 	
 	@Override
-	
-	public int[] getScreenshot() {
+	public int applyScreenshot(Pointer encoderContext) {
 		BufferedImage image = robot.createScreenCapture(getScreenSize());
 
-		return ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+		int[] screenshotData = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+		
+		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
+
+		return encoder.convert_frame(encoderContext, screenshotData);
 	}
 
 	@Override
