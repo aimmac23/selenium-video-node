@@ -16,6 +16,7 @@ public class VideoRecordController {
 	RecordVideoCallable currentCallable;
 	private Future<File> currentFuture;
 	private final int targetFramerate;
+	private final File xvfbLocation;
 	
 	public VideoRecordController() {
 		executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
@@ -23,6 +24,27 @@ public class VideoRecordController {
 		executor.prestartAllCoreThreads();
 		
 		String framerateString = System.getProperty("video.framerate", "15");
+		String xvfbLocationString = System.getProperty("video.xvfbscreen", null);
+		if(xvfbLocationString != null) {
+			File xvfbDirectory = new File(xvfbLocationString);
+			File xvfbFile = new File(xvfbDirectory, "Xvfb_screen0");
+			if(!xvfbFile.exists()) {
+				log.warning("Xvfb Screen location not found: " + xvfbFile);
+				xvfbLocation = null;
+			}
+			else if(!xvfbFile.isFile()) {
+				log.warning("Xvfb Screen location is not a file: " + xvfbFile);
+				xvfbLocation = null;
+			}
+			else {
+				xvfbLocation = xvfbFile;
+			}
+		}
+		else {
+			xvfbLocation = null;
+		}
+		
+		
 		targetFramerate = Integer.parseInt(framerateString);
 		
 		log.info("Will attempt to record at  " + targetFramerate + " frames per second - adjust this value " +
@@ -33,7 +55,16 @@ public class VideoRecordController {
 		if(currentCallable != null) {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
-		currentCallable = new RecordVideoCallable(targetFramerate, new XvfbFileScreenshotSource());
+		
+		ScreenshotSource source;
+		if(xvfbLocation != null) {
+			source = new XvfbFileScreenshotSource(xvfbLocation);
+			log.info("Using Xvfb acceleration");
+		}
+		else {
+			source = new RobotScreenshotSource();
+		}
+		currentCallable = new RecordVideoCallable(targetFramerate, source);
 		currentFuture = executor.submit(currentCallable);
 	}
 	

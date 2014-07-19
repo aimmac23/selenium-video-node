@@ -1,5 +1,7 @@
 package com.aimmac23.node;
 
+import java.io.File;
+
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.aimmac23.node.jna.XvfbScreenshotInterface;
@@ -10,10 +12,10 @@ public class XvfbFileScreenshotSource implements ScreenshotSource {
 	private XvfbScreenshotInterface xvfbInterface;
 	private Pointer interfacePointer;
 
-	public XvfbFileScreenshotSource() {
+	public XvfbFileScreenshotSource(File path) {
 		xvfbInterface = JnaLibraryLoader.getXvfbInterface();
 		
-		interfacePointer = xvfbInterface.xvfb_interface_init("/var/tmp/Xvfb_screen0");
+		interfacePointer = xvfbInterface.xvfb_interface_init(path.getAbsolutePath());
 		
 		if(interfacePointer == null) {
 			throw new IllegalStateException("Could not create xvfb interface");
