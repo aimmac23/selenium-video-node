@@ -39,4 +39,13 @@ public class XvfbFileScreenshotSource implements ScreenshotSource {
 		return xvfbInterface.xvfb_interface_getHeight(interfacePointer);
 	}
 
+	@Override
+	public void doStartupSanityChecks() {
+		
+		String result = xvfbInterface.xvfb_interface_sanityChecks(interfacePointer);
+		if(result != null) {
+			throw new IllegalStateException("Could not use xvfb accelleration: " + result);
+		}
+	}
+
 }

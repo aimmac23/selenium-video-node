@@ -14,14 +14,10 @@ public interface XvfbScreenshotInterface extends Library {
 	
 	Pointer xvfb_interface_init(String frameBufferPath);
 	
-	//int xvfb_interface_sanityChecks(Pointer xvfbInterface);
-	
-	//String xvfb_interface_getErrorString(int error);
-	
+	String xvfb_interface_sanityChecks(Pointer xvfbInterface);
+		
 	Pointer xvfb_interface_getScreenshot(Pointer xvfbInterface);
 	
 	int xvfb_interface_getWidth(Pointer xvfbInterface);
 	int xvfb_interface_getHeight(Pointer xvfbInterface);
-	
-	//void xvfb_interface_destroy(Pointer xvfbInterface);
 }

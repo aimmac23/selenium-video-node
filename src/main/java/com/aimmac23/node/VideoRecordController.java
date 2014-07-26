@@ -17,6 +17,8 @@ public class VideoRecordController {
 	private Future<File> currentFuture;
 	private final int targetFramerate;
 	private final File xvfbLocation;
+
+	private ScreenshotSource screenshotSource;
 	
 	public VideoRecordController() {
 		executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
@@ -49,6 +51,22 @@ public class VideoRecordController {
 		
 		log.info("Will attempt to record at  " + targetFramerate + " frames per second - adjust this value " +
 		" by setting -Dvideo.framerate=<value>");
+		
+		try {
+			if(xvfbLocation != null) {
+				screenshotSource = new XvfbFileScreenshotSource(xvfbLocation);
+				log.info("Using Xvfb acceleration");
+			}
+			else {
+				screenshotSource = new RobotScreenshotSource();
+			}
+			
+			screenshotSource.doStartupSanityChecks();
+		}
+		catch(Exception e) {
+			throw new IllegalStateException("Could not create screenshot source for video encoder", e);
+		}
+		
 	}
 	
 	public void startRecording() throws Exception {
@@ -56,15 +74,7 @@ public class VideoRecordController {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
 		
-		ScreenshotSource source;
-		if(xvfbLocation != null) {
-			source = new XvfbFileScreenshotSource(xvfbLocation);
-			log.info("Using Xvfb acceleration");
-		}
-		else {
-			source = new RobotScreenshotSource();
-		}
-		currentCallable = new RecordVideoCallable(targetFramerate, source);
+		currentCallable = new RecordVideoCallable(targetFramerate, screenshotSource);
 		currentFuture = executor.submit(currentCallable);
 	}
 	

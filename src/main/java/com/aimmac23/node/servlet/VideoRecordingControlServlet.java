@@ -28,7 +28,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(VideoRecordingControlServlet.class.getName());
 
 	private static final long serialVersionUID = 1L;
-	private VideoRecordController controller;
+	private static VideoRecordController controller;
 	Cache<String, File> availableVideos;
 
 	// make sure we initialise the RecordVideoCallable class, because that initialises
@@ -40,12 +40,15 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		} catch (ClassNotFoundException e) {
 			// not possible
 		}
+		
+		// this class contains things which should be checked at startup, not when the servlet is 
+		// initialised
+		controller = new VideoRecordController();
 	}
 	public VideoRecordingControlServlet() {
 		super();
 		log.info("Constructor called");
 		
-		controller = new VideoRecordController();
 		
 		availableVideos = CacheBuilder.newBuilder().maximumSize(10).removalListener(new RemovalListener<String, File>() {
 			@Override

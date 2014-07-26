@@ -45,4 +45,9 @@ public class RobotScreenshotSource implements ScreenshotSource {
 				getDefaultScreenDevice().getDefaultConfiguration().getBounds();
 		
 	}
+
+	@Override
+	public void doStartupSanityChecks() {
+		// nothing to do - creating the Robot should have done this
+	}
 }
