@@ -2,6 +2,7 @@ package com.aimmac23.node;
 
 import java.io.File;
 
+import com.aimmac23.exception.MissingFrameException;
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.aimmac23.node.jna.XvfbScreenshotInterface;
@@ -20,12 +21,19 @@ public class XvfbFileScreenshotSource implements ScreenshotSource {
 		if(interfacePointer == null) {
 			throw new IllegalStateException("Could not create xvfb interface");
 		}
+		
+		doStartupSanityChecks();
 	}
 
 	@Override
-	public int applyScreenshot(Pointer encoderContext) {
+	public int applyScreenshot(Pointer encoderContext) throws MissingFrameException {
+		
 		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		Pointer screenshotData = xvfbInterface.xvfb_interface_getScreenshot(interfacePointer);
+		
+		if(screenshotData == null) {
+			throw new MissingFrameException("Could not fetch screenshot data - result was a null pointer!");
+		}
 		return encoder.convert_frame(encoderContext, screenshotData);
 	}
 

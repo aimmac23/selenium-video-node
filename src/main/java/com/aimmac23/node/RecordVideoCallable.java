@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
+import com.aimmac23.exception.MissingFrameException;
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
@@ -67,14 +68,19 @@ public class RecordVideoCallable implements Callable<File> {
 			excessTime = excessTime % targetFramerateSleepTime;
 			long start = System.currentTimeMillis();
 			
-			result = screenshotSource.applyScreenshot(context);
+			try {
+				result = screenshotSource.applyScreenshot(context);
 
-			if(result != 0) {
-				throw new IllegalStateException("Failed to convert frame to YUV format");
+				if(result != 0) {
+					throw new IllegalStateException("Failed to convert frame to YUV format");
+				}
+				result = encoder.encode_next_frame(context, frameDuration);
+				
+				handleVPXError(result, "Failed to encode next VPX frame", context);				
 			}
-			result = encoder.encode_next_frame(context, frameDuration);
-			
-			handleVPXError(result, "Failed to encode next VPX frame", context);
+			catch(MissingFrameException e) {
+				log.warning("Had to drop frame - reason: " + e.getMessage());
+			}
 			
 			long finish = System.currentTimeMillis();
 			frames++;

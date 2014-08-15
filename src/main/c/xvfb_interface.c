@@ -15,11 +15,20 @@
 
 #include <X11/XWDFile.h>
 
+// from http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/Xserver/hw/vfb/InitOutput.c?rev=HEAD&content-type=text/plain
+// XXX: Going by the source, it looks correct, but it may contain bugs with long hostnames
+#define XWD_WINDOW_NAME_LEN 60
+
 typedef struct _xvfb_interface_context
 {
   FILE* mapping;
   void* memory;
   size_t size;
+  void* target_memory;
+  
+  int header_size;
+  int image_width;
+  int image_height;
   
 } xvfb_interface;
 
@@ -37,7 +46,10 @@ int get_header_size(XWDFileHeader* header)
     int header_size = readValue(&header->header_size);
     int colourmap_size = readValue(&header->ncolors) * sizeof(XWDColor);
     
-    return header_size + colourmap_size;
+    // the header also includes the "Window Name"
+    // see http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/Xserver/hw/vfb/InitOutput.c?rev=HEAD&content-type=text/plain
+    header_size = sizeof(XWDFileHeader);
+    return header_size + colourmap_size + XWD_WINDOW_NAME_LEN;
 }
 
 xvfb_interface* xvfb_interface_init(char* frameBufferPath)
@@ -68,12 +80,29 @@ xvfb_interface* xvfb_interface_init(char* frameBufferPath)
   interface->memory = memory;
   interface->mapping = file;
   interface->size = size;
+  interface->target_memory = malloc(size);
+  
+  // record some values from the header, to allow us to check for corrupt frames
+  XWDFileHeader* header = (XWDFileHeader*) interface->memory;
+  
+  interface->image_width = readValue(&header->pixmap_width);
+  interface->image_height = readValue(&header->pixmap_height);
+  interface->header_size = get_header_size(header);
   return interface;
 }
 
 char* xvfb_interface_sanityChecks(xvfb_interface* xvfbInterface)
 {
   XWDFileHeader* header = (XWDFileHeader*) xvfbInterface->memory;
+  
+  struct stat stat_buf;
+  fstat(fileno(xvfbInterface->mapping), &stat_buf);
+  
+  if(stat_buf.st_size != xvfbInterface->size)
+  {
+    printf("ERROR: XWD file has changed size: Was %d now %d\n", xvfbInterface->size, stat_buf.st_size);
+    return "XWD file has changed size!";
+  }
   
   if(xvfbInterface->size < sizeof(XWDFileHeader))
   {
@@ -83,6 +112,7 @@ char* xvfb_interface_sanityChecks(xvfb_interface* xvfbInterface)
   int file_version = readValue(&header->file_version);
   if(file_version != XWD_FILE_VERSION)
   {
+    printf("ERROR: File format hex was: %x\n", file_version);
     return "Not in the XWD file format!";
   }
   
@@ -110,20 +140,46 @@ char* xvfb_interface_sanityChecks(xvfb_interface* xvfbInterface)
 
 int xvfb_interface_getWidth(xvfb_interface* interface)
 {
-  XWDFileHeader* header = (XWDFileHeader*) interface->memory;
-  return readValue(&header->pixmap_width);
+  return interface->image_width;
 }
 int xvfb_interface_getHeight(xvfb_interface* interface)
 {
-  XWDFileHeader* header = (XWDFileHeader*) interface->memory;
-  return readValue(&header->pixmap_height);
+  return interface->image_height;
 }
 
 void* xvfb_interface_getScreenshot(xvfb_interface* interface)
-{
-    XWDFileHeader* header = (XWDFileHeader*) interface->memory;
+{    
+    // First we take a snapshot of the Xvfb output
+    memcpy(interface->target_memory, interface->memory, interface->size);
     
-    return interface->memory + get_header_size(header);
+    // Then we start verifying the snapshot, to see if it is corrupted (happens in rare cases)
+    XWDFileHeader* header = (XWDFileHeader*) interface->target_memory;
 
+    int header_size = get_header_size(header);
+    
+    if(header_size != interface->header_size)
+    {
+      printf("ERROR: Header size incorrect! Is %d (corrupt input?)\n", header_size);
+      fflush(NULL);
+      return NULL;
+    }
+    
+    int width = readValue(&header->pixmap_width);
+    int height = readValue(&header->pixmap_height);
+    
+    if(width != interface->image_width)
+    {
+        printf("ERROR: Image width in header is incorrect (corrupt input?)\n");
+        fflush(NULL);
+        return NULL;
+    }
+    if(height != interface->image_height)
+    {
+        printf("ERROR: Image height in header is incorrect (corrupt input?)\n");
+        fflush(NULL);
+        return NULL;
+    }
+   
+    return interface->target_memory + header_size;
 }
 
