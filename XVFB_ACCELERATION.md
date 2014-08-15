@@ -11,17 +11,25 @@ Fortunately, Xvfb has an option which can expose the screen output so that other
 
 ## Usage
 
-First we have to tell Xfvb to map its output to a file. Modify the xvfb-run command to say:
+First we have to create a directory for the Xvfb server to write its output into:
+
+    mkdir /tmp/screen
+
+Next we have to modify the xvfb-run command to tell it to write the screen output into the new directory. Modify the xvfb-run command to say:
 
     xvfb-run -a -s "-screen 0 1280x1024x24 -wr -fbdir /tmp/screen" <video node start command>
 
-This memory-maps the output to a set of files in that directory representing all the screens on that Xvfb server (we assume a single screen).
+Xvfb will memory-map its screen output to a set of files in /tmp/screen, one file per screen attached to that server. For this project we assume that Xvfb only has one screen/This memory-maps the output to a set of files in /tmp/screen which represent all the screens on that Xvfb server (we assume a single screen).
 
 Now, we have to tell the Selenium Node where to find the screen data. Modify the video node start command to include the option:
 
     -Dvideo.xvfbscreen=/tmp/screen
 
-This enables the Xvfb Acceleration feature, and makes the video encoder use the files in /tmp/screen for the screenshot data instead of java.awt.Robot (as a technical detail, it currently memory-maps the file into the process address space, for almost zero copying).
+The node should then say at startup:
+
+    22:38:00.670 INFO - Using Xvfb acceleration
+
+To say that Xvfb acceleration is enabled.
 
 ## Caveats/Gotchas
 
