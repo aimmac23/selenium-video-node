@@ -1,4 +1,4 @@
-Version 1.2 ??
+Version 1.2 15/08/2014
 =====================
 
 * Add a new means of taking screenshots for Xvfb, where we can memory-map the Xvfb output into our address space to run the video encoder directly on.
