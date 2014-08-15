@@ -16,7 +16,6 @@ public class VideoRecordController {
 	RecordVideoCallable currentCallable;
 	private Future<File> currentFuture;
 	private final int targetFramerate;
-	private final File xvfbLocation;
 
 	private ScreenshotSource screenshotSource;
 	
@@ -27,16 +26,16 @@ public class VideoRecordController {
 		
 		String framerateString = System.getProperty("video.framerate", "15");
 		String xvfbLocationString = System.getProperty("video.xvfbscreen", null);
+		
+		File xvfbLocation = null;
 		if(xvfbLocationString != null) {
 			File xvfbDirectory = new File(xvfbLocationString);
 			File xvfbFile = new File(xvfbDirectory, "Xvfb_screen0");
 			if(!xvfbFile.exists()) {
-				log.warning("Xvfb Screen location not found: " + xvfbFile);
-				xvfbLocation = null;
+				throw new IllegalStateException("Xvfb Screen location not found: " + xvfbFile);
 			}
 			else if(!xvfbFile.isFile()) {
-				log.warning("Xvfb Screen location is not a file: " + xvfbFile);
-				xvfbLocation = null;
+				throw new IllegalStateException("Xvfb Screen location is not a file: " + xvfbFile);
 			}
 			else {
 				xvfbLocation = xvfbFile;
