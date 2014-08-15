@@ -46,8 +46,7 @@ int get_header_size(XWDFileHeader* header)
     int header_size = readValue(&header->header_size);
     int colourmap_size = readValue(&header->ncolors) * sizeof(XWDColor);
     
-    // the header also includes the "Window Name"
-    // see http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/Xserver/hw/vfb/InitOutput.c?rev=HEAD&content-type=text/plain
+    // I didn't trust the header size data from the header
     header_size = sizeof(XWDFileHeader);
     return header_size + colourmap_size + XWD_WINDOW_NAME_LEN;
 }
@@ -63,10 +62,9 @@ xvfb_interface* xvfb_interface_init(char* frameBufferPath)
   }
   int fd = fileno(file);
   
+  // get the size of the Xvfb output file
   struct stat stat_buf;
-  
   fstat(fd, &stat_buf);
-  
   size_t size = stat_buf.st_size;
   
   void* memory = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
@@ -82,7 +80,7 @@ xvfb_interface* xvfb_interface_init(char* frameBufferPath)
   interface->size = size;
   interface->target_memory = malloc(size);
   
-  // record some values from the header, to allow us to check for corrupt frames
+  // record some values from the header, to allow us to check for corrupt frames later
   XWDFileHeader* header = (XWDFileHeader*) interface->memory;
   
   interface->image_width = readValue(&header->pixmap_width);
