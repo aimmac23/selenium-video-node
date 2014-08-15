@@ -19,9 +19,9 @@ Next we have to modify the xvfb-run command to tell it to write the screen outpu
 
     xvfb-run -a -s "-screen 0 1280x1024x24 -wr -fbdir /tmp/screen" <video node start command>
 
-Xvfb will memory-map its screen output to a set of files in /tmp/screen, one file per screen attached to that server. For this project we assume that Xvfb only has one screen/This memory-maps the output to a set of files in /tmp/screen which represent all the screens on that Xvfb server (we assume a single screen).
+Xvfb will memory-map its screen output to a set of files in /tmp/screen, one file per screen attached to that server. For this project we assume that Xvfb only has one screen.
 
-Now, we have to tell the Selenium Node where to find the screen data. Modify the video node start command to include the option:
+Finally, we have to tell the Selenium Node where to find the screen data. Modify the video node start command to include the option:
 
     -Dvideo.xvfbscreen=/tmp/screen
 
