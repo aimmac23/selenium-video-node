@@ -51,7 +51,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		log.info("Constructor called");
 		
 		
-		availableVideos = CacheBuilder.newBuilder().maximumSize(10).removalListener(new RemovalListener<String, File>() {
+		availableVideos = CacheBuilder.newBuilder().maximumSize(5).removalListener(new RemovalListener<String, File>() {
 			@Override
 			public void onRemoval(RemovalNotification<String, File> arg0) {
 				if(arg0.getValue().delete()) {
