@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,14 +55,31 @@ public class VideoRecordingControlServlet extends HttpServlet {
 			@Override
 			public void onRemoval(RemovalNotification<String, File> arg0) {
 				if(arg0.getValue().delete()) {
-					log.info("Deleted recording due to excess videos: " + arg0.getKey());
+					if(arg0.wasEvicted()) {
+						log.info("Deleted recording due to excess videos: " + arg0.getKey());	
+					}
 				}
 			}
 		}).build();
 		
-		// I suspect that simply mentioning these variables will throw a rather rude
-		// throwable if the dependencies cannot be found - still, best check
-			
+		addShutdownHook();
+	}
+	
+	/**
+	 * Deletes all videos on exit.
+	 */
+	private void addShutdownHook() {
+		Thread shutdownHook = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<String> iterator = availableVideos.asMap().keySet().iterator();
+				while(iterator.hasNext()) {
+					availableVideos.invalidate(iterator.next());
+				}
+			}
+		}, "Video Cache Shutdown Hook Thread");
+		
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 	
 	@Override
