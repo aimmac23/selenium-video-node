@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 
+import com.google.common.collect.FluentIterable;
+import com.google.common.io.Files;
+import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
@@ -24,7 +28,7 @@ public class JnaLibraryLoader {
 	static private EncoderInterface encoder;
 	// optional dependency
 	static private XvfbScreenshotInterface xvfbInterface;
-
+	
 	private static void addNativePath(String path) {
 		NativeLibrary.addSearchPath("vpx", path);
 		NativeLibrary.addSearchPath("yuv", path);
@@ -88,6 +92,8 @@ public class JnaLibraryLoader {
 		
 		File targetDirectory = extractJNABinariesIfAvailable();
 		
+		addShutdownCleanupHook(targetDirectory);
+		
 		// this makes things work in Eclipse
 		String classpath = System.getProperty("java.class.path");
 		String[] classpathEntries = classpath.split(File.pathSeparator);
@@ -142,6 +148,37 @@ public class JnaLibraryLoader {
 		}
 		
 		tryLoadLibraries();
+	}
+	
+	private static void disposeLibrary(Library lib, String name) {
+		if(lib != null) {
+			NativeLibrary.getInstance(name).dispose();
+		}
+	}
+	
+	private static synchronized void addShutdownCleanupHook(final File extractedDirectory) {
+		
+		Thread shutdownThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// close the native libraries in reverse order
+				disposeLibrary(xvfbInterface, "xvfb_interface");
+				
+				disposeLibrary(encoder, "interface");
+				
+				disposeLibrary(libMKV, "mkv");
+				disposeLibrary(yuvLib, "yuv");
+				disposeLibrary(libVPX, "vpx");
+				
+				// Java File doesn't want to recursively delete things
+				Iterator<File> iterator = Files.fileTreeTraverser().postOrderTraversal(extractedDirectory).iterator();
+				while(iterator.hasNext()) {
+					iterator.next().delete();
+				}
+			}
+		}, "JNA Shutdown Hook Thread");
+		
+		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
 	
 	public static EncoderInterface getEncoder() {
