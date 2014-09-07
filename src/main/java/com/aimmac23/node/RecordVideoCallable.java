@@ -115,10 +115,6 @@ public class RecordVideoCallable implements Callable<File> {
 		shouldStop = true;
 	}
 	
-	protected int[] getScreenshotData() {
-		return null;
-	}
-	
 	private void handleVPXError(int errorCode, String message, Pointer context) {
 		if(errorCode != 0) {
 			throw new IllegalStateException(message + ": " 
