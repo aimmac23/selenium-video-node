@@ -1,5 +1,11 @@
+Version 1.3 11/09/2014
+======================
+
+* Make the node delete extracted native dependencies and recorded videos on exit (fixes issue #7).
+  This could cause the machine the node was running on to diskfill if the node was repeatedly restarted.
+
 Version 1.2 15/08/2014
-=====================
+======================
 
 * Add a new means of taking screenshots for Xvfb, where we can memory-map the Xvfb output into our address space to run the video encoder directly on.
   Note that this requires an extra JVM flag to make this work.
