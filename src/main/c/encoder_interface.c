@@ -44,6 +44,7 @@ encoder_context* create_context(char* output_file)
   if(!context->output)
   {
     printf("Couldn't open output file, but continuing anyway :/");
+    fflush(NULL);
   }
   
   context->encoder_output.stream = context->output;
@@ -76,9 +77,7 @@ int init_encoder(encoder_context* context, int width, int height, int fps)
   context->height = height;
   
   context->pts_timestamp = 0;
-  
-  printf("Video stats: width: %d height: %d bitrate: %d\n", context->cfg.g_w, context->cfg.g_h, context->cfg.rc_target_bitrate);
-  
+    
   write_webm_file_header(&context->encoder_output, &context->cfg, &context->cfg.g_timebase, STEREO_FORMAT_MONO, VP8_FOURCC);
   
   return result;
