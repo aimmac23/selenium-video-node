@@ -50,21 +50,19 @@ public class RobotScreenshotSource implements ScreenshotSource {
 
 	@Override
 	public void doStartupSanityChecks() {
-		// test to make assert that the bit depth is 32 bit
+		// test to make assert that the bit depth has 8 bits per pixel
 		
 		ColorModel colorModel = GraphicsEnvironment.getLocalGraphicsEnvironment().
 		getDefaultScreenDevice().getDefaultConfiguration().getColorModel();
 		
 		int[] bitAllocations = colorModel.getComponentSize();
 		
-		int bitDepth = 0;
+		// don't count alpha bits
+		int bitDepth = bitAllocations[0] + bitAllocations[1] + bitAllocations[2];
 		
-		for(int pixelBitSize : bitAllocations) {
-			bitDepth += pixelBitSize; 
-		}
-		
-		if(bitDepth != 32) {
-			throw new IllegalStateException("Could not start - display bit depth is not 32-bit");
+		if(bitDepth != 24) {
+			throw new IllegalStateException("Display colour depth incorrect (should be 8 bits of red, blue and green). Currently: " 
+					+ bitAllocations[0] + "-" + bitAllocations[1] + "-" + bitAllocations[2]);
 		}
 	}
 }
