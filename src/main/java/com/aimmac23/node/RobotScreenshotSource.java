@@ -4,7 +4,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
+import java.util.Arrays;
 
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
@@ -48,6 +50,21 @@ public class RobotScreenshotSource implements ScreenshotSource {
 
 	@Override
 	public void doStartupSanityChecks() {
-		// nothing to do - creating the Robot should have done this
+		// test to make assert that the bit depth is 32 bit
+		
+		ColorModel colorModel = GraphicsEnvironment.getLocalGraphicsEnvironment().
+		getDefaultScreenDevice().getDefaultConfiguration().getColorModel();
+		
+		int[] bitAllocations = colorModel.getComponentSize();
+		
+		int bitDepth = 0;
+		
+		for(int pixelBitSize : bitAllocations) {
+			bitDepth += pixelBitSize; 
+		}
+		
+		if(bitDepth != 32) {
+			throw new IllegalStateException("Could not start - display bit depth is not 32-bit");
+		}
 	}
 }
