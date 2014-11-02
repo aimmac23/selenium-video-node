@@ -23,7 +23,7 @@ For example videos recorded using this plugin, [see the examples page](http://se
 
 * A dual core processor (one core for video encoding, another for everything else). It is possible to lower this requirement by reducing the framerate.
 
-* 32-bit colour display output (8 bits red, 8 bits blue, 8 bits green, 8 bit alpha/unused).
+* 32-bit colour display output - 8 bits red, 8 bits blue, 8 bits green, with either 8 bits of alpha or 8 bits unused. [See Wikipedia](http://en.wikipedia.org/wiki/Color_depth#True_color_.2824-bit.29) for more information.
 
 * A Java 6 JVM (or higher) running on one of the following platforms:
 
