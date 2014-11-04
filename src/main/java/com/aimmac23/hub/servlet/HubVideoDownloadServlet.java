@@ -71,10 +71,12 @@ public class HubVideoDownloadServlet extends AbstractHubVideoServlet {
 			resp.setStatus(HttpStatus.SC_NOT_FOUND);
 			resp.getWriter().write("Video content not found for sessionId: " + sessionId);
 			videoContext.close();
+			log.info("Received request for video that was not found. Requested sessionId: " + sessionId);
 			return;
 		}
 		
 		try {
+			log.info("Received request for video - now returning content. Requested sessionId: " + sessionId);
 			resp.setContentType("video/webm");
 			
 			Long contentLength = videoContext.getContentLengthIfKnown();
