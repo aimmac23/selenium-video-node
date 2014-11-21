@@ -67,4 +67,4 @@ See [ExampleSeleniumTests.java](src/test/java/com/aimmac23/hub/examples/ExampleS
 
 ## Other Helpful information
 
-WINDOWS: The classpath seperator (for the -cp argument) is ";" instead of ":" - nothing will tell report incorrect usage as an error, but you will get ClassNotFound exceptions.
+WINDOWS: The classpath seperator (for the -cp argument) is ";" instead of ":" - nothing will report incorrect usage as an error, but you will get ClassNotFound exceptions.
