@@ -12,7 +12,7 @@ Download:
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-0.8.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role node
+    java -cp selenium-video-node-0.8.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role wd
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 
@@ -64,3 +64,7 @@ WARNING: By default the Hub will only store 200 recently recorded videos to avoi
 ## Code Examples
 
 See [ExampleSeleniumTests.java](src/test/java/com/aimmac23/hub/examples/ExampleSeleniumTests.java) and [AbstractVideoSeleniumTest.java](src/test/java/com/aimmac23/hub/examples/AbstractVideoSeleniumTest.java) for a Java example how how you can integrate videos into your Selenium tests.
+
+## Other Helpful information
+
+WINDOWS: The classpath seperator (for the -cp argument) is ";" instead of ":" - nothing will tell report incorrect usage as an error, but you will get ClassNotFound exceptions.
