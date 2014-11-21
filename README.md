@@ -32,7 +32,7 @@ For example videos recorded using this plugin, [see the examples page](http://se
 | Linux x86_64 (64-bit) |  Yes        | Yes |
 | Linux x86 (32-bit)   | Yes      | Yes |
 | Windows x86_64 (64-bit) | Yes¹ | Yes¹ |
-| Windows x86 (32-bit) | No | No |
+| Windows x86 (32-bit) | Yes | Yes |
 | Mac OS X 10.9 x86_64 (64 bit)² | Yes | Yes |
 | Mac OS X 10.5-10.8 x86_64 (64-bit)² | Yes | No |
 
