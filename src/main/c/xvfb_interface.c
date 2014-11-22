@@ -30,40 +30,41 @@ typedef struct _xvfb_interface_context
 
    void*  target_memory;
 
-   unsigned header_size;
+   unsigned int header_size;
 
-   unsigned xwdfilehdr_size;
-   unsigned xwdfile_version;
+   unsigned int xwdfilehdr_size;
+   unsigned int xwdfile_version;
 
-   unsigned image_width;
-   unsigned image_height;
+   unsigned int image_width;
+   unsigned int image_height;
 
-   unsigned ncolors_hdr;
+   unsigned int ncolors_hdr;
 
-   unsigned colormap_size;
+   unsigned int colormap_size;
 
-   unsigned bits_per_pixel;
+   unsigned int bits_per_pixel;
 
 } xvfb_interface;
 
 
-unsigned readValue( void* address )
+unsigned int readValue( void* address )
 {
    unsigned char* data = ( unsigned char* )address;
 
-   unsigned value = ( ( ( unsigned )data[ 3 ] ) | ( ( ( unsigned )data[ 2 ] ) << 8 ) | ( ( ( unsigned )data[ 1 ] ) << 16 ) | ( ( ( unsigned )data[ 0 ] ) << 24 ) );
+   unsigned int value = ( ( ( unsigned int )data[ 3 ] ) | ( ( ( unsigned int )data[ 2 ] ) << 8 ) 
+            | ( ( ( unsigned int )data[ 1 ] ) << 16 ) | ( ( ( unsigned int )data[ 0 ] ) << 24 ) );
 
    return value;
 }
 
 
-unsigned get_header_size( XWDFileHeader* header )
+unsigned int get_header_size( XWDFileHeader* header )
 {
    // the graphics data should lie past this...
 
-   unsigned header_size = readValue( &header->header_size );
+   unsigned int header_size = readValue( &header->header_size );
 
-   unsigned colourmap_size = readValue( &header->ncolors ) * sizeof( XWDColor );
+   unsigned int colourmap_size = readValue( &header->ncolors ) * sizeof( XWDColor );
 
    return header_size + colourmap_size;
 }
@@ -148,13 +149,13 @@ xvfb_interface* xvfb_interface_init( char* pathToFrameBuffer )
 }
 
 
-unsigned xvfb_interface_getWidth( xvfb_interface* xvfb )
+unsigned int xvfb_interface_getWidth( xvfb_interface* xvfb )
 {
    return xvfb->image_width;
 }
 
 
-unsigned xvfb_interface_getHeight( xvfb_interface* xvfb )
+unsigned int xvfb_interface_getHeight( xvfb_interface* xvfb )
 {
    return xvfb->image_height;
 }
@@ -182,7 +183,7 @@ char* xvfb_interface_sanityChecks( xvfb_interface* xvfb )
       return "ERROR: XWD file is too small to be the valid output of a Xvfb server!";
    }
 
-   unsigned file_version = readValue( &header->file_version );
+   unsigned int file_version = readValue( &header->file_version );
 
    if ( file_version != XWD_FILE_VERSION )
    {
@@ -191,7 +192,7 @@ char* xvfb_interface_sanityChecks( xvfb_interface* xvfb )
       return errorMSG;
    }
 
-   unsigned bits_per_pixel = readValue( &header->bits_per_pixel );
+   unsigned int bits_per_pixel = readValue( &header->bits_per_pixel );
 
    // Check pixel depth - passing "-screen 0 1280x1024x24" to Xvfb actually gives us 32 bits per pixel - we just don't use the Alpha
    // ED: XWDFileHeader->pixmap_depth contains the last value in the width x height x depth triplet
@@ -201,7 +202,7 @@ char* xvfb_interface_sanityChecks( xvfb_interface* xvfb )
       return "Incorrect pixel depth - you must set the Xvfb server to use a minimum of 24 bits per pixel (8 bits per-color, no alpha)";
    }
 
-   unsigned expected_file_size = ( xvfb->bits_per_pixel / 8 ) * xvfb->image_width * xvfb->image_height + xvfb->xwdfilehdr_size + xvfb->colormap_size;
+   unsigned int expected_file_size = ( xvfb->bits_per_pixel / 8 ) * xvfb->image_width * xvfb->image_height + xvfb->xwdfilehdr_size + xvfb->colormap_size;
 
    if ( file_info.st_size < expected_file_size )
    {
@@ -222,7 +223,7 @@ void* xvfb_interface_getScreenshot( xvfb_interface* xvfb )
    // perform sanity checks on the snapshot to verify if it is corrupted (happens in rare cases)
    XWDFileHeader* header = ( XWDFileHeader* )xvfb->target_memory;
 
-   unsigned header_size = get_header_size( header );
+   unsigned int header_size = get_header_size( header );
 
    if( header_size != xvfb->header_size )
    {
@@ -233,8 +234,8 @@ void* xvfb_interface_getScreenshot( xvfb_interface* xvfb )
       return NULL;
    }
 
-   unsigned width = readValue( &header->pixmap_width );
-   unsigned height = readValue( &header->pixmap_height );
+   unsigned int width = readValue( &header->pixmap_width );
+   unsigned int height = readValue( &header->pixmap_height );
 
    if ( width != xvfb->image_width )
    {
