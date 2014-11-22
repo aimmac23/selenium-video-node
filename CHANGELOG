@@ -1,3 +1,10 @@
+Version 1.5 22/11/2014
+======================
+
+* Bundled the org.json:json Maven artifact, so we can parse JSON from Selenium 2.44 onwards - they dropped it as a dependency (issue #9)
+* Fix integer promotion bug in the xvfb acceleration code, which allows us to record in larger resolutions (fix contributed by https://github.com/DeathBeforeDecaf)
+* Bump Selenium version we are compiling against to 2.43 (shouldn't make any difference)
+
 Version 1.4 21/11/2014
 ======================
 
