@@ -91,6 +91,25 @@ public class VideoProxy extends DefaultRemoteProxy {
 	}
 	
 	@Override
+	public void beforeCommand(TestSession session, HttpServletRequest request,
+			HttpServletResponse response) {
+		super.beforeCommand(session, request, response);
+		
+		SeleniumBasedRequest seleniumRequest = SeleniumBasedRequest.createFromRequest(request, getRegistry());
+		
+		// https://github.com/aimmac23/selenium-video-node/issues/10 - we need to mark the session as stopping, before we
+		// pass back the client any information to prevent race conditions when downloading the video
+		if(RequestType.STOP_SESSION.equals(seleniumRequest.getRequestType())) {
+			if(isCurrentlyRecording) {
+				HubVideoRegistry.declareSessionStopping(session);
+			}
+			else {
+				log.severe("Recording not started for " + session.getExternalKey() + " on node " + getId() + " - cannot register session as stopping.");				
+			}
+		}
+	}
+	
+	@Override
 	public void afterCommand(TestSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		super.afterCommand(session, request, response);

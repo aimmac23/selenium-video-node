@@ -1,6 +1,10 @@
 package com.aimmac23.hub;
 
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +24,8 @@ import com.aimmac23.hub.videostorage.LocalTempFileStore;
 import com.aimmac23.hub.videostorage.SessionInfoBean;
 import com.aimmac23.hub.videostorage.StoredVideoDownloadContext;
 import com.aimmac23.hub.videostorage.StoredVideoInfoContext;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @SuppressWarnings("unchecked")
 public class HubVideoRegistry {
@@ -27,6 +33,8 @@ public class HubVideoRegistry {
 	private static final Logger log = Logger.getLogger(HubVideoRegistry.class.getName());
 
 	private static IVideoStore videoStore;
+	
+	private static Cache<String, VideoFuture> stoppingSessions;
 	
 	static {
 		try {
@@ -43,6 +51,12 @@ public class HubVideoRegistry {
 			// throw a nasty error to hopefully prevent the Hub from trying to continue without this 
 			throw new Error("Could not initialize video store due to exception", e);
 		}
+		
+		stoppingSessions = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+	}
+	
+	public static void declareSessionStopping(TestSession session) {
+		stoppingSessions.put(session.getExternalKey().getKey(), new VideoFuture());	
 	}
 
 	public static void copyVideoToHub(TestSession session, String pathKey, URL remoteHost) {
@@ -82,20 +96,80 @@ public class HubVideoRegistry {
 		}
         finally {
         	r.releaseConnection();
+        	VideoFuture videoFuture = stoppingSessions.getIfPresent(key.getKey());
+        	if(videoFuture != null) {
+        		videoFuture.setDone();
+        	}
         }
+	}
+	private static void checkVideoIsDone(ExternalSessionKey key) throws Exception {
+		VideoFuture videoFuture;
+		synchronized(HubVideoRegistry.class) {
+			 videoFuture = stoppingSessions.getIfPresent(key.toString());
+		}
+		
+		if(videoFuture != null) {
+			videoFuture.get();
+		}
 	}
 	
 	public static StoredVideoDownloadContext getVideoForSession(ExternalSessionKey key) throws Exception {
-		
+		checkVideoIsDone(key);
 		return videoStore.retrieveVideo(key.toString());
 	}
 	
 	public static StoredVideoInfoContext getVideoInfoForSession(ExternalSessionKey key) throws Exception {
+		checkVideoIsDone(key);
 		return videoStore.getVideoInformation(key.toString());
 	}
 	
 	public static String getVideoStoreType() {
 		return videoStore.getVideoStoreTypeIdentifier();
 	}
+	
+	private static class VideoFuture implements Future<Void> {
 
+		private boolean isDone = false;
+		
+		public synchronized void setDone() {
+			this.isDone = true;
+			
+			this.notifyAll();
+		}
+		
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			// cancelling not allowed
+			return false;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			// we never cancel this
+			return false;
+		}
+
+		@Override
+		public boolean isDone() {
+			return isDone;
+		}
+
+		@Override
+		public synchronized Void get() throws InterruptedException, ExecutionException {
+			while(!isDone) {
+				this.wait();
+			}
+			return null;
+		}
+
+		@Override
+		public synchronized Void get(long timeout, TimeUnit unit)
+				throws InterruptedException, ExecutionException,
+				TimeoutException {
+			if(!isDone) {
+				this.wait(unit.toMillis(timeout));
+			}
+			return null;
+		}
+	}
 }
