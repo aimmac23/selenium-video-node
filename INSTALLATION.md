@@ -12,7 +12,9 @@ Download:
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-0.8.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role wd
+    java -cp selenium-video-node-1.5.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role wd
+
+Note that on Windows, the classpath seperator (for the -cp argument) is ";" instead of ":" - Java will not report incorrect usage as an error, but you will get ClassNotFound exceptions.
 
 If you are running this under Linux, then it may be convenient to run the Video Node under a virtual X server, so the real X server can be used for other purposes:
 
@@ -31,7 +33,9 @@ It is also recommended to specify only the browers that your platform supports a
 
 We also need to add some extra functionality to the Selenium Hub to make this work:
 
-    java -cp selenium-video-node-0.4.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
+    java -cp selenium-video-node-1.5.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
+
+Note that again on Windows, the classpath separator should again be ";" instead of ":", otherwise you will get ClassNotFound exceptions.
 
 When starting up, you should see a line saying something like:
 
@@ -65,6 +69,3 @@ WARNING: By default the Hub will only store 200 recently recorded videos to avoi
 
 See [ExampleSeleniumTests.java](src/test/java/com/aimmac23/hub/examples/ExampleSeleniumTests.java) and [AbstractVideoSeleniumTest.java](src/test/java/com/aimmac23/hub/examples/AbstractVideoSeleniumTest.java) for a Java example how how you can integrate videos into your Selenium tests.
 
-## Other Helpful information
-
-WINDOWS: The classpath seperator (for the -cp argument) is ";" instead of ":" - nothing will report incorrect usage as an error, but you will get ClassNotFound exceptions.
