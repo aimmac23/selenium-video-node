@@ -31,10 +31,15 @@ import com.google.common.cache.CacheBuilder;
 public class HubVideoRegistry {
 	
 	private static final Logger log = Logger.getLogger(HubVideoRegistry.class.getName());
+	
+	// 20 seconds
+	private static final long DEFAULT_DOWNLOAD_WAIT_TIMEOUT = 20000;
 
 	private static IVideoStore videoStore;
 	
 	private static Cache<String, VideoFuture> stoppingSessions;
+	
+	private static long downloadWaitTimeout;
 	
 	static {
 		try {
@@ -53,6 +58,17 @@ public class HubVideoRegistry {
 		}
 		
 		stoppingSessions = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+		
+		String downloadTimeoutString = System.getProperty("video.downloadTimeout");
+		
+		if(downloadTimeoutString == null) {
+			downloadWaitTimeout = DEFAULT_DOWNLOAD_WAIT_TIMEOUT;
+		}
+		else {
+			downloadWaitTimeout = Long.parseLong(downloadTimeoutString);
+		}
+		
+		log.info("Download wait timeout currently set to " + downloadWaitTimeout + " milliseconds");
 	}
 	
 	public static void declareSessionStopping(TestSession session) {
@@ -103,13 +119,10 @@ public class HubVideoRegistry {
         }
 	}
 	private static void checkVideoIsDone(ExternalSessionKey key) throws Exception {
-		VideoFuture videoFuture;
-		synchronized(HubVideoRegistry.class) {
-			 videoFuture = stoppingSessions.getIfPresent(key.toString());
-		}
+		VideoFuture videoFuture = stoppingSessions.getIfPresent(key.toString());
 		
 		if(videoFuture != null) {
-			videoFuture.get();
+			videoFuture.get(downloadWaitTimeout, TimeUnit.MILLISECONDS);
 		}
 	}
 	
