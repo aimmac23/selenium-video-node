@@ -1,3 +1,9 @@
+Version 1.6 05/02/2014
+======================
+
+* Fix issue #10 - make video download requests wait until the Hub has retrieved the video from the Node
+
+
 Version 1.5 22/11/2014
 ======================
 
