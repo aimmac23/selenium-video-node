@@ -58,4 +58,9 @@ Optionally provide a password to use when uploading the video.
 
 You can also create your own plugin to handle storage, but it has to implement com.aimmac23.hub.videostorage.IVideoStore.
 
+## Miscellaneous Arguments
+
+Sometimes the Hub will tell the test that the Session has been successfully closed slightly before it has finished copying the video off the node. If this has occurred, then the Hub will make any video download calls wait up to 20 seconds (by default) for the copying to finish. To control the time, set:
+
+    -Dvideo.downloadTimeout=<timeout_in_milliseconds>
 
