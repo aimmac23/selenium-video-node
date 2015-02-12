@@ -43,8 +43,8 @@ public class RobotScreenshotSource implements ScreenshotSource {
 
 	protected Rectangle getScreenSize() {
 		//XXX: This probably won't work with multiple monitors
-		return GraphicsEnvironment.getLocalGraphicsEnvironment().
-				getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+		DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+		return new Rectangle(displayMode.getWidth(), displayMode.getHeight());
 		
 	}
 
