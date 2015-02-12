@@ -1,3 +1,9 @@
+Version 1.7 12/02/2014
+======================
+
+* Fix for issue where dynamically changing resolution before recording a test didn't record at the new resolution - we used the 
+  resolution at startup (fix contributed by https://github.com/suayipozmen)
+
 Version 1.6 05/02/2014
 ======================
 
