@@ -1,5 +1,6 @@
 package com.aimmac23.node;
 
+import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
