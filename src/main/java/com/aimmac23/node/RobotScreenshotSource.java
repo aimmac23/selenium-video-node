@@ -23,7 +23,7 @@ public class RobotScreenshotSource implements ScreenshotSource {
 	
 	@Override
 	public int applyScreenshot(Pointer encoderContext) {
-		BufferedImage image = robot.createScreenCapture(getScreenSize());
+		BufferedImage image = takeScreenshot();
 
 		int[] screenshotData = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		
@@ -47,6 +47,10 @@ public class RobotScreenshotSource implements ScreenshotSource {
 		DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
 		return new Rectangle(displayMode.getWidth(), displayMode.getHeight());
 		
+	}
+	
+	public BufferedImage takeScreenshot(){
+		return robot.createScreenCapture(getScreenSize());
 	}
 
 	@Override
