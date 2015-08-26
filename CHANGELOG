@@ -1,3 +1,9 @@
+Version 1.8 26/06/2015
+======================
+
+ * A lot of POM changes to upload this project to Maven central (no code changes)
+ * Fix issue where the native code zip file was being included in the source JAR file
+
 Version 1.7 12/02/2014
 ======================
 
