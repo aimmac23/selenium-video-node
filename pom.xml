@@ -3,9 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aimmac23</groupId>
     <artifactId>selenium-video-node</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.8</version>
     <name>selenium-video-node</name>
     <description>Selenium Grid plugin that records videos of running tests</description>
+    <packaging>jar</packaging>
+    <url>https://github.com/aimmac23/selenium-video-node</url>
     <scm>
         <connection>scm:git:git://github.com/aimmac23/selenium-video-node.git</connection>
         <developerConnection>scm:git:git://github.com:aimmac23/selenium-video-node.git</developerConnection>
@@ -17,17 +19,6 @@
             <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-         </snapshotRepository>
-         <repository>
-             <id>ossrh</id>
-             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-          </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
