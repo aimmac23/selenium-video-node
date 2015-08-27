@@ -43,8 +43,22 @@ The above does not apply to the Selenium Hub, which does not perform any video p
 
 ## Downloads
 
-The latest version can be downloaded here: https://aimmac23.com/public/maven-repository/com/aimmac23/selenium-video-node/
+Download the latest version from Maven Central:
 
+http://repo1.maven.org/maven2/com/aimmac23/selenium-video-node/
+
+Older releases can be found here:
+
+https://aimmac23.com/public/maven-repository/com/aimmac23/selenium-video-node/
+
+Alternatively, if you are creating your own Selenium Maven project, add the following to your POM file's dependency section:
+
+    <dependency>
+        <groupId>com.aimmac23</groupId>
+        <artifactId>selenium-video-node</artifactId>
+        <version>1.8</version>
+    </dependency>
+  
 ## Basic Installation
 
 To get the plugin working on your Selenium grid, see [Installation](INSTALLATION.md)
