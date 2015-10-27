@@ -1,5 +1,7 @@
 package com.aimmac23.hub.proxy;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
@@ -41,6 +44,30 @@ public class VideoProxy extends DefaultRemoteProxy {
 				getRemoteHost().getPort());
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         client = httpClientFactory.getHttpClient();
+        
+        // its possible that the Hub may have crashed/been terminated/lost network connection, leaving the
+        // node still recording. Tell it to get back to a known-state (https://github.com/aimmac23/selenium-video-node/issues/5)
+		HttpPost r = new HttpPost(serviceUrl + "?command=reset");
+		try {
+			HttpResponse response = client.execute(r);
+			
+			if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+				String body = EntityUtils.toString(response.getEntity());
+				log.log(Level.SEVERE, "Could not reset node " + this.getId() + 
+						" to known recording status - incorrect HTTP response. Got: HTTP " + 
+						response.getStatusLine().getStatusCode() + " code with body: '" + body + "'");
+				// XXX: Does this mean that the node is unusable? We would probably take this path if the node was on an older
+				// version of this library
+			}			
+			
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not reset node " + this.getId() + " to known recording status - caught exception", e);
+			// XXX: Does this mean that the node is unusable?
+		}
+		finally {
+			r.releaseConnection();
+		}
+
 	}
 	
 	static RegistrationRequest transformRegistration(RegistrationRequest request) {
