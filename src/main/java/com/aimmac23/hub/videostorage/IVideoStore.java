@@ -46,7 +46,8 @@ public interface IVideoStore {
 	/**
 	 * Returns some sort of machine-readable string to help identify the storage mechanism
 	 * being used. This is used in the {@link HubVideoInfoServlet}
-	 * @return
+	 * 
+	 * @return A string identifier for the storage mechanism. Should be unique. 
 	 */
 	public String getVideoStoreTypeIdentifier();
 }

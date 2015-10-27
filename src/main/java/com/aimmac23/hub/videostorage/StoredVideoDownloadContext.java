@@ -15,14 +15,16 @@ public interface StoredVideoDownloadContext {
 	/**
 	 * Was the requested video found?
 	 * 
-	 * @return
+	 * @return true if the video was found, false otherwise
 	 */
 	boolean isVideoFound();
 	
 	/**
 	 * If the video was found, return an Input stream for the content, or null otherwise.
 	 * 
-	 * @return
+	 * @return an InputStream by which the video content can be read.
+	 * 
+	 * @throws IOException
 	 */
 	InputStream getStream() throws IOException;
 	

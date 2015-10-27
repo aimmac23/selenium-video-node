@@ -47,9 +47,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		controller = new VideoRecordController();
 	}
 	public VideoRecordingControlServlet() {
-		super();
-		log.info("Constructor called");
-		
+		super();		
 		
 		availableVideos = CacheBuilder.newBuilder().maximumSize(5).removalListener(new RemovalListener<String, File>() {
 			@Override
@@ -117,7 +115,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		}
 		else {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
-			resp.getWriter().write("Bad parameter: 'command', must be either 'start' or 'stop'");
+			resp.getWriter().write("Bad parameter: 'command', must be either 'start', 'stop', 'reset', or 'download'");
 			return;		
 		}
 	}
