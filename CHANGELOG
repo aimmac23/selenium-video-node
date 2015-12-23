@@ -1,3 +1,10 @@
+Version 1.9 23/12/2015
+======================
+
+ * Recompile 32-bit Windows native dependencies, to fix problem where they were dynamically linked against GCC's libc library (issue #19)
+ * Commit fix for issue #5 (where the node can get into an inconsistent recording state if the hub gets restarted)
+ * Logging/documentation improvements
+
 Version 1.8 26/06/2015
 ======================
 
