@@ -1,28 +1,31 @@
-#define VPX_CODEC_DISABLE_COMPAT 1
-#include "vpx/vpx_encoder.h"
-#include "vpx/vp8cx.h"
-#define interface (vpx_codec_vp8_cx())
-//#define fourcc    0x30385056
+#include "vpxenc.h"
+#include "tools_common.h"
+#include "video_writer.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "libyuv.h"
+// libyuv functions
+#include "libyuv/convert.h"
 
 #include "webmenc.h"
 
 typedef struct _encoder_context
 {
+      const VpxInterface *encoder;
+      VpxVideoInfo video_info;
+      VpxVideoWriter* writer;
+      // older
       vpx_codec_enc_cfg_t  cfg;
       vpx_codec_ctx_t      codec;
-      vpx_image_t*          raw;
+      vpx_image_t *         raw;
       int width;
       int height;
+      char* filename;
       vpx_codec_pts_t pts_timestamp;
       FILE* output;
-      struct EbmlGlobal encoder_output;
   
 } encoder_context;
 
@@ -39,58 +42,70 @@ encoder_context* create_context(char* output_file)
   encoder_context* context = (encoder_context*) malloc(sizeof(encoder_context));
   memset(context, 0, sizeof(encoder_context));
   
-  context->output = fopen(output_file, "wb");
+  strcpy(context->filename, output_file);
   
-  if(!context->output)
-  {
-    printf("Couldn't open output file, but continuing anyway :/");
-    fflush(NULL);
-  }
-  
-  context->encoder_output.stream = context->output;
-  context->encoder_output.debug = 1;
-  context->encoder_output.cue_list = NULL;
-
   return context;
   
 }
 
 int init_encoder(encoder_context* context, int width, int height, int fps)
 {
+  int result = 0;
+  context->encoder = get_vpx_encoder_by_name("vp8");
   
-  int result = vpx_codec_enc_config_default(interface, &context->cfg, 0);
-  
-  if(result)
+  if(!context->encoder) 
   {
-    return result;
+    die("Couldn't get encoder context");
+    return -1;
   }
-  // XXX: The example does this before setting width/height - not sure why
-  context->cfg.rc_target_bitrate = width * height * context->cfg.rc_target_bitrate / context->cfg.g_w / context->cfg.g_h;
-  context->cfg.g_w = width;
-  context->cfg.g_h = height;
   
-  context->cfg.g_timebase.num=1;
-  context->cfg.g_timebase.den=fps;
+  context->video_info.frame_width = width;
+  context->video_info.frame_height = height;
+  
+  context->video_info.time_base.numerator=1;
+  context->video_info.time_base.denominator=fps;
   
   
   context->width = width;
   context->height = height;
   
-  context->pts_timestamp = 0;
-    
-  write_webm_file_header(&context->encoder_output, &context->cfg, &context->cfg.g_timebase, STEREO_FORMAT_MONO, VP8_FOURCC);
+  result = vpx_codec_enc_config_default(context->encoder->codec_interface(), &context->cfg, 0);
+  if (result)
+  {
+      
+      die("Failed to get default codec config.");
+  }
+  
+  
+  if (vpx_codec_enc_init(&context->codec, context->encoder->codec_interface(), &context->cfg, 0))
+  {
+      die("Failed to initialize encoder");
+  }
+  
+  context->cfg.g_w = context->video_info.frame_width;
+  context->cfg.g_h = context->video_info.frame_height;
+  context->cfg.g_timebase.num = context->video_info.time_base.numerator;
+  context->cfg.g_timebase.den = context->video_info.time_base.denominator;
+  // TODO: From an older version - check its good
+  context->cfg.rc_target_bitrate = width * height * context->cfg.rc_target_bitrate / context->cfg.g_w / context->cfg.g_h;
+  
+  context->writer = vpx_video_writer_open(context->filename, kContainerIVF, &context->video_info);
+  if (!context->writer)
+  {
+    die("Failed to open %s for writing.", context->filename);  
+  }
   
   return result;
 }
 
 int init_codec(encoder_context* context)
 {
-  return vpx_codec_enc_init(&context->codec, interface, &context->cfg, 0);
+    // TODO: Do something here, or delete this method
 }
   
 int init_image(encoder_context* context)
 {
-  context->raw = vpx_img_alloc(NULL, VPX_IMG_FMT_I420, context->width, context->height, 1);
+  context->raw = vpx_img_alloc(NULL, VPX_IMG_FMT_I420, context->video_info.frame_width, context->video_info.frame_height, 1);
   return context->raw == NULL;
 }
 
@@ -124,7 +139,10 @@ int do_encode(encoder_context* context, vpx_image_t* image, unsigned long durati
     switch(packet->kind) 
     {
       case VPX_CODEC_CX_FRAME_PKT:
-	write_webm_block(&context->encoder_output, &context->cfg, packet);
+          vpx_video_writer_write_frame(context->writer,
+                                           packet->data.frame.buf,
+                                           packet->data.frame.sz,
+                                           packet->data.frame.pts);
         break;
       default:
 	// we can also receive statistics packets
@@ -147,8 +165,7 @@ int encode_finish(encoder_context* context)
   // pass NULL, to signal that we're done
   result = do_encode(context, NULL, 1);
   
-  // XXX: 0 is an incorrect hash
-  write_webm_file_footer(&context->encoder_output, 1);
+  vpx_video_writer_close(context->writer);
   fflush(context->output);
   fclose(context->output);
   
