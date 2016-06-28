@@ -30,7 +30,7 @@ public class JnaLibraryLoader {
 	static private XvfbScreenshotInterface xvfbInterface;
 	
 	private static void addNativePath(String path) {
-		NativeLibrary.addSearchPath("vpx", path);
+		NativeLibrary.addSearchPath("vpx_mine", path);
 		NativeLibrary.addSearchPath("yuv", path);
 		NativeLibrary.addSearchPath("mkv", path);
 		NativeLibrary.addSearchPath("interface", path);
@@ -122,7 +122,7 @@ public class JnaLibraryLoader {
 	
 	private static void tryLoadLibraries() {
 
-		libVPX = (LibVPX) Native.loadLibrary("vpx", LibVPX.class);
+		libVPX = (LibVPX) Native.loadLibrary("vpx_mine", LibVPX.class);
 		yuvLib = (YUVLib) Native.loadLibrary("yuv", YUVLib.class);
 		libMKV = (LibMKV) Native.loadLibrary("mkv", LibMKV.class);
 		encoder = (EncoderInterface) Native.loadLibrary("interface", EncoderInterface.class);
