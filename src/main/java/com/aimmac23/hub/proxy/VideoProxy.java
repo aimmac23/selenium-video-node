@@ -1,6 +1,5 @@
 package com.aimmac23.hub.proxy;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
@@ -69,24 +67,24 @@ public class VideoProxy extends DefaultRemoteProxy {
 		}
 
 	}
-	
+
 	static RegistrationRequest transformRegistration(RegistrationRequest request) {
-		int maxSessions = request.getConfigAsInt(RegistrationRequest.MAX_SESSION, 1);
-		request.getConfiguration().put(RegistrationRequest.MAX_SESSION, 1);
-		
+		int maxSessions = request.getConfiguration().maxSession;
+		request.getConfiguration().maxSession = 1;
+
 		if(maxSessions != 1) {
-			log.warning("Reducing " + RegistrationRequest.MAX_SESSION + " value to 1: Video node does not support concurrent sessions");
+			log.warning("Reducing 'maxSession' value to 1: Video node does not support concurrent sessions");
 		}
-		
-		for(DesiredCapabilities caps : request.getCapabilities()) {
+
+		for(DesiredCapabilities caps : request.getConfiguration().capabilities) {
 			Object maxInstances = caps.getCapability(RegistrationRequest.MAX_INSTANCES);
 			caps.setCapability(RegistrationRequest.MAX_INSTANCES, "1");
 			if(maxInstances != null && !"1".equals(maxInstances)) {
-				log.warning("Reducing " + RegistrationRequest.MAX_INSTANCES + " for browser " + caps.getBrowserName() + 
+				log.warning("Reducing " + RegistrationRequest.MAX_INSTANCES + " for browser " + caps.getBrowserName() +
 						" to 1: Video node does not support concurrent sessions");
 			}
 		}
-			
+
 		return request;
 	}
 	
