@@ -1,9 +1,9 @@
-Version 1.11 01/11/2016
+Version 2.1 01/11/2016
 =======================
 
  * Properly fix issue #23, where JNA was picking up the system version of libvpx on Linux, causing the JVM to segfault.
 
-Version 1.10 01/11/2016
+Version 2.0 01/11/2016
 =======================
 
  * Update build to support Selenium 3 (contributed by mhardin)
