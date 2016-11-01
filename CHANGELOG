@@ -1,3 +1,8 @@
+Version 1.10 01/11/2016
+=======================
+
+ * Update build to support Selenium 3 (contributed by mhardin)
+
 Version 1.9 23/12/2015
 ======================
 
