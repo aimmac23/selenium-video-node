@@ -6,13 +6,13 @@ This guide assumes some familiarity with the Selenium Grid setup guide: https://
 
 Download:
 * The latest "selenium-server-standalone" JAR from http://selenium-release.storage.googleapis.com/index.html
-* The latest "selenium-video-node" JAR from https://aimmac23.com/public/maven-repository/com/aimmac23/selenium-video-node/
+* The latest "selenium-video-node" JAR from http://repo1.maven.org/maven2/com/aimmac23/selenium-video-node/
 
 ### Node setup
 
 A Selenium node can be launched by running:
 
-    java -cp selenium-video-node-1.5.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role wd
+    java -cp selenium-video-node-2.0.jar:selenium-server-standalone-3.0.1.jar org.openqa.grid.selenium.GridLauncherV3 -servlets com.aimmac23.node.servlet.VideoRecordingControlServlet -proxy com.aimmac23.hub.proxy.VideoProxy -role wd
 
 Note that on Windows, the classpath seperator (for the -cp argument) is ";" instead of ":" - Java will not report incorrect usage as an error, but you will get ClassNotFound exceptions.
 
@@ -22,7 +22,7 @@ If you are running this under Linux, then it may be convenient to run the Video 
     
 When starting up you should see a line saying something like:
 
-    08:47:44.173 INFO - started extra node servlet visible at : http://xxx:5555/extra/VideoRecordingControlServlet/*
+    08:47:44.173 INFO - binding com.aimmac23.node.servlet.VideoRecordingControlServlet to /extra/VideoRecordingControlServlet/*
 
 This means that the extra JAR file has been found, and the native code loaded.
 
@@ -33,7 +33,7 @@ It is also recommended to specify only the browers that your platform supports a
 
 We also need to add some extra functionality to the Selenium Hub to make this work:
 
-    java -cp selenium-video-node-1.5.jar:selenium-server-standalone-2.40.0.jar org.openqa.grid.selenium.GridLauncher -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
+    java -cp selenium-video-node-2.0.jar:selenium-server-standalone-3.0.1.jar org.openqa.grid.selenium.GridLauncherV3 -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet -role hub
 
 Note that again on Windows, the classpath separator should again be ";" instead of ":", otherwise you will get ClassNotFound exceptions.
 
