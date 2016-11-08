@@ -64,3 +64,24 @@ Sometimes the Hub will tell the test that the Session has been successfully clos
 
     -Dvideo.downloadTimeout=<timeout_in_milliseconds>
 
+## Hub Video information servlet
+
+The hub can also include information about the videos it is currently storing (such as the location), in case links to the videos need to be included in something else, such as a test report.
+
+To use this, add another servlet to the hub:
+
+    -servlets com.aimmac23.hub.servlet.HubVideoDownloadServlet,com.aimmac23.hub.servlet.HubVideoInfoServlet
+    
+You can then ask the Hub for information about videos it knows about:
+
+    http://127.0.0.1:4444/grid/admin/HubVideoInfoServlet/?sessionId=14da5f32-5556-4003-bf62-da0ae7653358
+    
+And the hub will reply with a JSON response:
+
+    {
+        "additional": {"path": "/tmp/videos/14da5f32-5556-4003-bf62-da0ae7653358.webm"},
+        "fileSize": 279497,
+        "storageType": "LOCAL_FILE"
+    }
+    
+To get file path information in the response, you will need to configure a video storage provider - see "Video Storage Arguments" above.
