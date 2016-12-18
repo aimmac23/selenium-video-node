@@ -19,14 +19,13 @@ import org.openqa.grid.internal.TestSession;
 import org.openqa.grid.selenium.proxy.DefaultRemoteProxy;
 import org.openqa.grid.web.servlet.handler.RequestType;
 import org.openqa.grid.web.servlet.handler.SeleniumBasedRequest;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 import com.aimmac23.hub.HubVideoRegistry;
 
 public class VideoProxy extends DefaultRemoteProxy {
 
-    private static final Logger log = Logger.getLogger(VideoProxy.class.getName());
+	private static final Logger log = Logger.getLogger(VideoProxy.class.getName());
 
 	private String serviceUrl;
 	boolean isCurrentlyRecording = false;
@@ -34,7 +33,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	private HttpHost remoteHost;
 	
 	public VideoProxy(RegistrationRequest request, Registry registry) {
-		super(transformRegistration(request), registry);
+		super(RegistrationRequestCorrector.correctRegistrationRequest(request), registry);
 		
 		serviceUrl = getRemoteHost() + "/extra/VideoRecordingControlServlet";
 		
@@ -66,26 +65,6 @@ public class VideoProxy extends DefaultRemoteProxy {
 			r.releaseConnection();
 		}
 
-	}
-
-	static RegistrationRequest transformRegistration(RegistrationRequest request) {
-		int maxSessions = request.getConfiguration().maxSession;
-		request.getConfiguration().maxSession = 1;
-
-		if(maxSessions != 1) {
-			log.warning("Reducing 'maxSession' value to 1: Video node does not support concurrent sessions");
-		}
-
-		for(DesiredCapabilities caps : request.getConfiguration().capabilities) {
-			Object maxInstances = caps.getCapability(RegistrationRequest.MAX_INSTANCES);
-			caps.setCapability(RegistrationRequest.MAX_INSTANCES, "1");
-			if(maxInstances != null && !"1".equals(maxInstances)) {
-				log.warning("Reducing " + RegistrationRequest.MAX_INSTANCES + " for browser " + caps.getBrowserName() +
-						" to 1: Video node does not support concurrent sessions");
-			}
-		}
-
-		return request;
 	}
 	
 	@Override
