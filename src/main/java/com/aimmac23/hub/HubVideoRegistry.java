@@ -53,6 +53,7 @@ public class HubVideoRegistry {
 			log.info("Using " + storageClass + " to store videos");
 			
 		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not initialize video store", e);
 			// throw a nasty error to hopefully prevent the Hub from trying to continue without this 
 			throw new Error("Could not initialize video store due to exception", e);
 		}
