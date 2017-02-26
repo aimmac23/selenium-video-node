@@ -61,6 +61,7 @@ public final class RegistrationRequestCorrector {
 			Method getConfigurationMethod = request.getClass().getMethod("getConfiguration");
 			Object configuration = getConfigurationMethod.invoke(request);
 			Field maxSessionField = configuration.getClass().getField("maxSession");
+			maxSessionField.setAccessible(true);
 			Integer maxSessions = (Integer) maxSessionField.get(configuration);
 
 			if(maxSessions != null && maxSessions != 1) {
