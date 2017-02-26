@@ -37,7 +37,7 @@ Changes the backend implementation for how we store videos. This can be either a
 
 ### com.aimmac23.hub.videostorage.LocalTempFileStore (default)
 
-This implementation stores the videos as temporary files, and deletes them if too many accumulate. It also tends to forget about currently stored videos if the hub gets restarted.
+This implementation stores the videos as temporary files, and deletes them if too many accumulate (maximum of 200 videos). It also tends to forget about currently stored videos if the hub gets restarted.
 
 There are currently no configurable options for this plugin.
 
