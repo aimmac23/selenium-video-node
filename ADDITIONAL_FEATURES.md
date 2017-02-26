@@ -3,16 +3,27 @@ Additional Features
 
 # Video Node Arguments
 
+## Custom Framerate
+
     -Dvideo.framerate=<value>
 
 Sets the framerate that we try to record video at - default value is "15" frames a second.
 
-Selecting higher values seems to have no harmful side-effects (apart from not getting the requested framerate), while selecting lower values will consume less CPU resources.
+Selecting higher values has no harmful side-effects (apart from not getting the requested framerate), while selecting lower values will consume less CPU time.
 
+## Xvfb Acceleration (Linux/Unix only)
 
-    -D-Dvideo.xvfbscreen=<path>
+Xvfb is a virtual display on Linux/Unix systems, which only renders the screen in memory (so no graphics cards/monitors are involved). With some additional configuration we can use some Xvfb features to improve video performance - see [Xvfb Acceleration](XVFB_ACCELERATION.md) on how to configure it.
+
+## X11 Acceleration (Linux/Unix only)
+
+As of version 2.3 we can use some simplified screenshot code to grab the screen image (currently off by default). To use this, pass this option to the node:
+
+    -Dvideo.source=X11
     
-Enables Xvfb video encoding acceleration (Linux only, use of Xvfb virtual X Server required). See [Xvfb Acceleration](XVFB_ACCELERATION.md) on how to configure it.
+You should then see the node print this at startup:
+
+    Using X11 Native Screenshot Source
 
 # Hub Arguments
 
