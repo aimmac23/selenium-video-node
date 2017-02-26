@@ -27,7 +27,7 @@ Finally, we have to tell the Selenium Node where to find the screen data. Modify
 
 The node should then say at startup:
 
-    22:38:00.670 INFO - Using Xvfb acceleration
+    Using Xvfb File Screenshot Source
 
 To say that Xvfb acceleration is enabled.
 
