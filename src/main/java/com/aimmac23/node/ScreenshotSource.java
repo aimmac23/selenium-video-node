@@ -13,6 +13,10 @@ public interface ScreenshotSource {
 	
 	int getHeight();
 	
+	/**
+	 * @return A human-readable string identifier for this screenshot source
+	 */
+	String getSourceName();
 	
 
 }

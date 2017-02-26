@@ -40,7 +40,7 @@ public class RecordVideoCallable implements Callable<File> {
 				
 		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		
-		log.info("Starting new recording at " + targetFramerate + " with resolution " 
+		log.info("Starting new recording at " + targetFramerate + " fps with resolution " 
 		+ screenshotSource.getWidth() + "x" + screenshotSource.getHeight());
 		Pointer context = encoder.create_context(outputFile.getCanonicalPath());
 		int result = encoder.init_encoder(context, screenshotSource.getWidth(),

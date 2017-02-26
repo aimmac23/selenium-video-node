@@ -68,4 +68,9 @@ public class X11ScreenshotSource implements ScreenshotSource {
 		return x11ScreenshotSource.x11_screenshot_source_getHeight(screenshotContext);
 	}
 
+	@Override
+	public String getSourceName() {
+		return "X11 Native";
+	}
+
 }

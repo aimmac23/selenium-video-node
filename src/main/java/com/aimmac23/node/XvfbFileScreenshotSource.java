@@ -56,4 +56,9 @@ public class XvfbFileScreenshotSource implements ScreenshotSource {
 		}
 	}
 
+	@Override
+	public String getSourceName() {
+		return "Xvfb File";
+	}
+
 }

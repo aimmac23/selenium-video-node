@@ -25,6 +25,7 @@ public class VideoRecordController {
 		executor.prestartAllCoreThreads();
 		
 		String framerateString = System.getProperty("video.framerate", "15");
+		String videoSourceString = System.getProperty("video.source", "robot");
 		String xvfbLocationString = System.getProperty("video.xvfbscreen", null);
 		
 		File xvfbLocation = null;
@@ -48,17 +49,25 @@ public class VideoRecordController {
 		
 		targetFramerate = Integer.parseInt(framerateString);
 		
-		log.info("Will attempt to record at  " + targetFramerate + " frames per second - adjust this value " +
+		log.info("Will attempt to record at " + targetFramerate + " frames per second - adjust this value " +
 		" by setting -Dvideo.framerate=<value>");
 		
 		try {
+			// TODO: The usage of this additional flag implies using the xvfb screenshot source - fix this in a future release?
 			if(xvfbLocation != null) {
 				screenshotSource = new XvfbFileScreenshotSource(xvfbLocation);
-				log.info("Using Xvfb acceleration");
 			}
-			else {
+			else if("x11".equalsIgnoreCase(videoSourceString)){
 				screenshotSource = new X11ScreenshotSource();
 			}
+			else if("robot".equalsIgnoreCase(videoSourceString)) {
+				screenshotSource = new RobotScreenshotSource();
+			}
+			else {
+				throw new IllegalArgumentException("Unrecognised screenshot source: " + screenshotSource);
+			}
+			
+			log.info("Using " + screenshotSource.getSourceName() + " Screenshot Source");
 			
 			screenshotSource.doStartupSanityChecks();
 		}

@@ -70,4 +70,9 @@ public class RobotScreenshotSource implements ScreenshotSource {
 					+ bitAllocations[0] + "-" + bitAllocations[1] + "-" + bitAllocations[2]);
 		}
 	}
+
+	@Override
+	public String getSourceName() {
+		return "Java AWT Robot";
+	}
 }
