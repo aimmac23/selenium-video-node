@@ -57,7 +57,7 @@ public class VideoRecordController {
 				log.info("Using Xvfb acceleration");
 			}
 			else {
-				screenshotSource = new RobotScreenshotSource();
+				screenshotSource = new X11ScreenshotSource();
 			}
 			
 			screenshotSource.doStartupSanityChecks();

@@ -26,8 +26,9 @@ public class JnaLibraryLoader {
 	static private YUVLib yuvLib;
 	static private LibMKV libMKV;
 	static private EncoderInterface encoder;
-	// optional dependency
+	// optional dependencies
 	static private XvfbScreenshotInterface xvfbInterface;
+	static private X11ScreenshotSource x11ScreenshotSource;
 	
 	private static void addNativePath(String path) {
 		NativeLibrary.addSearchPath("vpx", path);
@@ -36,6 +37,8 @@ public class JnaLibraryLoader {
 		NativeLibrary.addSearchPath("interface", path);
 		
 		NativeLibrary.addSearchPath("xvfb_interface", path);
+		NativeLibrary.addSearchPath("x11_screenshot_source", path);
+
 	}
 	
 	private static File extractJNABinariesIfAvailable() {
@@ -199,6 +202,14 @@ public class JnaLibraryLoader {
 		}
 		return xvfbInterface;
 	}
+	
+	public static X11ScreenshotSource getX11ScreenshotSource() {
+		if(x11ScreenshotSource == null) {
+			x11ScreenshotSource = (X11ScreenshotSource) Native.loadLibrary("x11_screenshot_source", X11ScreenshotSource.class);
+		}
+		return x11ScreenshotSource;
+	}
+	
 	
 	private static enum BitDepth {
 		BIT_32("32bit"), BIT_64("64bit");
