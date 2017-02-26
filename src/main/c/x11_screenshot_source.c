@@ -97,7 +97,34 @@ X11ScreenshotContext* x11_screenshot_source_init()
 
 char* x11_screenshot_source_sanityChecks(X11ScreenshotContext* context)
 {
-    return NULL;
+    // take a screenshot, just to check that the image data is in the correct format
+    if(!XShmGetImage (context->display, DefaultRootWindow(context->display), context->image, 0, 0, AllPlanes))
+    {
+        // from testing, if this step doesn't work its going to print out an X11 error and kill the process, rather than returning
+        return "Unable to take screenshot";
+    }
+    
+    switch(image->bits_per_pixel)
+    {
+        case 24:
+            // I'm fairly sure this can be made to work, but I'd rather see a modern X11 server use it first.
+            return "X11 Image is a 24-bit image. Please file a bug against this project to get support added for it";           
+            
+        case 32:
+            // if the Pixels are ARGB/RGB:
+            if (context->image->red_mask   == 0xff0000 && image->green_mask == 0x00ff00 && image->blue_mask  == 0x0000ff ) {
+                //success!
+                return NULL;
+            }
+            else 
+            {
+                // This doesn't have to be a fatal error, but the results are hilarious
+                perror("X11 Image is a 32 bit image, but the pixel colour format is unrecognised. We will attempt to continue anyway, but the video colours may be completely incorrect");
+                return NULL;   
+            }
+        default:
+            return "Unrecognised X11 display bit depth";
+    }
 }
 
 void* x11_screenshot_source_getScreenshot(X11ScreenshotContext* context)
