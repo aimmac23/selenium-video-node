@@ -14,18 +14,126 @@
 
 #include <stdio.h>
 
-void x11_screenshot_source_init()
+typedef struct X11ScreenshotContext 
 {
+    Display* display;
+    Screen* screen;
+    
+    int screen_num;
+    int screen_width;
+    int screen_height;    
+    
+    XShmSegmentInfo* shminfo;
+    XImage *image;
+    
+    
+} X11ScreenshotContext;
+
+X11ScreenshotContext* x11_screenshot_source_init()
+{
+    // open the default display specified by the DISPLAY environment variable
+    Display* display = XOpenDisplay(NULL);
+    
+    if(!display)
+    {
+        perror("Couldn't open display");
+        return NULL;
+    }
+    
+    if(!XShmQueryExtension(display))
+    {
+        perror("Shared memory extensions unavailable!");
+        return NULL;
+    }
+    
+    Screen* screen = DefaultScreenOfDisplay(display);
+    
+    if(!screen)
+    {
+        perror("Couldn't get default screen");
+        return NULL;
+    }
+    
+    
+    int screen_width = WidthOfScreen(screen);
+    int screen_height = HeightOfScreen(screen);
+    
+    int screen_num = DefaultScreen(display);
+    
+    XShmSegmentInfo* shminfo = malloc(sizeof(XShmSegmentInfo));
+    
+    XImage *image;
+    
+    image=XShmCreateImage(display,DefaultVisual(display,0), DefaultDepth(display, 0), ZPixmap,NULL,shminfo,screen_width,screen_height);
+    
+    if(!image)
+    {
+        perror("Couldn't create shared image");
+        return NULL;
+    }
+    
+    shminfo->shmid=shmget (IPC_PRIVATE,image->bytes_per_line*image->height,IPC_CREAT|0777);
+    shminfo->shmaddr= image->data = shmat (shminfo->shmid, NULL, 0);
+    shminfo->readOnly = False;
+    
+    if(!XShmAttach(display, shminfo)) 
+    {
+        perror("X Server couldn't attach to shared memory!");
+        return NULL;
+    }
+
+    X11ScreenshotContext* toReturn = malloc(sizeof(X11ScreenshotContext));
+    toReturn->display = display;
+    toReturn->screen = screen;
+    toReturn->screen_num = screen_num;
+    toReturn->screen_width = screen_width;
+    toReturn->screen_height = screen_height;
+    toReturn->shminfo = shminfo;
+    toReturn->image = image;
+    
+    
+    return toReturn;
 }
 
-char* x11_screenshot_source_sanityChecks(void* context)
+char* x11_screenshot_source_sanityChecks(X11ScreenshotContext* context)
 {
+    return NULL;
+}
+
+void* x11_screenshot_source_getScreenshot(X11ScreenshotContext* context)
+{
+    
+    if(!XShmGetImage (context->display, DefaultRootWindow(context->display), context->image, 0, 0, AllPlanes))
+    {
+        perror("Couldn't get image data");
+        return NULL;
+    }
+    
+    return context->image->data;
+
+}
+
+void x11_screenshot_source_destroy(X11ScreenshotContext* context)
+{
+    // detach X11 from the shared memory, and release objects
+    XShmDetach (context->display, context->shminfo);
+    XDestroyImage (context->image);
+    // close shared memory resources
+    shmdt (context->shminfo->shmaddr);
+    shmctl (context->shminfo->shmid, IPC_RMID, 0);
+    // close the X Display connection
+    XCloseDisplay(context->display);
     
 }
 
-void* x11_screenshot_source_getScreenshot(void* context)
+int x11_screenshot_source_getWidth(X11ScreenshotContext* context)
 {
-    
+   return context->screen_width; 
+}
+
+int x11_screenshot_source_getHeight(X11ScreenshotContext* context)
+{
+    return context->screen_height;
 }
 
 int main()

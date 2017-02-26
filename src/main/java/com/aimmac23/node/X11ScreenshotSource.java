@@ -19,15 +19,21 @@ public class X11ScreenshotSource implements ScreenshotSource {
 
 	public X11ScreenshotSource() {
 		x11ScreenshotSource = JnaLibraryLoader.getX11ScreenshotSource();
-	}
-	
-	@Override
-	public void doStartupSanityChecks() {
 		
 		screenshotContext = x11ScreenshotSource.x11_screenshot_source_init();
 		
 		if(screenshotContext == null) {
 			throw new IllegalStateException("Couldn't initialise X11 screenshot functionality. Check the logs for more information.");
+		}
+	}
+	
+	@Override
+	public void doStartupSanityChecks() {
+		
+		String result = x11ScreenshotSource.x11_screenshot_source_sanityChecks(screenshotContext);
+		
+		if(result != null) {
+			throw new IllegalStateException("Native X11 code failed to initialize - result: " + result);
 		}
 		
 		// we have to release some shared memory resources on exit, otherwise the X server may leak memory
