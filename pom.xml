@@ -24,12 +24,15 @@
             <name>Alasdair Macmillan</name>
         </developer>
     </developers>
+    <properties>
+        <selenium.version>3.1.0</selenium.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-server</artifactId>
-            <version>3.1.0</version>
+            <version>${selenium.version}</version>
             <scope>provided</scope>
         </dependency>
 	<dependency>
