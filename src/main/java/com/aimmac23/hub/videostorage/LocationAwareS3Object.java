@@ -14,7 +14,7 @@ public final class LocationAwareS3Object {
 	public LocationAwareS3Object(S3Object videoObject, String bucketName, String fileName) {
 		this.s3Object = videoObject;
 		this.bucketName = bucketName;
-		this.fileName = fileName;
+		this.fileName = LocationAwareS3Object.formatFileName(fileName);
 	}
 
 	public S3Object getS3Object() {
@@ -27,5 +27,9 @@ public final class LocationAwareS3Object {
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	public static String formatFileName(final String fileName) {
+		return String.format("%s.%s", fileName, "mp4");
 	}
 }

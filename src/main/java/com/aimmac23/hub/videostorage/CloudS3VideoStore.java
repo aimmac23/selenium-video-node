@@ -42,14 +42,16 @@ public class CloudS3VideoStore implements IVideoStore {
 	}
 
 	@Override
-	public void storeVideo(InputStream videoStream, long contentLength, String mimeType, String sessionId, SessionInfoBean sessionInfo) throws Exception {
+	public void storeVideo(InputStream videoStream, long contentLength, String mimeType, String sessionId,
+	                       SessionInfoBean sessionInfo) throws Exception {
 		// Set correct content-length and content-type headers
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(contentLength);
 		metadata.setContentType(mimeType);
 
 		// Make the videos publicly readable
-		PutObjectRequest request = new PutObjectRequest(bucketName, sessionId, videoStream, metadata);
+		PutObjectRequest request = new PutObjectRequest(bucketName,
+				LocationAwareS3Object.formatFileName(sessionId), videoStream, metadata);
 		request.setCannedAcl(CannedAccessControlList.PublicRead);
 
 		// Upload the object
