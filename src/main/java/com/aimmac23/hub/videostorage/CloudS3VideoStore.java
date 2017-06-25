@@ -2,8 +2,7 @@ package com.aimmac23.hub.videostorage;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 
 import java.io.InputStream;
 
@@ -44,17 +43,22 @@ public class CloudS3VideoStore implements IVideoStore {
 
 	@Override
 	public void storeVideo(InputStream videoStream, long contentLength, String mimeType, String sessionId, SessionInfoBean sessionInfo) throws Exception {
+		// Set correct content-length and content-type headers
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(contentLength);
 		metadata.setContentType(mimeType);
 
-		client.putObject(bucketName, sessionId, videoStream, metadata);
+		// Make the videos publicly readable
+		PutObjectRequest request = new PutObjectRequest(bucketName, sessionId, videoStream, metadata);
+		request.setCannedAcl(CannedAccessControlList.PublicRead);
+
+		// Upload the object
+		client.putObject(request);
 	}
 
 	@Override
 	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception {
 		final S3Object videoObject = client.getObject(bucketName, sessionId);
-
 		return new CloudS3VideoDownloadContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
 	}
 
