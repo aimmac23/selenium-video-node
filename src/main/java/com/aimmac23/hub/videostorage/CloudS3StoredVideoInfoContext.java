@@ -21,7 +21,7 @@ public class CloudS3StoredVideoInfoContext implements StoredVideoInfoContext {
 	@Override
 	public boolean isVideoFound() {
 		try {
-			return (video.getS3Object().getObjectContent().available() > 0);
+			return (video != null && video.getS3Object().getObjectContent().available() > 0);
 		} catch (IOException e) {
 			return false;
 		}
@@ -30,7 +30,7 @@ public class CloudS3StoredVideoInfoContext implements StoredVideoInfoContext {
 	@Override
 	public Long getContentLengthIfKnown() {
 		try {
-			return (long) video.getS3Object().getObjectContent().available();
+			return video != null ? (long) video.getS3Object().getObjectContent().available() : 0L;
 		} catch (IOException e) {
 			return 0L;
 		}

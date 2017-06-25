@@ -60,7 +60,8 @@ public class CloudS3VideoStore implements IVideoStore {
 
 	@Override
 	public StoredVideoInfoContext getVideoInformation(String sessionId) throws Exception {
-		return null;
+		final S3Object videoObject = client.getObject(bucketName, sessionId);
+		return new CloudS3StoredVideoInfoContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
 	}
 
 	@Override
