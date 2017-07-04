@@ -177,7 +177,16 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <exclude>junit:junit</exclude>
                                     <include>org.json:json</include>
+                                    <include>com.amazonaws:aws-java-sdk-s3</include>
+                                    <include>com.amazonaws:aws-java-sdk-kms</include>
+                                    <include>com.amazonaws:aws-java-sdk-core</include>
+                                    <include>software.amazon.ion:ion-java</include>
+                                    <include>com.amazonaws:jmespath-java</include>
+                                    <include>joda-time:joda-time</include>
+                                    <include>com.fasterxml.jackson.core:*</include>
+                                    <include>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
