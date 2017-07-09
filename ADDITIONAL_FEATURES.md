@@ -65,6 +65,23 @@ Optionally provide a username to use when uploading the video.
     
 Optionally provide a password to use when uploading the video.
 
+### com.aimmac23.hub.videostorage.CloudS3VideoStore
+
+Uploads videos to [Amazon Simple Cloud Storage](https://aws.amazon.com/s3). This plugin is useful in a Grid architecture. If you have set up multiple nodes managed by a central Hub then you need to solve the problem of storing videos in a centralized way.    
+
+To use this storage you will need to create an S3 bucket and a set of [IAM credentials](https://aws.amazon.com/iam/) to be able to upload files to it.
+ 
+After that just configure these environment variables 
+
+```shell
+AWS_BUCKET_NAME: The S3 bucket name where you want to upload the videos
+AWS_ACCESS_KEY_ID: IAM credential access key id
+AWS_SECRET_ACCESS_KEY: IAM credential secret access key
+(Optional) AWS_REGION: The S3 region where you've created your bucket. Only set this if you're using any other region except the default "us-east-1"
+```
+
+After a video has been uploaded you can use the [Hub Video info servlet](#hub-video-information-servlet) to obtain its URL on S3.  
+
 ### User-Defined plugin
 
 You can also create your own plugin to handle storage, but it has to implement com.aimmac23.hub.videostorage.IVideoStore.
@@ -87,12 +104,20 @@ You can then ask the Hub for information about videos it knows about:
 
     http://127.0.0.1:4444/grid/admin/HubVideoInfoServlet/?sessionId=14da5f32-5556-4003-bf62-da0ae7653358
     
-And the hub will reply with a JSON response:
+And the hub will reply with a JSON response. This example uses the LOCAL_FILE video storage.
 
     {
         "additional": {"path": "/tmp/videos/14da5f32-5556-4003-bf62-da0ae7653358.webm"},
         "fileSize": 279497,
         "storageType": "LOCAL_FILE"
+    }
+    
+An example of a response if using [S3](#com.aimmac23.hub.videostorage.CloudS3VideoStore):
+
+    {
+        "additional": {"path": "https://s3.amazonaws.com/selenium-grid-videos/14da5f32-5556-4003-bf62-da0ae7653358.webm"},
+        "fileSize": 279497,
+        "storageType": "CLOUD_AWS_S3"
     }
     
 To get file path information in the response, you will need to configure a video storage provider - see "Video Storage Arguments" above.
