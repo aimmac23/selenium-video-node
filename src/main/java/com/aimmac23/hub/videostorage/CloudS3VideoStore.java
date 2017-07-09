@@ -84,7 +84,7 @@ public class CloudS3VideoStore implements IVideoStore {
 	public StoredVideoInfoContext getVideoInformation(String sessionId) throws Exception {
 		log.fine(String.format("Downloading video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
 
-		final S3Object videoObject = client.getObject(bucketName, sessionId);
+		final S3Object videoObject = client.getObject(bucketName, LocationAwareS3Object.formatFileName(sessionId));
 		return new CloudS3StoredVideoInfoContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
 	}
 
