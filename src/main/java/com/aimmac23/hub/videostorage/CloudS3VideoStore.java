@@ -98,7 +98,7 @@ public class CloudS3VideoStore implements IVideoStore {
 	 */
 	private void assertEnvironmentVars(List<String> varNames) {
 		for (String varName : varNames) {
-			String var = System.getProperty(varName);
+			String var = System.getenv(varName);
 
 			if (var == null || var.isEmpty()) {
 				throw new RuntimeException(String.format("Invalid value for %s! " +
