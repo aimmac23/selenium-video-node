@@ -51,7 +51,7 @@ public class CloudS3VideoStore implements IVideoStore {
 		// AWS client automatically picks up the env. variables
 		client = AmazonS3ClientBuilder.defaultClient();
 
-		bucketName = System.getProperty("AWS_BUCKET_NAME");
+		bucketName = System.getenv("AWS_BUCKET_NAME");
 	}
 
 	@Override
