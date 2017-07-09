@@ -23,9 +23,11 @@ import java.util.List;
  *
  * This Store depends on several environment variables:
  * <ul>
- *   <li>AWS_REGION: One of the multiple AWS regions supported, by default us-east-1.
- *   This must be specified in order to upload the videos to the correct bucket
- *   if you've configured any other region other than us-east-1.</li>
+ *   <li>AWS_REGION: One of the multiple AWS regions supported. If you have not selected
+ *   any region while configuring your bucket then it has been created in US standard
+ *   and has the following identifier: "us-east-1". This must be specified in order to
+ *   upload the videos to the correct bucket.
+ *   @see com.amazonaws.regions.Regions for all the supported region identifiers.</li>
  *   <li>AWS_BUCKET_NAME: The name of the AWS bucket configured from AWS S3.</li>
  *   <li>AWS_ACCESS_KEY_ID: The AWS access key credential, configurable from AWS IAM.</li>
  *   <li>AWS_SECRET_ACCESS_KEY: The AWS secret key credential, configurable from AWS IAM.</li>
@@ -89,7 +91,7 @@ public class CloudS3VideoStore implements IVideoStore {
 	 * any one of them is not found.
 	 */
 	private void assertEnvironmentVars() {
-		assertEnvironmentVars(Arrays.asList("AWS_BUCKET_NAME", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"));
+		assertEnvironmentVars(Arrays.asList("AWS_REGION", "AWS_BUCKET_NAME", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"));
 	}
 
 	/**

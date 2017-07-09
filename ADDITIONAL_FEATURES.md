@@ -75,9 +75,9 @@ After that just configure these environment variables
 
 ```shell
 AWS_BUCKET_NAME: The S3 bucket name where you want to upload the videos
+AWS_REGION: The S3 region where you've created your bucket. Note that if you are using the default region this must be set to "us-east-1".
 AWS_ACCESS_KEY_ID: IAM credential access key id
 AWS_SECRET_ACCESS_KEY: IAM credential secret access key
-(Optional) AWS_REGION: The S3 region where you've created your bucket. Only set this if you're using any other region except the default "us-east-1"
 ```
 
 After a video has been uploaded you can use the [Hub Video info servlet](#hub-video-information-servlet) to obtain its URL on S3.  
