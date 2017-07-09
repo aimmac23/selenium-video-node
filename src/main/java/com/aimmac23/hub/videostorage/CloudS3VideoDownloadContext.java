@@ -35,7 +35,7 @@ public class CloudS3VideoDownloadContext implements StoredVideoDownloadContext {
 		try {
 			return (long) video.getS3Object().getObjectContent().available();
 		} catch (IOException e) {
-			return 0L;
+			return null;
 		}
 	}
 
