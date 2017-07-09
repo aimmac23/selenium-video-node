@@ -23,7 +23,7 @@ public class CloudS3StoredVideoInfoContext implements StoredVideoInfoContext {
 		try {
 			return (video != null && video.getS3Object().getObjectContent().available() > 0);
 		} catch (IOException e) {
-			return false;
+			throw new RuntimeException("S3 video not accessible", e);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class CloudS3StoredVideoInfoContext implements StoredVideoInfoContext {
 		try {
 			return video != null ? (long) video.getS3Object().getObjectContent().available() : 0L;
 		} catch (IOException e) {
-			return 0L;
+			return null;
 		}
 	}
 
