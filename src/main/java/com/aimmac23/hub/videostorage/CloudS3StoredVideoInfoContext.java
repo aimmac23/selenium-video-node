@@ -1,53 +1,41 @@
 package com.aimmac23.hub.videostorage;
 
-import java.io.IOException;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Context information for AWS S3 stored videos
  */
 public class CloudS3StoredVideoInfoContext implements StoredVideoInfoContext {
-	private final LocationAwareS3Object video;
+	private final ObjectMetadata metadata;
+	private final String bucketName;
+	private final String videoFileName;
 
-	private static final Logger log = Logger.getLogger(CloudS3StoredVideoInfoContext.class.getName());
-
-	CloudS3StoredVideoInfoContext(LocationAwareS3Object videoObject) {
-		this.video = videoObject;
+	CloudS3StoredVideoInfoContext(ObjectMetadata metadata, String bucketName, String videoFileName) {
+		this.metadata = metadata;
+		this.bucketName = bucketName;
+		this.videoFileName = videoFileName;
 	}
 
 	@Override
 	public boolean isVideoFound() {
-		try {
-			return (video != null && video.getS3Object().getObjectContent().available() > 0);
-		} catch (IOException e) {
-			throw new RuntimeException("S3 video not accessible", e);
-		}
+		return metadata != null;
 	}
 
 	@Override
 	public Long getContentLengthIfKnown() {
-		try {
-			return video != null ? (long) video.getS3Object().getObjectContent().available() : 0L;
-		} catch (IOException e) {
-			return null;
-		}
+		return metadata.getContentLength();
 	}
 
 	@Override
-	public void close() {
-		try {
-			video.getS3Object().close();
-		} catch (IOException e) {
-			log.warning("Unable to close InputStream, this may lead to resource leaks!");
-		}
-	}
+	public void close() {}
 
 	@Override
 	public Map<String, Object> additionalInformation() {
 		return new HashMap<String, Object>(Collections.singletonMap("path",
-				String.format("https://%s.s3.amazonaws.com/%s", video.getBucketName(), video.getFileName())));
+				String.format("https://%s.s3.amazonaws.com/%s", bucketName, videoFileName)));
 	}
 }

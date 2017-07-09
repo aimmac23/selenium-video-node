@@ -18,11 +18,7 @@ public class CloudS3VideoDownloadContext implements StoredVideoDownloadContext {
 
 	@Override
 	public boolean isVideoFound() {
-		try {
-			return (video.getS3Object().getObjectContent().available() > 0);
-		} catch (IOException e) {
-			return false;
-		}
+		return (video.getS3Object() != null);
 	}
 
 	@Override
@@ -32,11 +28,7 @@ public class CloudS3VideoDownloadContext implements StoredVideoDownloadContext {
 
 	@Override
 	public Long getContentLengthIfKnown() {
-		try {
-			return (long) video.getS3Object().getObjectContent().available();
-		} catch (IOException e) {
-			return null;
-		}
+		return video.getS3Object().getObjectMetadata().getContentLength();
 	}
 
 	@Override
