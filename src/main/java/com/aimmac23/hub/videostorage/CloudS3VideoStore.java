@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.*;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A plugin to store videos on Amazon Web Services S3 cloud storage.
@@ -36,6 +37,7 @@ import java.util.List;
  * @author Ovidiu Bute
  */
 public class CloudS3VideoStore implements IVideoStore {
+	public static final Logger log = Logger.getLogger(CloudS3VideoStore.class.getName());
 	private AmazonS3 client;
 	private String bucketName;
 
@@ -66,17 +68,22 @@ public class CloudS3VideoStore implements IVideoStore {
 		request.setCannedAcl(CannedAccessControlList.PublicRead);
 
 		// Upload the object
+		log.fine(String.format("Uploading video with sessionId=%s to AWS S3 bucket=%s", sessionId, bucketName));
 		client.putObject(request);
 	}
 
 	@Override
 	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception {
+		log.fine(String.format("Downloading video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
+
 		final S3Object videoObject = client.getObject(bucketName, sessionId);
 		return new CloudS3VideoDownloadContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
 	}
 
 	@Override
 	public StoredVideoInfoContext getVideoInformation(String sessionId) throws Exception {
+		log.fine(String.format("Downloading video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
+
 		final S3Object videoObject = client.getObject(bucketName, sessionId);
 		return new CloudS3StoredVideoInfoContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
 	}
