@@ -47,7 +47,6 @@ public class CloudS3VideoStore implements IVideoStore {
 		// AWS client automatically picks up the env. variables
 		client = AmazonS3ClientBuilder.defaultClient();
 
-		// Optional, if not defined then bucket is in the US standard region
 		bucketName = System.getProperty("AWS_BUCKET_NAME");
 	}
 
