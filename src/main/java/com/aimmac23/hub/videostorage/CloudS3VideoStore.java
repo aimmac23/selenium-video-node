@@ -40,6 +40,7 @@ public class CloudS3VideoStore implements IVideoStore {
 	public static final Logger log = Logger.getLogger(CloudS3VideoStore.class.getName());
 	private AmazonS3 client;
 	private String bucketName;
+	private String awsRegion;
 
 	/**
 	 * CloudS3VideoStore constructor
@@ -52,6 +53,7 @@ public class CloudS3VideoStore implements IVideoStore {
 		client = AmazonS3ClientBuilder.defaultClient();
 
 		bucketName = System.getenv("AWS_BUCKET_NAME");
+		awsRegion = System.getenv("AWS_REGION");
 	}
 
 	@Override
@@ -85,7 +87,8 @@ public class CloudS3VideoStore implements IVideoStore {
 		log.fine(String.format("Retrieving video metadata with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
 
 		final ObjectMetadata objectMetadata = client.getObjectMetadata(bucketName, LocationAwareS3Object.formatFileName(sessionId));
-		return new CloudS3StoredVideoInfoContext(objectMetadata, bucketName, LocationAwareS3Object.formatFileName(sessionId));
+		return new CloudS3StoredVideoInfoContext(objectMetadata, bucketName, LocationAwareS3Object.formatFileName(sessionId),
+				Region.fromValue(awsRegion));
 	}
 
 	@Override
