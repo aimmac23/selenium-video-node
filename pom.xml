@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aimmac23</groupId>
     <artifactId>selenium-video-node</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
     <name>selenium-video-node</name>
     <description>Selenium Grid plugin that records videos of running tests</description>
     <packaging>jar</packaging>
@@ -28,6 +28,18 @@
         <selenium.version>3.1.0</selenium.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>1.11.106</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -35,11 +47,15 @@
             <version>${selenium.version}</version>
             <scope>provided</scope>
         </dependency>
-	<dependency>
+	    <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20080701</version>
-	</dependency>
+	    </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+        </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
@@ -52,7 +68,6 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
@@ -160,9 +175,19 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <artifactSet>
                                 <includes>
+                                    <exclude>junit:junit</exclude>
                                     <include>org.json:json</include>
+                                    <include>com.amazonaws:aws-java-sdk-s3</include>
+                                    <include>com.amazonaws:aws-java-sdk-kms</include>
+                                    <include>com.amazonaws:aws-java-sdk-core</include>
+                                    <include>software.amazon.ion:ion-java</include>
+                                    <include>com.amazonaws:jmespath-java</include>
+                                    <include>joda-time:joda-time</include>
+                                    <include>com.fasterxml.jackson.core:*</include>
+                                    <include>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
