@@ -14,16 +14,6 @@ import org.apache.http.HttpStatus;
 /**
  * A plugin to store videos on Amazon Web Services S3 cloud storage.
  *
- * This should be used when:
- * <ul>
- * <li>You would like to store videos for a longer period of time for auditing</li>
- * <li>Your Selenium Grid nodes do not have sufficient disk space to store videos</li>
- * <li>You would like to retrieve the videos on your Selenium Grid Nodes after each session.
- * This can be achieved with file storage but using S3 is much simpler as the nodes
- * can just download the videos via absolute URLs from S3.</li>
- * <li>You don't want the Hub to forget about videos over restarts.</li>
- * </ul>
- *
  * This Store depends on several environment variables:
  * <ul>
  *   <li>AWS_REGION: One of the multiple AWS regions supported. If you have not selected

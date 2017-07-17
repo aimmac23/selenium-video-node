@@ -67,7 +67,7 @@ Optionally provide a password to use when uploading the video.
 
 ### com.aimmac23.hub.videostorage.CloudS3VideoStore
 
-Uploads videos to [Amazon Simple Cloud Storage](https://aws.amazon.com/s3). This plugin is useful in a Grid architecture. If you have set up multiple nodes managed by a central Hub then you need to solve the problem of storing videos in a centralized way.    
+Uploads videos to [Amazon Simple Cloud Storage](https://aws.amazon.com/s3). Note that the uploaded videos are set to be publicly-readable, unless the AWS bucket has more specific access control permissions applied. 
 
 To use this storage you will need to create an S3 bucket and a set of [IAM credentials](https://aws.amazon.com/iam/) to be able to upload files to it.
  
