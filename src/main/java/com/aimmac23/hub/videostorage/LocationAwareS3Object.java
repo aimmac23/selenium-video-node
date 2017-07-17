@@ -30,6 +30,6 @@ public final class LocationAwareS3Object {
 	}
 
 	public static String formatFileName(final String fileName) {
-		return String.format("%s.%s", fileName, "mp4");
+		return String.format("%s.%s", fileName, "mkv");
 	}
 }
