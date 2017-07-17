@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.http.HttpStatus;
+
 /**
  * A plugin to store videos on Amazon Web Services S3 cloud storage.
  *
@@ -78,17 +80,41 @@ public class CloudS3VideoStore implements IVideoStore {
 	public StoredVideoDownloadContext retrieveVideo(String sessionId) throws Exception {
 		log.fine(String.format("Downloading video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
 
-		final S3Object videoObject = client.getObject(bucketName, LocationAwareS3Object.formatFileName(sessionId));
-		return new CloudS3VideoDownloadContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
+		try {
+		    final S3Object videoObject = client.getObject(bucketName, LocationAwareS3Object.formatFileName(sessionId));
+		    return new CloudS3VideoDownloadContext(new LocationAwareS3Object(videoObject, bucketName, sessionId));
+		} catch(AmazonS3Exception e) {
+		    if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+		        log.info(String.format("Couldn't find video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
+		        return new CloudS3VideoDownloadContext(new LocationAwareS3Object(null, sessionId, sessionId));
+		    }
+		    else {
+		        // not handling this here
+		        throw e;
+		    }
+		}
+		
 	}
 
 	@Override
 	public StoredVideoInfoContext getVideoInformation(String sessionId) throws Exception {
 		log.fine(String.format("Retrieving video metadata with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
 
-		final ObjectMetadata objectMetadata = client.getObjectMetadata(bucketName, LocationAwareS3Object.formatFileName(sessionId));
-		return new CloudS3StoredVideoInfoContext(objectMetadata, bucketName, LocationAwareS3Object.formatFileName(sessionId),
-				Region.fromValue(awsRegion));
+		try {
+		    final ObjectMetadata objectMetadata = client.getObjectMetadata(bucketName, LocationAwareS3Object.formatFileName(sessionId));
+		      return new CloudS3StoredVideoInfoContext(objectMetadata, bucketName, LocationAwareS3Object.formatFileName(sessionId),
+		                Region.fromValue(awsRegion));
+
+		} catch(AmazonS3Exception e) {
+            if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                log.info(String.format("Couldn't find video with sessionId=%s from AWS S3 bucket=%s", sessionId, bucketName));
+                return new CloudS3StoredVideoInfoContext(null, bucketName, LocationAwareS3Object.formatFileName(sessionId), Region.fromValue(awsRegion));
+            }
+            else {
+                // not handling this here
+                throw e;
+            }
+        }
 	}
 
 	@Override

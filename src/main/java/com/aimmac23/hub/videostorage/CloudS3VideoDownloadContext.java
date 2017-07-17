@@ -34,7 +34,9 @@ public class CloudS3VideoDownloadContext implements StoredVideoDownloadContext {
 	@Override
 	public void close() {
 		try {
-			video.getS3Object().close();
+		    if(video.getS3Object() != null) {
+		        video.getS3Object().close();    
+		    }
 		} catch (IOException e) {
 			log.warning("Unable to close InputStream, this may lead to resource leaks!");
 		}
