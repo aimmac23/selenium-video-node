@@ -25,6 +25,7 @@
         </developer>
     </developers>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <selenium.version>3.1.0</selenium.version>
     </properties>
 
@@ -88,39 +89,43 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-                <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <mkdir dir="src/main/resources" />
-                <zip includes="**" basedir="binaries/" destfile="src/main/resources/native.zip">
-                </zip>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
-          <executions>
-              <execution>
-                  <id>attach-sources</id>
-                  <goals>
-                      <goal>jar</goal>
-                  </goals>
-              </execution>
-          </executions>
-      </plugin>
+            <!-- Build a ZIP file which contains the native dependencies  -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<appendassemblyid>false</appendassemblyid>
+					<finalName>native</finalName>
+					<descriptors>
+						<descriptor>src/main/assembly/native-zip.xml</descriptor>
+					</descriptors>
+					<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+		
+				</configuration>
+				<executions>
+				    <!-- Note that the M2E Eclipse plugin may complain about this line, due to the non-standard phase -->
+				    <!-- See http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html  -->
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+	      <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-javadoc-plugin</artifactId>
+	          <version>2.10.3</version>
+	          <executions>
+	              <execution>
+	                  <id>attach-sources</id>
+	                  <goals>
+	                      <goal>jar</goal>
+	                  </goals>
+	              </execution>
+	          </executions>
+	      </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -151,10 +156,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <!-- Don't include the native code zip file in the sources -->
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -207,18 +208,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- Uploads to the staging area for Maven central -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.3</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
             </plugin>
         </plugins>
         <extensions>
