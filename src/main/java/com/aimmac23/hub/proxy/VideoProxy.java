@@ -30,15 +30,12 @@ public class VideoProxy extends DefaultRemoteProxy {
 	private String serviceUrl;
 	boolean isCurrentlyRecording = false;
 	private HttpClient client;
-	private HttpHost remoteHost;
-	
+
 	public VideoProxy(RegistrationRequest request, Registry registry) {
 		super(RegistrationRequestCorrector.correctRegistrationRequest(request), registry);
 		
 		serviceUrl = getRemoteHost() + "/extra/VideoRecordingControlServlet";
 		
-		remoteHost = new HttpHost(getRemoteHost().getHost(),
-				getRemoteHost().getPort());
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         client = httpClientFactory.getHttpClient();
         
@@ -74,7 +71,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 		HttpPost r = new HttpPost(serviceUrl + "?command=start");
 		
         try {
-			HttpResponse response = client.execute(remoteHost, r);
+			HttpResponse response = client.execute(r);
 			if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				log.warning("Could not start video reporting: " + EntityUtils.toString(response.getEntity()));
 				return;
@@ -151,7 +148,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 		HttpPost r = new HttpPost(serviceUrl + "?command=stop");
 		
         try {
-			HttpResponse response = client.execute(remoteHost, r);
+			HttpResponse response = client.execute(r);
 			if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				log.warning("Could not stop video reporting: " + EntityUtils.toString(response.getEntity()));
 			}
