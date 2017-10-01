@@ -27,3 +27,9 @@ Starting with version 1.5, the compiled JAR file may be bundled with the JSON pa
 http://www.json.org/java/
 
 See the website for the relevant license.
+
+-------------------------
+
+Starting with version 2.3, the compiled JAR file may be bundled with the Amazon AWS SDK:
+
+https://github.com/aws/aws-sdk-java/blob/master/LICENSE.txt
