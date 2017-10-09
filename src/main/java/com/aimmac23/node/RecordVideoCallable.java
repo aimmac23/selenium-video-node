@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.aimmac23.exception.MissingFrameException;
 import com.aimmac23.node.jna.EncoderInterface;
-import com.aimmac23.node.jna.JnaLibraryLoader;
+import com.aimmac23.node.jna.LibVPX;
 import com.sun.jna.Pointer;
 
 public class RecordVideoCallable implements Callable<File> {
@@ -21,14 +21,15 @@ public class RecordVideoCallable implements Callable<File> {
 	private volatile boolean shouldStop = false;
 
 	private ScreenshotSource screenshotSource;
+
+	private LibVPX vpxLibrary;
+	private EncoderInterface encoder;
 	
-	static {
-		JnaLibraryLoader.init();
-	}
-	
-	public RecordVideoCallable(int targetFramerate, ScreenshotSource screenshotSource) {
+	public RecordVideoCallable(int targetFramerate, ScreenshotSource screenshotSource, LibVPX vpxLibrary, EncoderInterface encoderLibrary) {
 		this.targetFramerate = targetFramerate;
 		this.screenshotSource = screenshotSource;
+		this.vpxLibrary = vpxLibrary;
+		this.encoder = encoderLibrary;
 		this.targetFramerateSleepTime = (int)((1.0 / targetFramerate) * 1000.0);
 	}
 
@@ -38,7 +39,6 @@ public class RecordVideoCallable implements Callable<File> {
 
 		File outputFile = File.createTempFile("screencast", ".webm");
 				
-		EncoderInterface encoder = JnaLibraryLoader.getEncoder();
 		
 		log.info("Starting new recording at " + targetFramerate + " fps with resolution " 
 		+ screenshotSource.getWidth() + "x" + screenshotSource.getHeight());
@@ -118,8 +118,8 @@ public class RecordVideoCallable implements Callable<File> {
 	private void handleVPXError(int errorCode, String message, Pointer context) {
 		if(errorCode != 0) {
 			throw new IllegalStateException(message + ": " 
-					+ JnaLibraryLoader.getLibVPX().vpx_codec_err_to_string(errorCode)
-					+ " due to: " + JnaLibraryLoader.getEncoder().codec_error_detail(context));
+					+ vpxLibrary.vpx_codec_err_to_string(errorCode)
+					+ " due to: " + encoder.codec_error_detail(context));
 		}
 	}
 

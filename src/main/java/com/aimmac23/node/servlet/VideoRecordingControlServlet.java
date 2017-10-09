@@ -17,9 +17,9 @@ import org.apache.commons.exec.StreamPumper;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
-import com.aimmac23.node.RecordVideoCallable;
 import com.aimmac23.node.VideoRecordController;
 import com.aimmac23.node.args.SystemPropertyRecordArgs;
+import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -33,19 +33,13 @@ public class VideoRecordingControlServlet extends HttpServlet {
 	private static VideoRecordController controller;
 	Cache<String, File> availableVideos;
 
-	// make sure we initialise the RecordVideoCallable class, because that initialises
-	// the native code dependencies. If we can't load the native code, we should blow
-	// up now
+	// Make sure we load the mandatory native dependencies, and initialise the screenshot source. 
+	// If we fail to do this, we should fail at startup
 	static {
-		try {
-			Class.forName(RecordVideoCallable.class.getName());
-		} catch (ClassNotFoundException e) {
-			// not possible
-		}
-		
-		// this class contains things which should be checked at startup, not when the servlet is 
-		// initialised
-		controller = new VideoRecordController(new SystemPropertyRecordArgs());
+		JnaLibraryLoader.init();
+
+		controller = new VideoRecordController(new SystemPropertyRecordArgs(), 
+				JnaLibraryLoader.getLibVPX(), JnaLibraryLoader.getEncoder());
 	}
 	public VideoRecordingControlServlet() {
 		super();		

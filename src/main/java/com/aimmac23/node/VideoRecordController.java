@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.aimmac23.node.args.IRecordArgs;
+import com.aimmac23.node.jna.EncoderInterface;
+import com.aimmac23.node.jna.LibVPX;
 
 public class VideoRecordController implements Closeable {
 	
@@ -22,8 +24,13 @@ public class VideoRecordController implements Closeable {
 	private final int targetFramerate;
 
 	private ScreenshotSource screenshotSource;
+
+	private LibVPX vpxLibrary;
+	private EncoderInterface encoderInterface;
 	
-	public VideoRecordController(IRecordArgs recordArgs) {
+	public VideoRecordController(IRecordArgs recordArgs, LibVPX vpxLibrary, EncoderInterface encoderInterface) {
+		this.vpxLibrary = vpxLibrary;
+		this.encoderInterface = encoderInterface;
 		executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
 		executor.setThreadFactory(new RecorderThreadFactory());
 		executor.prestartAllCoreThreads();
@@ -46,7 +53,7 @@ public class VideoRecordController implements Closeable {
 			throw new IllegalStateException("Video recording currently in progress, cannot record again");
 		}
 		
-		currentCallable = new RecordVideoCallable(targetFramerate, screenshotSource);
+		currentCallable = new RecordVideoCallable(targetFramerate, screenshotSource, vpxLibrary, encoderInterface);
 		currentFuture = executor.submit(currentCallable);
 	}
 	

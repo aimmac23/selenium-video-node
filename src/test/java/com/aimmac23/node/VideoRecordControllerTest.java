@@ -9,6 +9,7 @@ import com.aimmac23.node.RobotScreenshotSource;
 import com.aimmac23.node.ScreenshotSource;
 import com.aimmac23.node.VideoRecordController;
 import com.aimmac23.node.args.IRecordArgs;
+import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.google.common.base.Throwables;
 
 public class VideoRecordControllerTest {
@@ -29,8 +30,9 @@ public class VideoRecordControllerTest {
 	@Test
 	public void canCreateForThisPlatform() throws Exception {
 
+		JnaLibraryLoader.init();
 		IRecordArgs args = new TestRecordArgs();
-		try (VideoRecordController controller = new VideoRecordController(args)) {
+		try (VideoRecordController controller = new VideoRecordController(args, JnaLibraryLoader.getLibVPX(), JnaLibraryLoader.getEncoder())) {
 			controller.startRecording();
 
 			Thread.sleep(2000);
