@@ -3,6 +3,7 @@ package com.aimmac23.hub.examples;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -17,6 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Alasdair Macmillan
  *
  */
+@Ignore
 public class ExampleSeleniumTests extends AbstractVideoSeleniumTest {
 	
 	// change this to point to your own grid hub

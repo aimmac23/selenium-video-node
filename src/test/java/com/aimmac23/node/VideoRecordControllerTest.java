@@ -1,4 +1,4 @@
-package com.aimmac23.node.jna;
+package com.aimmac23.node;
 
 import java.io.File;
 
@@ -22,11 +22,7 @@ public class VideoRecordControllerTest {
 
 		@Override
 		public ScreenshotSource getNewScreenshotSource() {
-			try {
-				return new RobotScreenshotSource();
-			} catch (Exception e) {
-				throw Throwables.propagate(e);
-			}
+			return new DummyScreenshotSource();
 		}
 	}
 
@@ -37,7 +33,7 @@ public class VideoRecordControllerTest {
 		try (VideoRecordController controller = new VideoRecordController(args)) {
 			controller.startRecording();
 
-			Thread.sleep(500);
+			Thread.sleep(2000);
 
 			File recording = controller.stopRecording();
 
