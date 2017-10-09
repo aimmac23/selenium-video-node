@@ -8,7 +8,6 @@ import com.aimmac23.node.RobotScreenshotSource;
 import com.aimmac23.node.ScreenshotSource;
 import com.aimmac23.node.X11ScreenshotSource;
 import com.aimmac23.node.XvfbFileScreenshotSource;
-import com.aimmac23.node.servlet.VideoRecordingControlServlet;
 import com.google.common.base.Preconditions;
 
 public class SystemPropertyRecordArgs implements IRecordArgs {

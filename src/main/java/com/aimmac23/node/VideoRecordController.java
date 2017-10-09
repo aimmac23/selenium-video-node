@@ -1,6 +1,8 @@
 package com.aimmac23.node;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -10,7 +12,7 @@ import java.util.logging.Logger;
 
 import com.aimmac23.node.args.IRecordArgs;
 
-public class VideoRecordController {
+public class VideoRecordController implements Closeable {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
 
@@ -26,16 +28,10 @@ public class VideoRecordController {
 		executor.setThreadFactory(new RecorderThreadFactory());
 		executor.prestartAllCoreThreads();
 		
-
-		
-		
-		
-		
 		targetFramerate = recordArgs.getTargetFramerate();
 		
 		log.info("Will attempt to record at " + targetFramerate + " frames per second - adjust this value " +
 		" by setting -Dvideo.framerate=<value>");
-		
 		
 		screenshotSource = recordArgs.getNewScreenshotSource();
 		
@@ -81,6 +77,12 @@ public class VideoRecordController {
 		}
 		
 	}
+	
+	@Override
+	public void close() throws IOException {
+		// really only for unit tests
+		executor.shutdown();		
+	}
 	class RecorderThreadFactory implements ThreadFactory {
 		
 		@Override
@@ -91,4 +93,5 @@ public class VideoRecordController {
 			return thread;
 		}
 	}
+
 }

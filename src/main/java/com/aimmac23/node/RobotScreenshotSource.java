@@ -1,5 +1,6 @@
 package com.aimmac23.node;
 
+import java.awt.AWTException;
 import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -7,7 +8,6 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
-import java.util.Arrays;
 
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
@@ -17,7 +17,7 @@ public class RobotScreenshotSource implements ScreenshotSource {
 
 	private Robot robot;
 
-	public RobotScreenshotSource() throws Exception {
+	public RobotScreenshotSource() throws AWTException, SecurityException {
 		robot = new Robot();
 	}
 	
