@@ -2,19 +2,23 @@ package com.aimmac23.node;
 
 import java.io.File;
 
+import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.aimmac23.node.RobotScreenshotSource;
-import com.aimmac23.node.ScreenshotSource;
-import com.aimmac23.node.VideoRecordController;
 import com.aimmac23.node.args.IRecordArgs;
-import com.aimmac23.node.jna.JnaLibraryLoader;
-import com.google.common.base.Throwables;
+import com.aimmac23.node.jna.EncoderInterface;
+import com.aimmac23.node.jna.LibVPX;
 
 public class VideoRecordControllerTest {
 
 	private final class TestRecordArgs implements IRecordArgs {
+		
+		private EncoderInterface encoderInterface;
+
+		public TestRecordArgs(EncoderInterface encoderInterface) {
+			this.encoderInterface = encoderInterface;
+		}
 		
 		@Override
 		public int getTargetFramerate() {
@@ -23,24 +27,30 @@ public class VideoRecordControllerTest {
 
 		@Override
 		public ScreenshotSource getNewScreenshotSource() {
-			return new DummyScreenshotSource();
+			return new DummyScreenshotSource(encoderInterface);
 		}
 	}
-
+	
 	@Test
 	public void canCreateForThisPlatform() throws Exception {
 
-		JnaLibraryLoader.init();
-		IRecordArgs args = new TestRecordArgs();
-		try (VideoRecordController controller = new VideoRecordController(args, JnaLibraryLoader.getLibVPX(), JnaLibraryLoader.getEncoder())) {
+		// mock the LibVPX dependency - technically we only need it for error handling...
+		LibVPX vpx = EasyMock.createStrictMock(LibVPX.class);
+		EncoderInterface encoderInterface = new DummyEncoderInterface();
+				
+		EasyMock.replay(vpx);
+		IRecordArgs args = new TestRecordArgs(encoderInterface);
+		try (VideoRecordController controller = new VideoRecordController(args, vpx, encoderInterface)) {
 			controller.startRecording();
 
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 
 			File recording = controller.stopRecording();
 
 			Assert.assertTrue("Recording file does not exist!", recording.exists());
 			Assert.assertTrue("File is zero length!", recording.length() > 0);
 		}
+		
+		EasyMock.verify(vpx);
 	}
 }
