@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import com.aimmac23.node.RecordVideoCallable;
 import com.aimmac23.node.VideoRecordController;
+import com.aimmac23.node.args.SystemPropertyRecordArgs;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -44,7 +45,7 @@ public class VideoRecordingControlServlet extends HttpServlet {
 		
 		// this class contains things which should be checked at startup, not when the servlet is 
 		// initialised
-		controller = new VideoRecordController();
+		controller = new VideoRecordController(new SystemPropertyRecordArgs());
 	}
 	public VideoRecordingControlServlet() {
 		super();		

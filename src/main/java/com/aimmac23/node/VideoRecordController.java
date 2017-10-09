@@ -8,6 +8,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.aimmac23.node.args.IRecordArgs;
+
 public class VideoRecordController {
 	
 	private static final Logger log = Logger.getLogger(RecordVideoCallable.class.getSimpleName());
@@ -19,61 +21,27 @@ public class VideoRecordController {
 
 	private ScreenshotSource screenshotSource;
 	
-	public VideoRecordController() {
+	public VideoRecordController(IRecordArgs recordArgs) {
 		executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
 		executor.setThreadFactory(new RecorderThreadFactory());
 		executor.prestartAllCoreThreads();
 		
-		String framerateString = System.getProperty("video.framerate", "15");
-		String videoSourceString = System.getProperty("video.source", "robot");
-		String xvfbLocationString = System.getProperty("video.xvfbscreen", null);
-		
-		File xvfbLocation = null;
-		if(xvfbLocationString != null) {
-			File xvfbDirectory = new File(xvfbLocationString);
-			File xvfbFile = new File(xvfbDirectory, "Xvfb_screen0");
-			if(!xvfbFile.exists()) {
-				throw new IllegalStateException("Xvfb Screen location not found: " + xvfbFile);
-			}
-			else if(!xvfbFile.isFile()) {
-				throw new IllegalStateException("Xvfb Screen location is not a file: " + xvfbFile);
-			}
-			else {
-				xvfbLocation = xvfbFile;
-			}
-		}
-		else {
-			xvfbLocation = null;
-		}
+
 		
 		
-		targetFramerate = Integer.parseInt(framerateString);
+		
+		
+		targetFramerate = recordArgs.getTargetFramerate();
 		
 		log.info("Will attempt to record at " + targetFramerate + " frames per second - adjust this value " +
 		" by setting -Dvideo.framerate=<value>");
 		
-		try {
-			// TODO: The usage of this additional flag implies using the xvfb screenshot source - fix this in a future release?
-			if(xvfbLocation != null) {
-				screenshotSource = new XvfbFileScreenshotSource(xvfbLocation);
-			}
-			else if("x11".equalsIgnoreCase(videoSourceString)){
-				screenshotSource = new X11ScreenshotSource();
-			}
-			else if("robot".equalsIgnoreCase(videoSourceString)) {
-				screenshotSource = new RobotScreenshotSource();
-			}
-			else {
-				throw new IllegalArgumentException("Unrecognised screenshot source: " + screenshotSource);
-			}
-			
-			log.info("Using " + screenshotSource.getSourceName() + " Screenshot Source");
-			
-			screenshotSource.doStartupSanityChecks();
-		}
-		catch(Exception e) {
-			throw new IllegalStateException("Could not create screenshot source for video encoder", e);
-		}
+		
+		screenshotSource = recordArgs.getNewScreenshotSource();
+		
+		log.info("Using " + screenshotSource.getSourceName() + " Screenshot Source");
+		
+		screenshotSource.doStartupSanityChecks();
 		
 	}
 	
