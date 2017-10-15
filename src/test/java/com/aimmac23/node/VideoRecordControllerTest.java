@@ -10,14 +10,19 @@ import com.aimmac23.node.args.IRecordArgs;
 import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.LibVPX;
 
+/**
+ * A test of the recording controller logic, with mock inputs
+ *
+ */
 public class VideoRecordControllerTest {
 
 	private final class TestRecordArgs implements IRecordArgs {
 		
-		private EncoderInterface encoderInterface;
 
-		public TestRecordArgs(EncoderInterface encoderInterface) {
-			this.encoderInterface = encoderInterface;
+		private ScreenshotSource screenshotSource;
+
+		public TestRecordArgs(ScreenshotSource screenshotSource) {
+			this.screenshotSource = screenshotSource;
 		}
 		
 		@Override
@@ -27,19 +32,29 @@ public class VideoRecordControllerTest {
 
 		@Override
 		public ScreenshotSource getNewScreenshotSource() {
-			return new DummyScreenshotSource(encoderInterface);
+			return screenshotSource;
 		}
 	}
 	
 	@Test
-	public void canCreateForThisPlatform() throws Exception {
+	public void canRecordVideo() throws Exception {
 
-		// mock the LibVPX dependency - technically we only need it for error handling...
+		// mock the LibVPX dependency - technically we only need it for error handling
 		LibVPX vpx = EasyMock.createStrictMock(LibVPX.class);
+		
+		// mock the screenshot source
+		ScreenshotSource source = EasyMock.mock(ScreenshotSource.class);
+		EasyMock.expect(source.getWidth()).andReturn(800).atLeastOnce();
+		EasyMock.expect(source.getHeight()).andReturn(600).atLeastOnce();
+		EasyMock.expect(source.applyScreenshot(EasyMock.anyObject())).andReturn(0).atLeastOnce();
+		EasyMock.expect(source.getSourceName()).andReturn("TEST").anyTimes();
+		source.doStartupSanityChecks(); EasyMock.expectLastCall().once();
+		
+		EasyMock.replay(vpx, source);
+		
 		EncoderInterface encoderInterface = new DummyEncoderInterface();
-				
-		EasyMock.replay(vpx);
-		IRecordArgs args = new TestRecordArgs(encoderInterface);
+
+		IRecordArgs args = new TestRecordArgs(source);
 		try (VideoRecordController controller = new VideoRecordController(args, vpx, encoderInterface)) {
 			controller.startRecording();
 
@@ -51,6 +66,6 @@ public class VideoRecordControllerTest {
 			Assert.assertTrue("File is zero length!", recording.length() > 0);
 		}
 		
-		EasyMock.verify(vpx);
+		EasyMock.verify(vpx, source);
 	}
 }

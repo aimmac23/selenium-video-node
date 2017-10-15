@@ -10,13 +10,25 @@ import com.aimmac23.node.jna.EncoderInterface;
 import com.aimmac23.node.jna.JnaLibraryLoader;
 import com.sun.jna.Pointer;
 
-public class DummyScreenshotSource implements ScreenshotSource {
+/**
+ * Creates a screenshot suitable for testing video encoding without worrying where it came from.
+ * 
+ * Still depends on native dependencies to do the YUV conversion.
+ * 
+ * @author aim
+ *
+ */
+public class TestScreenshotSource implements ScreenshotSource {
 
 	int redness = 0;
 	private EncoderInterface encoderInterface;
+	private int width;
+	private int height;
 	
-	public DummyScreenshotSource(EncoderInterface encoderInterface) {
+	public TestScreenshotSource(EncoderInterface encoderInterface, int width, int height) {
 		this.encoderInterface = encoderInterface;
+		this.width = width;
+		this.height = height;
 	}
 	
 	@Override
@@ -41,12 +53,12 @@ public class DummyScreenshotSource implements ScreenshotSource {
 
 	@Override
 	public int getWidth() {
-		return 800;
+		return width;
 	}
 
 	@Override
 	public int getHeight() {
-		return 600;
+		return height;
 	}
 
 	@Override
