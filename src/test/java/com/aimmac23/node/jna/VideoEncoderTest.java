@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import com.aimmac23.node.ScreenshotSource;
 import com.aimmac23.node.TestScreenshotSource;
 import com.aimmac23.node.VideoRecordController;
 import com.aimmac23.node.args.IRecordArgs;
+import com.sun.jna.Platform;
 
 /**
  * Test the ability to encode video data, at various resolutions.
@@ -24,6 +30,9 @@ public class VideoEncoderTest {
 	
 	@Before
 	public void setup() {
+		Assume.assumeTrue("Current platform is supported", 
+				"x86".equals(Platform.ARCH == "x86") || "x86-64".equals(Platform.ARCH));
+		
 		JnaLibraryLoader.init();
 	}
 	
