@@ -26,7 +26,7 @@
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <selenium.version>3.4.0</selenium.version>
+        <selenium.version>3.7.0</selenium.version>
     </properties>
 
     <dependencyManagement>
@@ -42,6 +42,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>4.5.0</version>
+        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-server</artifactId>
@@ -180,6 +185,7 @@
                             <artifactSet>
                                 <includes>
                                     <exclude>junit:junit</exclude>
+                                    <include>net.java.dev.jna:jna</include>
                                     <include>org.json:json</include>
                                     <include>com.amazonaws:aws-java-sdk-s3</include>
                                     <include>com.amazonaws:aws-java-sdk-kms</include>
