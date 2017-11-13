@@ -1,5 +1,5 @@
-Build: [![Build Status](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(MASTER)/badge/icon)](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(MASTER)/)
-Latest Selenium 3.x: [![Build Status](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(latest%20Selenium%203.x)/badge/icon)](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(latest%20Selenium%203.x)/)
+Build: [![Build Status](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(MASTER)/badge/icon)]
+Latest Selenium 3.x: [![Build Status](https://aimmac23.com/private/jenkins/job/Github/job/selenium-video-node%20(latest%20Selenium%203.x)/badge/icon)]
 
 selenium-video-node
 ===================
