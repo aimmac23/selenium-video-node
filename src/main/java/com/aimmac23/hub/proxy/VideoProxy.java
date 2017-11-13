@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.openqa.grid.common.RegistrationRequest;
+import org.openqa.grid.internal.GridRegistry;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.TestSession;
 import org.openqa.grid.selenium.proxy.DefaultRemoteProxy;
@@ -31,7 +32,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	boolean isCurrentlyRecording = false;
 	private HttpClient client;
 
-	public VideoProxy(RegistrationRequest request, Registry registry) {
+	public VideoProxy(RegistrationRequest request, GridRegistry registry) {
 		super(RegistrationRequestCorrector.correctRegistrationRequest(request), registry);
 		
 		serviceUrl = getRemoteHost() + "/extra/VideoRecordingControlServlet";
