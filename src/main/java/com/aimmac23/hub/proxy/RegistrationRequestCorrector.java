@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openqa.grid.common.RegistrationRequest;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.MutableCapabilities;
 
 /**
  * Some default configurations may try to register nodes that can run more than one browser in parallel. This is
@@ -69,7 +69,7 @@ public final class RegistrationRequestCorrector {
 				maxSessionField.set(configuration, Integer.valueOf(1));
 			}
 			
-			correctCapabilities((Collection<DesiredCapabilities>) configuration.getClass().getField("capabilities").get(configuration));
+			correctCapabilities((Collection<MutableCapabilities>) configuration.getClass().getField("capabilities").get(configuration));
 		}
 		
 	}
@@ -88,13 +88,13 @@ public final class RegistrationRequestCorrector {
 				configuration.put("maxSession", Integer.valueOf(1));
 			}
 			
-			correctCapabilities((Collection<DesiredCapabilities>) request.getClass().getMethod("getCapabilities").invoke(request));
+			correctCapabilities((Collection<MutableCapabilities>) request.getClass().getMethod("getCapabilities").invoke(request));
 		}
 		
 	}
 	
-	private static void correctCapabilities(Collection<DesiredCapabilities> capabilities) {
-		for(DesiredCapabilities caps : capabilities) {
+	private static void correctCapabilities(Collection<MutableCapabilities> capabilities) {
+		for(MutableCapabilities caps : capabilities) {
 			Object maxInstances = caps.getCapability(RegistrationRequest.MAX_INSTANCES);
 			caps.setCapability(RegistrationRequest.MAX_INSTANCES, "1");
 			if(maxInstances != null && !"1".equals(maxInstances)) {
