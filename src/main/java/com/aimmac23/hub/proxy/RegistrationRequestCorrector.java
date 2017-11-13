@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Some default configurations may try to register nodes that can run more than one browser in parallel. This is
