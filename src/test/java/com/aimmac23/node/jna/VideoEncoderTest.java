@@ -31,7 +31,7 @@ public class VideoEncoderTest {
 	@Before
 	public void setup() {
 		Assume.assumeTrue("Current platform is supported", 
-				"x86".equals(Platform.ARCH == "x86") || "x86-64".equals(Platform.ARCH));
+				"x86".equals(Platform.ARCH) || "x86-64".equals(Platform.ARCH));
 		
 		JnaLibraryLoader.init();
 	}
