@@ -32,8 +32,8 @@ For example videos recorded using this plugin, [see the examples page](http://se
 
 | Platform      | Support | Tested? | Jenkins Build |
 |:---------------:|:---------:|:---------:|:--------:|
-| Linux x86_64 (64-bit) |  Yes        | Yes | ![Build Status](https://aimmac23.com/private/jenkins/job/Github/selenium-video-node (64-bit Linux)/badge/icon) |
-| Linux x86 (32-bit)   | Yes      | Yes | ![Build Status](https://aimmac23.com/private/jenkins/job/Github/selenium-video-node (32-bit Linux)/badge/icon) |
+| Linux x86_64 (64-bit) |  Yes        | Yes | ![Build Status](https://aimmac23.com/private/jenkins/job/Github/selenium-video-node%20(64-bit%20Linux)/badge/icon) |
+| Linux x86 (32-bit)   | Yes      | Yes | ![Build Status](https://aimmac23.com/private/jenkins/job/Github/selenium-video-node%20(32-bit%20Linux)/badge/icon) |
 | Windows x86_64 (64-bit) | Yes¹ | Yes¹ | |
 | Windows x86 (32-bit) | Yes | Yes | |
 | Mac OS X 10.9 x86_64 (64 bit)² | Yes | Yes | |
