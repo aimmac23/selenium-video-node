@@ -16,6 +16,7 @@ import com.google.common.io.Files;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
 
 public class JnaLibraryLoader {
 	
@@ -80,8 +81,7 @@ public class JnaLibraryLoader {
 			addNativePath(targetDirectory);
 			
 			// at this point, we will have extracted the native libraries into a new temporary folder, containing directories
-			// "32bit" and "64bit". There is no platform-independent way to figure out what bit-size this JVM uses, and no way to
-			// change the search path of JNA once added, so we're going to copy things onto the search path instead and see what happens.
+			// "32bit" and "64bit".
 			
 			return target;
 				
@@ -104,12 +104,12 @@ public class JnaLibraryLoader {
 			addNativePath(entry);
 		}
 		
-		try {
-			tryBitDepth(BitDepth.BIT_64, targetDirectory);	
+		if(Platform.is64Bit()) {
+			log.info("64-bit JVM detected - loading 64-bit libraries");
+			tryBitDepth(BitDepth.BIT_64, targetDirectory);
 		}
-		catch(Error e) {
-			log.info("Could not load 64 bit native libraries - attempting 32 bit instead");
-			deleteAllFilesInDirectory(targetDirectory);
+		else {
+			log.info("32-bit JVM detected - loading 32-bit libraries");
 			tryBitDepth(BitDepth.BIT_32, targetDirectory);
 		}
 	}
