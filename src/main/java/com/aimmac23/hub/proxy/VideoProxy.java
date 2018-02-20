@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -15,15 +14,16 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.GridRegistry;
-import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.TestSession;
 import org.openqa.grid.selenium.proxy.DefaultRemoteProxy;
 import org.openqa.grid.web.servlet.handler.RequestType;
 import org.openqa.grid.web.servlet.handler.SeleniumBasedRequest;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
+import org.openqa.selenium.remote.server.jmx.ManagedService;
 
 import com.aimmac23.hub.HubVideoRegistry;
 
+@ManagedService(description = "Selenium Grid Hub Video-Capable TestSlot")
 public class VideoProxy extends DefaultRemoteProxy {
 
 	private static final Logger log = Logger.getLogger(VideoProxy.class.getName());
