@@ -1,3 +1,7 @@
+Vesrsion 2.7 08/04/2018
+=======================
+ * Add JMX annotations, so the VideoProxy still works under Selenium 3.9.0
+
 version 2.6 19/11/2017
 ======================
 
