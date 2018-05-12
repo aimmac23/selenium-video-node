@@ -42,6 +42,8 @@ public class HubServletIntegrationTest {
 	    hubConfig.servlets = Arrays.asList(HubVideoDownloadServlet.class.getCanonicalName(),
 	    		HubVideoInfoServlet.class.getCanonicalName());
 	    hubConfig.port = hubPort;
+	    // As of 
+	    hubConfig.host = "127.0.0.1";
 	    
 	    
 	    hub = new Hub(hubConfig);

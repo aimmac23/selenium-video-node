@@ -46,7 +46,8 @@ public class HubProxyIntegrationTest {
 	    hubConfig.servlets = Arrays.asList(HubVideoDownloadServlet.class.getCanonicalName(),
 	    		HubVideoInfoServlet.class.getCanonicalName());
 	    hubConfig.port = hubPort;
-	    
+	    hubConfig.host = "127.0.0.1";
+
 	    
 	    hub = new Hub(hubConfig);
 	    hub.start();
