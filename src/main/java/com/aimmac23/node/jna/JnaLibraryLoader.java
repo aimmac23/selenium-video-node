@@ -174,7 +174,7 @@ public class JnaLibraryLoader {
 				disposeLibrary(libVPX, "vpx");
 				
 				// Java File doesn't want to recursively delete things
-				Iterator<File> iterator = Files.fileTreeTraverser().postOrderTraversal(extractedDirectory).iterator();
+				Iterator<File> iterator = Files.fileTraverser().breadthFirst(extractedDirectory).iterator();
 				while(iterator.hasNext()) {
 					iterator.next().delete();
 				}
