@@ -67,7 +67,7 @@ public class HubProxyIntegrationTest {
 	public void testBasicRegistration() throws Exception {
 		expectNodeServletCalls();
 		
-		String registrationRequest = String.format("{name: 'test', configuration: {proxy: 'com.aimmac23.hub.proxy.VideoProxy', remoteHost: 'http://127.0.0.1:%s'}}", mockClientPort);
+		String registrationRequest = String.format("{\"name\": \"test\", \"configuration\": {\"proxy\": \"com.aimmac23.hub.proxy.VideoProxy\", \"remoteHost\": \"http://127.0.0.1:%s\", \"capabilities\": [{\"browserName\": \"htmlunit\"}]}}", mockClientPort);
 		HttpPost post = new HttpPost("http://127.0.0.1:" + hubPort + "/grid/register/");
 		post.setEntity(new StringEntity(registrationRequest));
 		
