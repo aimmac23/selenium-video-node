@@ -59,7 +59,7 @@ Alternatively, if you are creating your own Selenium Maven project, add the foll
     <dependency>
         <groupId>com.aimmac23</groupId>
         <artifactId>selenium-video-node</artifactId>
-        <version>2.0</version>
+        <version>2.8</version>
     </dependency>
   
 ## Basic Installation
