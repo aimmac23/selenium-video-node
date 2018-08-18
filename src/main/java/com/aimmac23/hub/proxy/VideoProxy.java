@@ -35,7 +35,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	public VideoProxy(RegistrationRequest request, GridRegistry registry) {
 		super(RegistrationRequestCorrector.correctRegistrationRequest(request), registry);
 		
-		serviceUrl = getRemoteHost() + "/extra/VideoRecordingControlServlet";
+		serviceUrl = getRemoteHost() + "/extra/TestVideoRecordServlet";
 		
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         client = httpClientFactory.getHttpClient();

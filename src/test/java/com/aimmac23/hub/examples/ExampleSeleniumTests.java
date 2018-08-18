@@ -18,7 +18,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Alasdair Macmillan
  *
  */
-@Ignore
 public class ExampleSeleniumTests extends AbstractVideoSeleniumTest {
 	
 	// change this to point to your own grid hub
@@ -41,7 +40,7 @@ public class ExampleSeleniumTests extends AbstractVideoSeleniumTest {
 	
 	@Test
 	public void successfulTest() throws Exception {
-		driver.manage().window().maximize();
+		//driver.manage().window().maximize();
 
 		driver.get("http://www.google.com");
 		// Google seem to like obscure element IDs
@@ -57,9 +56,10 @@ public class ExampleSeleniumTests extends AbstractVideoSeleniumTest {
 		assertEquals(LINK_TEXT, driver.getTitle());
 	}
 	
+	@Ignore
 	@Test
 	public void failingTest() throws Exception {
-		driver.manage().window().maximize();
+		//driver.manage().window().maximize();
 
 		driver.get("http://www.google.com");
 		

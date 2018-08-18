@@ -65,6 +65,13 @@ final class DummyEncoderInterface implements EncoderInterface {
 		Preconditions.checkArgument(context == myContext);
 		return 0;
 	}
+	
+
+	@Override
+	public int convert_frame(Pointer context, byte[] data) {
+		Preconditions.checkArgument(context == myContext);
+		return 0;
+	}
 
 	@Override
 	public int convert_frame(Pointer context, Pointer data) {
@@ -96,5 +103,6 @@ final class DummyEncoderInterface implements EncoderInterface {
 	public String codec_error_detail(Pointer context) {
 		throw new IllegalStateException("This implementation does not return errors");
 	}
+
 	
 }

@@ -22,7 +22,8 @@ public interface EncoderInterface extends Library {
 	int init_image(Pointer context);
 	
 	int convert_frame(Pointer context, int[] data);
-	
+	int convert_frame(Pointer context, byte[] data);
+
 	// same function, different way of expressing the argument
 	int convert_frame(Pointer context, Pointer data);
 	
