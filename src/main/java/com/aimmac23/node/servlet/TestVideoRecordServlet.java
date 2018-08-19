@@ -3,25 +3,18 @@ package com.aimmac23.node.servlet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.exec.StreamPumper;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.http.HttpStatus;
 import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.server.ActiveSession;
@@ -50,6 +43,7 @@ public class TestVideoRecordServlet extends HttpServlet {
 
 	Cache<SessionId, File> availableVideos;
 
+	// use the getter, to make sure the field has been set
 	private ActiveSessions activeSessions;
 
 	static {
@@ -70,46 +64,25 @@ public class TestVideoRecordServlet extends HttpServlet {
 				}
 			}
 		}).build();
-		
-		
-		// the Selenium servlet is lazy-initialized, so wait for the initialization to happen (on first HTTP request)
-		ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-		scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
-			// TODO: should we check if its non-null?
-			ServletContext context = getServletContext();
-			ActiveSessions activeSessions = (ActiveSessions) context.getAttribute(WebDriverServlet.ACTIVE_SESSIONS_KEY);
+	}
+	
+	private synchronized ActiveSessions getActiveSessions() {
+		if(this.activeSessions == null) {
+			ActiveSessions activeSessions = (ActiveSessions) getServletContext().getAttribute(WebDriverServlet.ACTIVE_SESSIONS_KEY);
+
 			if(activeSessions != null) {
 				processActiveSessionsObject(activeSessions);
-				scheduledThreadPoolExecutor.shutdown();	
 			}
-			
-		}, 1, 1, TimeUnit.SECONDS);
-
-		
-		
+			else {
+				new IllegalStateException("ActiveSessions object not found in ServletContext attributes! Has the WebDriverServlet been intialized?");
+			}
+		}
+		return this.activeSessions;
 	}
 	
 	private void processActiveSessionsObject(ActiveSessions activeSessions) {
 		this.activeSessions = activeSessions;
 		activeSessions.addListener(new SessionListener());
-		
-		ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-
-		// XXX: Don't do it this way
-		scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
-
-			@Override
-			public void run() {
-				ArrayList<ActiveSession> allSessions = new ArrayList<>(activeSessions.getAllSessions());
-				
-				allSessions.removeIf(session -> activeRecordings.containsKey(session.getId()));
-				// which leaves us with the sessions we're NOT currently recording on
-				
-				allSessions.forEach(session -> startRecording(session.getId()));
-				
-			}
-			
-		}, 200, 200, TimeUnit.MILLISECONDS);
 		
 		log.info("Started up " + this.getClass());
 	}
@@ -118,34 +91,28 @@ public class TestVideoRecordServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// FIXME: Mostly a copy-pasta from previous implementation - improve this!
 		String command = req.getParameter("command");
-		String sessionId = req.getParameter("sessionId");
+		Optional<SessionId> sessionId = Optional.ofNullable(req.getParameter("sessionId")).map(SessionId::new);
 		if(command == null) {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
 			resp.getWriter().write("Missing parameter: 'command'");
 			return;
 		}
+		if(!sessionId.isPresent()) {
+			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
+			resp.getWriter().write("Missing parameter: 'sessionId'");
+			return;
+		}
 		
 		
 		if(command.equalsIgnoreCase("start")) {
-			// do nothing
+			startRecording(sessionId.get());
 			return;
 		}
 		else if(command.equalsIgnoreCase("stop")) {
-			// do nothing
+			stopRecording(sessionId.get());
 		}
 		else if(command.equalsIgnoreCase("download")) {
-			
-			if(sessionId == null) {
-				resp.setStatus(HttpStatus.SC_BAD_REQUEST);
-				resp.getWriter().write("Missing parameter: 'sessionId'");
-				return;
-			}
-			
-			handleDownload(new SessionId(sessionId), resp);
-		}
-		if(command.equalsIgnoreCase("reset")) {
-			// suppress hub errors for this API call
-			resp.setStatus(HttpStatus.SC_OK);
+			handleDownload(sessionId.get(), resp);
 		}
 		else {
 			resp.setStatus(HttpStatus.SC_BAD_REQUEST);
@@ -156,7 +123,7 @@ public class TestVideoRecordServlet extends HttpServlet {
 	
 	public void startRecording(SessionId sessionId) {
 		
-		ActiveSession activeSession = activeSessions.get(sessionId);
+		ActiveSession activeSession = this.getActiveSessions().get(sessionId);
 		if(activeSession == null) {
 			throw new IllegalStateException("Cannot start recording - session not found: " + sessionId);
 		}
@@ -190,6 +157,7 @@ public class TestVideoRecordServlet extends HttpServlet {
 		VideoRecordController recordController = activeRecordings.get(sessionId);
 		if(recordController == null) {
 			log.log(Level.WARNING, "Can't stop recording - not recording for sessionId: " + sessionId);
+			return;
 		}
 		
 		try {
