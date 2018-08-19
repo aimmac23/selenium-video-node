@@ -35,7 +35,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 	public VideoProxy(RegistrationRequest request, GridRegistry registry) {
 		super(RegistrationRequestCorrector.correctRegistrationRequest(request), registry);
 		
-		serviceUrl = getRemoteHost() + "/extra/TestVideoRecordServlet";
+		serviceUrl = getRemoteHost() + "/extra/VideoRecordingControlServlet";
 		
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         client = httpClientFactory.getHttpClient();
@@ -160,7 +160,7 @@ public class VideoProxy extends DefaultRemoteProxy {
 			if(session.getExternalKey() != null) {
 				JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 				String fileKey = json.getString("filekey");
-				HubVideoRegistry.copyVideoToHub(session, fileKey, getRemoteHost());
+				HubVideoRegistry.copyVideoToHub(session, "/extra/VideoRecordingControlServlet?command=download&fileKey=" + fileKey, getRemoteHost());
 				
 
 			}

@@ -138,7 +138,7 @@ public class TestVideoProxy extends DefaultRemoteProxy {
 				log.warning("Could not stop video reporting: " + EntityUtils.toString(response.getEntity()));
 			}
 			else {
-				HubVideoRegistry.copyVideoToHub(session, session.getExternalKey().getKey(), getRemoteHost());
+				HubVideoRegistry.copyVideoToHub(session, "/extra/TestVideoRecordServlet?command=download&sessionId=" + session.getExternalKey(), getRemoteHost());
 			}
 			
 		} catch (Exception e) {

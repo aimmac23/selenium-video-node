@@ -76,8 +76,7 @@ public class HubVideoRegistry {
 		stoppingSessions.put(session.getExternalKey().getKey(), new VideoFuture());	
 	}
 
-	public static void copyVideoToHub(TestSession session, String pathKey, URL remoteHost) {
-		String serviceUrl = remoteHost + "/extra/TestVideoRecordServlet";
+	public static void copyVideoToHub(TestSession session, String remoteDownloadPath, URL remoteHost) {
 
 		SessionInfoBean infoBean = new SessionInfoBean(session);
 		
@@ -88,7 +87,7 @@ public class HubVideoRegistry {
         HttpClientFactory httpClientFactory = new HttpClientFactory();
         HttpClient client = httpClientFactory.getHttpClient();
         
-        HttpGet r = new HttpGet(serviceUrl + "?command=download&sessionId=" + pathKey);
+        HttpGet r = new HttpGet(remoteDownloadPath);
 		
         try {
 			HttpResponse response = client.execute(remote, r);
