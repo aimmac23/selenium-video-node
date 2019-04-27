@@ -143,6 +143,7 @@
                 <version>2.20</version>
                 <configuration>
                     <parallel>none</parallel>
+                    <useSystemClassLoader>false</useSystemClassLoader> <!-- Temporary fix for https://issues.apache.org/jira/browse/SUREFIRE-1588 - used in the Jenkins builds -->
                 </configuration>
             </plugin>
             <plugin>
