@@ -18,9 +18,9 @@ import org.openqa.grid.internal.TestSession;
 import org.openqa.grid.selenium.proxy.DefaultRemoteProxy;
 import org.openqa.grid.web.servlet.handler.RequestType;
 import org.openqa.grid.web.servlet.handler.SeleniumBasedRequest;
-import org.openqa.selenium.remote.internal.HttpClientFactory;
 import org.openqa.selenium.remote.server.jmx.ManagedService;
 
+import com.aimmac23.http.HttpClientFactory;
 import com.aimmac23.hub.HubVideoRegistry;
 
 @ManagedService(description = "Selenium Grid Hub Video-Capable TestSlot")

@@ -17,8 +17,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.grid.internal.TestSession;
-import org.openqa.selenium.remote.internal.HttpClientFactory;
 
+import com.aimmac23.http.HttpClientFactory;
 import com.aimmac23.hub.videostorage.IVideoStore;
 import com.aimmac23.hub.videostorage.LocalTempFileStore;
 import com.aimmac23.hub.videostorage.SessionInfoBean;
