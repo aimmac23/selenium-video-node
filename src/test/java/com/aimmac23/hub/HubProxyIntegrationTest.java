@@ -17,9 +17,9 @@ import org.mockserver.socket.PortFactory;
 import org.mockserver.verify.VerificationTimes;
 import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
 import org.openqa.grid.web.Hub;
-import org.openqa.selenium.remote.internal.HttpClientFactory;
 import org.testng.Assert;
 
+import com.aimmac23.http.HttpClientFactory;
 import com.aimmac23.hub.servlet.HubVideoDownloadServlet;
 import com.aimmac23.hub.servlet.HubVideoInfoServlet;
 
