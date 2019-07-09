@@ -15,8 +15,7 @@ public interface LibVPX extends Library {
 	String vpx_codec_iface_name(Pointer codecInterface);
 	
 	/**
-	 * Returns a pointer to some sort of VP8 codec definition
-	 * @return
+	 * @return Returns a pointer to some sort of VP8 codec definition
 	 */
 	Pointer vpx_codec_vp8_cx();
 }
