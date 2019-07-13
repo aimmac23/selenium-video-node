@@ -24,7 +24,7 @@ public interface StoredVideoDownloadContext {
 	 * 
 	 * @return an InputStream by which the video content can be read.
 	 * 
-	 * @throws IOException
+	 * @throws IOException on bad read of cached content
 	 */
 	InputStream getStream() throws IOException;
 	

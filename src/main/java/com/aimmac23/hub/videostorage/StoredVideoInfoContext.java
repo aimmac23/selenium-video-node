@@ -14,7 +14,7 @@ public interface StoredVideoInfoContext {
 	/**
 	 * Was the requested video found?
 	 * 
-	 * @return
+	 * @return returns true if the hub has the content cached
 	 */
 	boolean isVideoFound();
 	
