@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.FileUtils;
-
 import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
 import com.sun.jna.Library;
@@ -143,7 +141,7 @@ public class JnaLibraryLoader {
 		for(File file : filesToCopy) {
 			File destinationLocation = new File(targetDirectory, file.getName()); 
 			try {
-				FileUtils.copyFile(file, destinationLocation);
+				Files.copy(file, destinationLocation);
 			}
 			catch(IOException e) {
 				throw new IllegalStateException("Could not copy file: " + file + " to: " + destinationLocation, e);
