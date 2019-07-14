@@ -1,3 +1,9 @@
+Version 2.9 12/07/2019
+======================
+
+ * Updates to project dependencies, to handle upstream Selenium project changes (contributed by https://github.com/DeathBeforeDecaf)
+ * Bundle Apache HTTP client and commons-logging, since Selenium no longer depends on these projects.
+
 Version 2.8 14/08/2018
 ======================
  * Update to fix compile errors when running against newer versions of Guava (related to the Files.fileTreeTraverser() API)
